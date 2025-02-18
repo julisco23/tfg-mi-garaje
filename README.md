@@ -16,29 +16,29 @@ Antes de comenzar, asegúrate de tener instalado lo siguiente:
 Para clonar el repositorio, ejecuta el siguiente comando en tu terminal:
 
 ```bash
-git clone https://github.com/tu_usuario/tfg-mi-garaje.git
+git clone https://github.com/tu_usuario/tfg-mi-garaje.git```
 
 ## Ejecutar el proyecto
 
 Navega hasta la carpeta del proyecto:
 
-```bash cd tfg-mi-garaje
+```bash cd tfg-mi-garaje```
 
 Instala las dependencias del proyecto con el siguiente comando:
 
-```bash flutter pub get
+```bash flutter pub get```
 
 Para correr la aplicación en tu dispositivo/emulador, usa el siguiente comando:
 
-```bash flutter run
+```bash flutter run```
 
 
 ## Generar una versión de producción
 
 Android:
 
-flutter build apk --release
+```bash flutter build apk --release```
 
 IOS:
 
-flutter build ios --release
+```bash flutter build ios --release```
