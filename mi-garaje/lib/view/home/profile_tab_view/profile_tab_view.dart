@@ -3,7 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/shared/themes/theme_notifier.dart';
-import 'package:mi_garaje/shared/widgets/dialog_cuenta_nueva.dart';
+import 'package:mi_garaje/shared/widgets/dialogs/dialog_cuenta_nueva.dart';
 import 'package:mi_garaje/shared/widgets/elevated_button_utils.dart';
 import 'package:mi_garaje/view_model/auth_view_model.dart';
 import 'package:mi_garaje/view_model/garage_view_model.dart';
@@ -33,7 +33,7 @@ class Perfil extends StatelessWidget {
                   Text(viewModel.nombreUsuario),
                   SizedBox(height: screenHeight * 0.4),
                   MiButton(
-                    text: "Cambiar tema de la aplicación",
+                    text: "Cambiar de modo",
                     onPressed: () async {
                       final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
                       themeNotifier.toggleTheme();

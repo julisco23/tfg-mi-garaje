@@ -1,22 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:mi_garaje/data/models/car.dart';
-import 'package:mi_garaje/data/models/option.dart';
+import 'package:mi_garaje/data/models/activity.dart';
 import 'package:mi_garaje/data/services/car_service.dart';
 
 class GarageViewModel extends ChangeNotifier {
+  
   bool _isLoadingCars = true;
-
-  bool get isLoadingCars => _isLoadingCars;
-
-  void toggleLoadingCars() {
-    _isLoadingCars = !_isLoadingCars;
-  }
-
+  bool _isCochesCargados = false;
   Car? _selectedCoche;
 
   // Lista local para almacenar los coches
   final List<Car> _coches = [];
 
+  // Getters
+  bool get isLoadingCars => _isLoadingCars;
+  bool get isCochesCargados => _isCochesCargados;
+
+  // METODOS
+  // Cambiar el estado de carga de los coches
+  void toggleLoadingCars() {
+    _isLoadingCars = !_isLoadingCars;
+  }
+
+  // Cerrar la sesión del usuario
   void cerrarSesion() {
     _coches.clear();
     _selectedCoche = null;
@@ -25,10 +31,7 @@ class GarageViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool _isCochesCargados = false;
-
-  bool get isCochesCargados => _isCochesCargados;
-
+  // Cargar los coches del usuario
   Future<void> loadCoches() async {
     if (_isCochesCargados) return;
 
@@ -52,29 +55,17 @@ class GarageViewModel extends ChangeNotifier {
 
   // Agregar un coche a la lista
   void agregarCoche() async {
-    Car nuevoCoche = Car(
-        name: 'Coche ${_coches.length + 1}', initial: 'C${_coches.length + 1}');
-
-    // Guardamos el coche en Firestore
+    Car nuevoCoche = Car(name: 'Coche ${_coches.length + 1}', initial: 'C${_coches.length + 1}');
     await CarService().addCar(nuevoCoche);
-
-    // Agregamos el coche a la lista local
     _coches.add(nuevoCoche);
-
-    // Actualizamos la UI
     _selectedCoche = nuevoCoche;
     notifyListeners();
   }
 
   // Eliminar un coche de la lista
   void eliminarCoche(Car coche) async {
-    // Eliminamos el coche de Firestore
     await CarService().deleteCar(coche.id!);
-
-    // Eliminamos el coche de la lista local
     _coches.removeWhere((car) => car.id == coche.id);
-
-    // Notificamos a los escuchadores para que la UI se actualice
     notifyListeners();
   }
 
@@ -84,24 +75,24 @@ class GarageViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Actualizar el coche seleccionado
-  void agregarOpcion(Option option) {
-    CarService().addCarOption(selectedCoche!.id!, option);
-    selectedCoche!.addOption(option);
+  // Añadir una actividad al coche seleccionado
+  void addActivity(Actividad activity) {
+    CarService().addActivity(selectedCoche!.id!, activity);
+    selectedCoche!.addActivity(activity);
     notifyListeners();
   }
 
-  // Eliminar una opción del coche seleccionado
-  void eliminarOpcion(Option option) {
-    CarService().deleteCarOption(selectedCoche!.id!, option.id!);
-    selectedCoche!.removeOption(option);
+  // Eliminar una actividad del coche seleccionado
+  void deleteActivity(Actividad activity) {
+    CarService().deleteActivity(selectedCoche!.id!, activity.idActivity!);
+    selectedCoche!.removeActivity(activity);
     notifyListeners();
   }
 
-  // Actualizar una opción del coche seleccionado
-  void updateOption(Option option) {
-    CarService().updateCarOption(selectedCoche!.id!, option);
-    selectedCoche!.updateOption(option);
+  // Actualizar una actividad del coche seleccionado
+  void updateActivity(Actividad activity) {
+    CarService().updateActivity(selectedCoche!.id!, activity);
+    selectedCoche!.updateActivity(activity);
     notifyListeners();
   }
 

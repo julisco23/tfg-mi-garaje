@@ -9,6 +9,8 @@ class MiTextFormField extends StatelessWidget {
     this.validator,
     this.suffixIcon,
     this.obscureText = false,
+    this.maxLines = 1,
+    this.keyboardType = TextInputType.text,
   })  : _controller = controller,
         _labelText = labelText,
         _hintText = hintText;
@@ -19,12 +21,17 @@ class MiTextFormField extends StatelessWidget {
   final FormFieldValidator<String>? validator;
   final Widget? suffixIcon;
   final bool obscureText;
+  final int maxLines;
+  final TextInputType keyboardType;
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       controller: _controller,
+      keyboardType: keyboardType,
+      maxLines: maxLines,
       decoration: InputDecoration(
+        alignLabelWithHint: true,
         labelText: _labelText,
         hintText: _hintText,
         floatingLabelBehavior: FloatingLabelBehavior.auto,

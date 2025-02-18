@@ -6,7 +6,6 @@ import 'package:mi_garaje/view/home/profile_tab_view/profile_tab_view.dart';
 import 'package:mi_garaje/view/home/home_tab_view/home_tab_view.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/view_model/garage_view_model.dart';
-import 'package:mi_garaje/view_model/home_tab_view_model.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -21,6 +20,8 @@ class _HomeViewState extends State<HomeView> {
     HomeTabView(),
     Perfil(),
   ];
+
+  int _selectedIndex = 1;
 
   @override
   void initState() {
@@ -41,10 +42,7 @@ class _HomeViewState extends State<HomeView> {
       setState(() {
         garageViewModel.toggleLoadingCars();
       });
-    
-      Provider.of<HomeTabViewModel>(context, listen: false).resetIndex();
     }
-
   }
 
   @override
@@ -53,9 +51,10 @@ class _HomeViewState extends State<HomeView> {
       builder: (context, garageViewModel, _) {
         if (garageViewModel.isLoadingCars) {
           return Container(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.onPrimary,
             child: Center(
-              child: CircularProgressIndicator(color: Colors.blue),
+              child: CircularProgressIndicator(
+                  color: Theme.of(context).primaryColor),
             ),
           );
         }
@@ -72,48 +71,41 @@ class _HomeViewState extends State<HomeView> {
               IconButton(
                 icon: const Icon(Icons.garage_rounded),
                 onPressed: () {
-                  Navigator.pushNamed(
-                    context,
-                    RouteNames.garage,
-                  );
+                  Navigator.pushNamed(context, RouteNames.garage);
                 },
+                tooltip: "Garaje",
               ),
             ],
-            bottom: const PreferredSize(
-              preferredSize: Size.fromHeight(2.0),
-              child: SizedBox(),
-            ),
           ),
-          body: Consumer<HomeTabViewModel>(
-            builder: (context, homeViewModel, _) {
-              return _widgetOptions[homeViewModel.selectedIndex];
+          body: _widgetOptions[_selectedIndex],
+          bottomNavigationBar: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            currentIndex: _selectedIndex,
+            onTap: (index) {
+              setState(() {
+                _selectedIndex = index;
+              });
             },
-          ),
-          bottomNavigationBar: Consumer<HomeTabViewModel>(
-            builder: (context, homeViewModel, _) {
-              return BottomNavigationBar(
-                type: BottomNavigationBarType.fixed,
-                currentIndex: homeViewModel.selectedIndex,
-                onTap: homeViewModel.setSelectedIndex,
-                items: const [
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.work_history_outlined),
-                    label: 'HistoryTab',
-                    activeIcon: Icon(Icons.work_history_rounded),
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.home_outlined),
-                    label: 'HomeTab',
-                    activeIcon: Icon(Icons.home_rounded),
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.person_outline),
-                    label: 'ProfileTab',
-                    activeIcon: Icon(Icons.person_rounded),
-                  ),
-                ],
-              );
-            },
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.work_history_outlined),
+                label: 'HistoryTab',
+                activeIcon: Icon(Icons.work_history_rounded),
+                tooltip: "Historial",
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home_outlined),
+                label: 'HomeTab',
+                activeIcon: Icon(Icons.home_rounded),
+                tooltip: "Inicio",
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person_outline),
+                label: 'ProfileTab',
+                activeIcon: Icon(Icons.person_rounded),
+                tooltip: "Perfil",
+              ),
+            ],
           ),
         );
       },

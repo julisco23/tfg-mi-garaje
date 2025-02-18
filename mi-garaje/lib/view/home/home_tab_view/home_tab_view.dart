@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:mi_garaje/data/models/activity.dart';
+import 'package:mi_garaje/shared/constants/constants.dart';
+import 'package:mi_garaje/view/home/home_tab_view/dialog_wigdet/dialog_add_repostaje.dart';
+import 'package:mi_garaje/view/home/home_tab_view/dialog_wigdet/dialog_add_documento.dart';
+import 'package:mi_garaje/view/home/home_tab_view/dialog_wigdet/dialog_add_mantenimiento.dart';
 import 'package:provider/provider.dart';
-import 'package:mi_garaje/data/models/car.dart';
-import 'package:mi_garaje/data/models/option.dart';
-import 'package:mi_garaje/data/models/option_type.dart';
-import 'package:mi_garaje/shared/widgets/etiqueta_actividad.dart';
+import 'package:mi_garaje/shared/widgets/cards/activity_card.dart';
 import 'package:mi_garaje/view_model/garage_view_model.dart';
 
 class HomeTabView extends StatefulWidget {
@@ -25,23 +27,10 @@ class _HomeTabViewState extends State<HomeTabView> with SingleTickerProviderStat
   }
 
   @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height;
-
     return Consumer<GarageViewModel>(
       builder: (context, provider, _) {
-        final coche = provider.selectedCoche;
-
-        // Guardar las opciones de cada tipo de manera invertida previamente para evitar hacerlo en el builder
-        final repostajes = coche!.getOptions(OptionType.repostajes).reversed.toList();
-        final mantenimientos = coche.getOptions(OptionType.mantenimientos).reversed.toList();
-        final facturas = coche.getOptions(OptionType.facturas).reversed.toList();
+        final car = provider.selectedCoche!;
 
         return Scaffold(
           appBar: PreferredSize(
@@ -60,36 +49,30 @@ class _HomeTabViewState extends State<HomeTabView> with SingleTickerProviderStat
           body: TabBarView(
             controller: _tabController,
             children: [
-              _buildTabContent(repostajes, screenHeight),
-              _buildTabContent(mantenimientos, screenHeight),
-              _buildTabContent(facturas, screenHeight),
+              _buildTabContent(car.getActivities(ActivityType.refuel), car.getName()),
+              _buildTabContent(car.getActivities(ActivityType.repair), car.getName()),
+              _buildTabContent(car.getActivities(ActivityType.record), car.getName()),
             ],
           ),
           floatingActionButton: Row(
-            spacing: 16,
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               FloatingActionButton(
-                heroTag: null,
                 onPressed: () {
-                  final tabIndex = _tabController.index;
-                  provider.agregarOpcion(
-                    Option(
-                      name: 'Rápido',
-                      initial: 'R',
-                      type: OptionType.values[tabIndex],
-                    ),
-                  );
+                  switch (_tabController.index){
+                    case 0:
+                      DialogAddRefuel.show(context, provider);
+                      break;
+                    case 1:
+                      DialogAddRepair.show(context, provider);
+                      break;
+                    case 2:
+                      DialogAddDocument.show(context, provider);
+                      break;
+                  }
                 },
-                child: const Icon(Icons.fast_forward_rounded),
-              ),
-              FloatingActionButton(
-                heroTag: null,
-                onPressed: () {
-                  final tabIndex = _tabController.index;
-                  _agregarOpcion(context, coche, tabIndex);
-                },
-                child: const Icon(Icons.add),
+                tooltip: "Añadir actividad",
+                child: const Icon(Icons.add_rounded, size: 50),
               ),
             ],
           ),
@@ -98,76 +81,29 @@ class _HomeTabViewState extends State<HomeTabView> with SingleTickerProviderStat
     );
   }
 
-  // Extraemos el contenido de cada pestaña a un método reutilizable para evitar duplicación
-  Widget _buildTabContent(List<Option> opciones, double screenHeight) {
+  // Conenido de los tab
+  Widget _buildTabContent(List<Actividad> activities, String carName) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        SizedBox(height: screenHeight * 0.007),
+        SizedBox(height: AppDimensions.screenHeight(context) * 0.007),
         Expanded(
           child: ListView.builder(
-            itemCount: opciones.length + 1,
+            itemCount: activities.length + 1,
             itemBuilder: (context, index) {
-              if (index == opciones.length) {
-                return SizedBox(height: screenHeight * 0.09);
+              if (index == activities.length) {
+                return SizedBox(height: AppDimensions.screenHeight(context) * 0.09);
               }
 
-              return Etiqueta(
-                nombre: opciones[index].name,
-                inicial: opciones[index].initial,
-                fecha: opciones[index].date,
-                opcion: opciones[index],
-              );
+              return ActivityCard(
+                    activity: activities[index],
+                    type: _tabController.index,
+                    carName: carName,
+                  );
             },
           ),
         ),
       ],
-    );
-  }
-
-  // Método para agregar una opción con un diálogo
-  void _agregarOpcion(BuildContext context, Car coche, int tabIndex) {
-    final TextEditingController controller = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Colors.grey[900],
-          title: const Text('Agregar Opción', style: TextStyle(color: Colors.white)),
-          content: TextField(
-            controller: controller,
-            decoration: const InputDecoration(
-              labelText: 'Nombre de la Opción',
-              labelStyle: TextStyle(color: Colors.white70),
-            ),
-            style: const TextStyle(color: Colors.white),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancelar', style: TextStyle(color: Colors.red)),
-            ),
-            TextButton(
-              onPressed: () {
-                final String nombreOpcion = controller.text.trim();
-                if (nombreOpcion.isNotEmpty) {
-                  final nuevaOpcion = Option(
-                    name: nombreOpcion,
-                    initial: nombreOpcion[0].toUpperCase(),
-                    type: OptionType.values[tabIndex],
-                  );
-                  context.read<GarageViewModel>().agregarOpcion(nuevaOpcion);
-                  Navigator.of(context).pop();
-                }
-              },
-              child: const Text('Agregar', style: TextStyle(color: Colors.green)),
-            ),
-          ],
-        );
-      },
     );
   }
 }

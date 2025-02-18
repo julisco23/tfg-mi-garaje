@@ -18,33 +18,36 @@ class MiButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () => onPressed(),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: backgroundColor,
-        side: side,
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (imagen.isNotEmpty) ...[
-            Image.asset(
-              imagen, // Ruta de tu imagen
-              width: 24, // Ajusta el tamaño de la imagen según lo necesites
-              height: 24, // Ajusta el tamaño de la imagen según lo necesites
+    return Tooltip(
+      message: text,
+      child: ElevatedButton(
+        onPressed: () => onPressed(),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: backgroundColor,
+          side: side,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (imagen.isNotEmpty) ...[
+              Image.asset(
+                imagen,
+                width: 24,
+                height: 24,
+              ),
+              SizedBox(width: 8),
+            ],
+            Text(
+              text,
+              style: TextStyle(
+                fontSize: 20,
+                color: backgroundColor == Colors.blue
+                    ? Colors.white
+                    : Theme.of(context).primaryColor,
+              ),
             ),
-            SizedBox(width: 8), // Espaciado entre la imagen y el texto
           ],
-          Text(
-            text,
-            style: TextStyle(
-              fontSize: 20,
-              color: backgroundColor == Colors.blue
-                  ? Colors.white
-                  : Theme.of(context).primaryColor,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

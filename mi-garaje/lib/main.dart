@@ -11,7 +11,6 @@ import 'package:mi_garaje/view/home/home_view.dart';
 import 'package:mi_garaje/shared/themes/app_themes.dart';
 import 'package:mi_garaje/shared/themes/theme_notifier.dart';
 import 'package:mi_garaje/view_model/garage_view_model.dart';
-import 'package:mi_garaje/view_model/home_tab_view_model.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,7 +21,6 @@ Future<void> main() async {
       providers: [
         ChangeNotifierProvider(create: (context) => ThemeNotifier(AppThemes.lightTheme)),
         ChangeNotifierProvider(create: (_) => AuthViewModel()),
-        ChangeNotifierProvider(create: (_) => HomeTabViewModel()),
         ChangeNotifierProvider(create: (_) => GarageViewModel()),
       ],
       child: const MyApp(),

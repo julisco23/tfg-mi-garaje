@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:mi_garaje/data/models/car.dart';
-import 'package:mi_garaje/shared/widgets/etiqueta_coche.dart';
+import 'package:mi_garaje/shared/widgets/cards/etiqueta_coche.dart';
 import 'package:mi_garaje/view_model/garage_view_model.dart';
 
 class GarageView extends StatefulWidget {

@@ -1,12 +1,11 @@
-import 'package:mi_garaje/data/models/option.dart';
-import 'package:mi_garaje/data/models/option_type.dart';
+import 'package:mi_garaje/data/models/activity.dart';
 
 class Car {
   String? id;
   String name;
   String initial;
 
-  List<Option> options = [];
+  List<Actividad> activities = [];
 
   Car({
     this.id,
@@ -14,8 +13,8 @@ class Car {
     required this.initial,
   });
 
-  void addOption(Option option) {
-    options.add(option);
+  void addActivity(Actividad activity) {
+    activities.add(activity);
   }
 
   void setId(String id) {
@@ -34,27 +33,26 @@ class Car {
     return initial;
   }
 
-  void removeOption(Option option) {
-    options.remove(option);
+  void removeActivity(Actividad activity) {
+    activities.remove(activity);
   }
 
-  void updateOption(Option option) {
-    final index = options.indexWhere((element) => element.id == option.id);
-    options[index] = option;
+  void updateActivity(Actividad activity) {
+    final index = activities.indexWhere((element) => element.idActivity == activity.idActivity);
+    activities[index] = activity;
   }
 
-  List<Option> getOptions(OptionType type) {
-    
-    List<Option> filteredOptions = [];
+  List<Actividad> getActivities(ActivityType type) {
+    List<Actividad> filteredActivities = [];
 
-    // Recorre las opciones en la lista
-    options.forEach((option) {
-      if (option.type == type) {
-        filteredOptions.add(option);
+    for (var activity in activities) {
+      if (activity.activityType == type) {
+        filteredActivities.add(activity);
       }
-    });
+    }
 
-    return filteredOptions;
+    filteredActivities.sort((a, b) => b.date.compareTo(a.date));
+    return filteredActivities;
   }
 
   Map<String, dynamic> toMap() {
@@ -64,7 +62,6 @@ class Car {
     };
   }
 
-  /// Crear una instancia de `Car` desde un mapa de Firestore
   factory Car.fromMap(Map<String, dynamic> map) {
     return Car(
       name: map['name'] as String,

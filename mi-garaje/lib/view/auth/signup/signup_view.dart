@@ -3,7 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/shared/widgets/elevated_button_utils.dart';
-import 'package:mi_garaje/shared/widgets/input_utils.dart';
+import 'package:mi_garaje/shared/widgets/text_form_field.dart';
 import 'package:mi_garaje/view_model/auth_view_model.dart';
 
 class SignupView extends StatefulWidget {

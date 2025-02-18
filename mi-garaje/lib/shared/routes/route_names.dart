@@ -3,4 +3,7 @@ class RouteNames {
   static const String signup = '/signup';
   static const String home = '/home';
   static const String garage = '/garage';
+  static const String refuel = '/home/refuel';
+  static const String repair = '/home/repair';
+  static const String record = '/home/record';
 }

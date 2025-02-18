@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 class AppThemes {
   static final oscuro = Color.fromARGB(255, 11, 11, 14);
   static final blanco = Colors.white;
+  static final blancoTransparente = const Color.fromARGB(175, 255, 255, 255);
   static final azul = const Color.fromARGB(255, 33, 149, 243);
+  static final azulClaro = const Color.fromARGB(255, 119, 190, 248);
+  static final gris = Colors.grey[600];
+  static final verde = Colors.green[700];
 
   // Tema Claro
   static ThemeData lightTheme = ThemeData(
@@ -14,17 +18,22 @@ class AppThemes {
     appBarTheme: AppBarTheme(
       backgroundColor: azul,
       iconTheme: IconThemeData(color: blanco, size: 40),
-      titleTextStyle: TextStyle(color: blanco, fontSize: 30),
+      titleTextStyle: TextStyle(color: blanco, fontSize: 20),
     ),
     textTheme: TextTheme(
       titleLarge: TextStyle(color: azul, fontSize: 30),
       titleMedium: TextStyle(color: azul),
-      titleSmall: TextStyle(color: azul),
-      bodyLarge: TextStyle(color: oscuro), // TextFormFields
+      titleSmall: TextStyle(color: blanco),
+      bodyLarge: TextStyle(color: oscuro),
       bodyMedium: TextStyle(color: oscuro, fontSize: 18),
+      bodySmall: TextStyle(color: oscuro, fontSize: 14),
       labelLarge: TextStyle(color: oscuro, fontSize: 20),
-      labelMedium: TextStyle(color: oscuro, fontSize: 16),
-      labelSmall: TextStyle(color: oscuro, fontSize: 14),
+      labelMedium: TextStyle(color: verde, fontSize: 16),
+      labelSmall: TextStyle(color: gris, fontSize: 14),
+    ),
+    listTileTheme: ListTileThemeData(
+      titleTextStyle: TextStyle(color: oscuro, fontSize: 16, fontWeight: FontWeight.bold),
+      subtitleTextStyle: TextStyle(color: oscuro, fontSize: 14),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
@@ -42,9 +51,18 @@ class AppThemes {
         textStyle: TextStyle(color: blanco, fontSize: 16),
       ),
     ),
+    dialogTheme: DialogTheme(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+      ),
+      backgroundColor: blanco,
+    ),
     cardTheme: CardTheme(
-      color: const Color.fromARGB(255, 119, 190, 248),
-      margin: EdgeInsets.only(top: 0, left: 7, right: 7, bottom: 10),
+      elevation: 3,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      color: azulClaro,
     ),
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       backgroundColor: azul,
@@ -64,10 +82,63 @@ class AppThemes {
       ),
     ),
     floatingActionButtonTheme: FloatingActionButtonThemeData(
-      backgroundColor: const Color.fromARGB(175, 33, 149, 243),
-      foregroundColor: const Color.fromARGB(175, 255, 255, 255),
+      backgroundColor: azul,
+      foregroundColor: blancoTransparente
     ),
+    dividerTheme: DividerThemeData(
+      color: blanco,
+      thickness: 0.5,
+      space: 0,
+    ),
+
+    datePickerTheme: DatePickerThemeData(
+      backgroundColor: blanco,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      surfaceTintColor: Colors.transparent,
+      shadowColor: Colors.black54,
+      headerBackgroundColor: azul,
+      headerForegroundColor: blanco,
+      cancelButtonStyle: ButtonStyle(
+        foregroundColor: WidgetStateProperty.all(azul),
+      ),
+      confirmButtonStyle: ButtonStyle(
+        foregroundColor: WidgetStateProperty.all(azul),
+      ),
+      dayBackgroundColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return azul;
+        }
+        return null;
+      }),
+      dayForegroundColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return blanco;
+        }
+        return null;
+      }),
+      todayBackgroundColor: WidgetStateProperty.resolveWith((states) { 
+        if (states.contains(WidgetState.selected)) {
+          return azul;
+        }
+        return blanco;
+      }),
+      todayForegroundColor: WidgetStateProperty.resolveWith((states) { 
+        if (states.contains(WidgetState.selected)) {
+          return blanco;
+        }
+        return azul;
+      }),
+      todayBorder: BorderSide(color: azul, width: 2),
+    ),
+
+
+
   );
+
+
+
 
   // Tema Oscuro
   static ThemeData darkTheme = ThemeData(
@@ -93,8 +164,7 @@ class AppThemes {
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       border: OutlineInputBorder(
-        borderSide: BorderSide.none, borderRadius: BorderRadius.circular(14)
-      ),
+          borderSide: BorderSide.none, borderRadius: BorderRadius.circular(14)),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(

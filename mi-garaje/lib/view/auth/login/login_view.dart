@@ -4,7 +4,7 @@ import 'package:mi_garaje/view_model/auth_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/shared/widgets/elevated_button_utils.dart';
-import 'package:mi_garaje/shared/widgets/input_utils.dart';
+import 'package:mi_garaje/shared/widgets/text_form_field.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
