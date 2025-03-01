@@ -20,7 +20,7 @@ enum RecordType {
   }
 }
 
-class Refuel extends Actividad {
+class Refuel extends Activity {
   RecordType recordType;
   double costLiter;
   double? cost;

@@ -21,9 +21,9 @@ class AppThemes {
       titleTextStyle: TextStyle(color: blanco, fontSize: 20),
     ),
     textTheme: TextTheme(
-      titleLarge: TextStyle(color: azul, fontSize: 30),
-      titleMedium: TextStyle(color: azul),
-      titleSmall: TextStyle(color: blanco),
+      titleLarge: TextStyle(color: azul, fontSize: 30), // Titulo login/register/titulos dialog
+      titleMedium: TextStyle(color: oscuro, fontSize: 30), // Titulos dialog
+      titleSmall: TextStyle(color: Colors.amber),
       bodyLarge: TextStyle(color: oscuro),
       bodyMedium: TextStyle(color: oscuro, fontSize: 18),
       bodySmall: TextStyle(color: oscuro, fontSize: 14),

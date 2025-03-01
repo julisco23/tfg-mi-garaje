@@ -7,7 +7,7 @@ import 'package:mi_garaje/data/models/refuel.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/shared/themes/theme_notifier.dart';
-import 'package:mi_garaje/view/home/home_tab_view/dialog_wigdet/dialog_delete_activity.dart';
+import 'package:mi_garaje/shared/widgets/dialogs/home_tab/dialog_delete_activity.dart';
 import 'package:provider/provider.dart';
 
 class ActivityCard extends StatelessWidget {
@@ -15,11 +15,9 @@ class ActivityCard extends StatelessWidget {
     super.key,
     required this.activity,
     required this.carName,
-    required this.type,
   });
 
-  final Actividad activity;
-  final int type;
+  final Activity activity;
   final String carName;
 
   @override
@@ -29,22 +27,22 @@ class ActivityCard extends StatelessWidget {
         String routeName = "";
         Map<String, dynamic> arguments = {};
 
-        switch (type) {
-          case 0:
+        switch (activity.activityType) {
+          case ActivityType.refuel:
             routeName = RouteNames.refuel;
             arguments = {
               "refuel": activity as Refuel,
               "carName": carName
             };
             break;
-          case 1:
+          case ActivityType.repair:
             routeName = RouteNames.repair;
             arguments = {
               "repair": activity as Repair,
               "carName": carName
             };
             break;
-          case 2:
+          case ActivityType.record:
             routeName = RouteNames.record;
             arguments = {
               "record": activity as Record,
@@ -73,14 +71,14 @@ class ActivityCard extends StatelessWidget {
                 child: Builder(
                   builder: (context) {
                     IconData? icon;
-                    switch (type) {
-                      case 0:
+                    switch (activity.activityType) {
+                      case ActivityType.refuel:
                         icon = Icons.local_gas_station_rounded;
                         break;
-                      case 1:
+                      case ActivityType.repair:
                         icon = Icons.build_rounded;
                         break;
-                      case 2:
+                      case ActivityType.record:
                         icon = Icons.description_rounded;
                         break;
                     }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mi_garaje/shared/constants/constants.dart';
 
 class MiButton extends StatelessWidget {
   const MiButton({
@@ -7,14 +8,16 @@ class MiButton extends StatelessWidget {
     required this.onPressed,
     this.backgroundColor = Colors.blue,
     this.side = BorderSide.none,
-    this.imagen = '',
+    this.imagen,
+    this.icon,
   });
 
   final String text;
   final Function onPressed;
   final dynamic backgroundColor;
   final dynamic side;
-  final String imagen;
+  final String? imagen;
+  final IconData? icon;
 
   @override
   Widget build(BuildContext context) {
@@ -29,13 +32,17 @@ class MiButton extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (imagen.isNotEmpty) ...[
+            if (imagen != null) ...[
               Image.asset(
-                imagen,
+                imagen!,
                 width: 24,
                 height: 24,
               ),
-              SizedBox(width: 8),
+              SizedBox(width: AppDimensions.screenWidth(context) * 0.02),
+            ],
+            if (icon != null) ...[
+              Icon(icon, color: Colors.blue),
+              SizedBox(width: AppDimensions.screenWidth(context) * 0.02),
             ],
             Text(
               text,

@@ -4,36 +4,14 @@ import 'package:mi_garaje/data/services/auth_service.dart';
 
 class AuthViewModel extends ChangeNotifier {
   final AuthService _authService = AuthService();
-   
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController nameController = TextEditingController();
-  
-  final GlobalKey<FormState> loginFormKey = GlobalKey<FormState>();
-  final GlobalKey<FormState> signupFormKey = GlobalKey<FormState>();
-  final GlobalKey<FormState> profileFormKey = GlobalKey<FormState>();
 
-  bool obscureText = true;
-
-  User get usuario => _authService.usuarioActual;
-  bool get esAnonimo => usuario.isAnonymous;
-  bool get esGoogle => usuario.providerData[0].providerId == 'google.com';
-
-  void limpiarControladores() {
-    emailController.clear();
-    passwordController.clear();
-    nameController.clear();
-  }
+  User get usuario => _authService.usuarioActual!;
+  bool get esAnonimo => _authService.usuarioActual == null ? false : usuario.isAnonymous;
+  bool get esGoogle => _authService.usuarioActual == null ? false : usuario.providerData.isEmpty ? false : usuario.providerData[0].providerId == 'google.com';
 
   // Método para obtener el nombre del usuario
   String get nombreUsuario {
     return esAnonimo ? "Cuenta Anónima" : (usuario.displayName ?? usuario.email!);
-  }
-
-  // Método para cambiar la visibilidad de la contraseña
-  void togglePasswordVisibility() {
-    obscureText = !obscureText;
-    notifyListeners();
   }
 
   // Validación de correo electrónico
@@ -97,12 +75,20 @@ class AuthViewModel extends ChangeNotifier {
 
   // Método de eliminación de cuenta
   Future<String?> eliminarCuenta() async {
-    return await _authService.deleteAccount();
+    String? response = await _authService.deleteAccount();
+    return response;
   }
 
   // Método de vinculación de cuenta
   Future<String?> crearCuenta(String email, String password, String name) async {
     return await _authService.linkAnonymousAccount(email, password, name);
+  }
+
+  // Método de actualización de perfil
+  Future<String?> actualizarProfile(String name) async {
+    String? response = await _authService.updateProfile(name);
+    notifyListeners();
+    return response;
   }
 }
 

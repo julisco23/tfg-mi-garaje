@@ -36,7 +36,7 @@ enum RepairType {
 }
 
 
-class Repair extends Actividad {
+class Repair extends Activity {
   RepairType repairType;
   String? photo;
   String? details;

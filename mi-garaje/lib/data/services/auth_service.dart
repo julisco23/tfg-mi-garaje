@@ -1,10 +1,13 @@
+//import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+//import 'package:mi_garaje/data/models/user.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  //final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  User get usuarioActual => _auth.currentUser!;
+  User? get usuarioActual => _auth.currentUser;
 
   Future<bool> comprobarUsuarioAutenticado() async {
     return _auth.currentUser != null;
@@ -18,6 +21,21 @@ class AuthService {
       await _auth.createUserWithEmailAndPassword(email: email, password: password);
 
       await _auth.currentUser!.updateDisplayName(displayName);
+
+      /*UserMy user = UserMy(
+        id: usuarioActual!.uid,
+        name: usuarioActual!.displayName!,
+        email: usuarioActual!.email!,
+        photoURL: usuarioActual!.photoURL,
+        creationDate: usuarioActual!.metadata.creationTime!,
+        vehicles: [],
+      );
+
+      final docRef = await _firestore
+        .collection('users')
+        .add(user.toMap());
+
+      user.setId(docRef.id);*/
 
       //TODO Verificar el correo antes de poder acceder
       //await _auth.currentUser!.sendEmailVerification();
@@ -105,6 +123,8 @@ class AuthService {
       await user.linkWithCredential(EmailAuthProvider.credential(email: email, password: password));
         
       await user.updateDisplayName(displayName);
+
+      print("Con exito user: ${FirebaseAuth.instance.currentUser!.toString()}");
       return null;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
@@ -117,9 +137,19 @@ class AuthService {
   Future<String?> deleteAccount() async {
     try {
       await _auth.currentUser!.delete();
+      print("Con exito");
       return null;
     } catch (e) {
-      return "Error al eliminar cuenta";
+      return "***** Error al eliminar cuenta $e";
+    }
+  }
+
+  Future<String?> updateProfile(String displayName) async {
+    try {
+      await _auth.currentUser!.updateProfile(displayName: displayName);
+      return null;
+    } catch (e) {
+      return "Error al actualizar el perfil";
     }
   }
 }

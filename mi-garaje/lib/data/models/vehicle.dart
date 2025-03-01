@@ -1,0 +1,131 @@
+import 'package:mi_garaje/data/models/activity.dart';
+
+enum VehicleType {
+  car,
+  motorcycle,
+  truck,
+  bike,
+  electricScooter,
+  van,
+  agriculturalTransport;
+
+  String get getName {
+    switch (this) {
+      case VehicleType.car:
+        return "Coche";
+      case VehicleType.motorcycle:
+        return "Moto";
+      case VehicleType.truck:
+        return "Camión";
+      case VehicleType.bike:
+        return "Bicicleta";
+      case VehicleType.electricScooter:
+        return "Patín Eléctrico";
+      case VehicleType.van:
+        return "Furgoneta";
+      case VehicleType.agriculturalTransport:
+        return "Transporte Agrícola";
+    }
+  }
+}
+
+
+class Vehicle {
+  String? id;
+  String? name;
+  String brand;
+  String? model;
+  String? photo;
+  VehicleType vehicleType;
+
+  List<Activity> activities = [];
+
+  Vehicle({
+    this.id,
+    this.name,
+    required this.brand,
+    required this.model,
+    this.photo,
+    required this.vehicleType,
+  });
+
+  void addActivity(Activity activity) {
+    activities.add(activity);
+  }
+
+  void setId(String id) {
+    this.id = id;
+  }
+
+  String getId() {
+    return id!;
+  }
+
+  String? getName() {
+    return name;
+  }
+
+  String getBrand() {
+    return brand;
+  }
+
+  String? getModel() {
+    return model;
+  }
+
+  String? getPhoto() {
+    return photo;
+  }
+
+  String getVehicleType() {
+    return vehicleType.getName;
+  }
+
+  String getInitial() {
+    return name != null && name!.isNotEmpty ? name!.substring(0, 1).toUpperCase() : brand.substring(0, 1).toUpperCase();
+  }
+
+  String getNameTittle() {
+    return name ?? brand;
+  }
+
+  void removeActivity(Activity activity) {
+    activities.remove(activity);
+  }
+
+  void updateActivity(Activity activity) {
+    final index = activities
+        .indexWhere((element) => element.idActivity == activity.idActivity);
+    if (index != -1) {
+      activities[index] = activity;
+    }
+  }
+
+  List<Activity> getActivities(ActivityType type) {
+    List<Activity> filteredActivities =
+        activities.where((activity) => activity.activityType == type).toList();
+
+    filteredActivities.sort((a, b) => b.date.compareTo(a.date));
+    return filteredActivities;
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'brand': brand,
+      'model': model,
+      'photo': photo,
+      'vehicleType': vehicleType.toString().split('.').last,
+    };
+  }
+
+  factory Vehicle.fromMap(Map<String, dynamic> map) {
+    return Vehicle(
+      name: map['name'] as String?,
+      brand: map['brand'] as String,
+      model: map['model'] as String?,
+      photo: map['photo'] as String?,
+      vehicleType: VehicleType.values.byName(map['vehicleType']),
+    );
+  }
+}

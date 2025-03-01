@@ -4,14 +4,14 @@ import 'package:provider/provider.dart';
 import 'package:mi_garaje/view_model/garage_view_model.dart';
 
 class DeleteActivityDialog extends StatelessWidget {
-  final Actividad activity;
+  final Activity activity;
 
   const DeleteActivityDialog({
     super.key,
     required this.activity,
   });
 
-  static Future<void> show(BuildContext context, Actividad activity) {
+  static Future<void> show(BuildContext context, Activity activity) {
     return showDialog(
       context: context,
       builder: (context) => DeleteActivityDialog(activity: activity),

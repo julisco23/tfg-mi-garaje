@@ -14,7 +14,7 @@ enum RecordType {
   }
 }
 
-class Record extends Actividad {
+class Record extends Activity {
   RecordType recordType;
   String? photo;
   String? details;

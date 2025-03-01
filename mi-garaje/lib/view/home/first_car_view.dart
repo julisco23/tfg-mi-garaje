@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/widgets/elevated_button_utils.dart';
+import 'package:mi_garaje/shared/widgets/dialogs/garage_tab/dialog_add_vehicle.dart';
 import 'package:mi_garaje/view_model/garage_view_model.dart';
 
 class FirstCar extends StatelessWidget {
@@ -20,11 +22,11 @@ class FirstCar extends StatelessWidget {
                 'Necesitas añadir un coche para continuar',
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 50),
+              SizedBox(height: AppDimensions.screenHeight(context) * 0.05),
               MiButton(
                 text: 'Añadir coche',
                 onPressed: () async {
-                  viewModel.agregarCoche();
+                  DialogAddVehicle.show(context, viewModel);
                 },
               ),
             ],

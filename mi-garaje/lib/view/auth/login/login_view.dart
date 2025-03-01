@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/view_model/auth_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
@@ -14,9 +15,15 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
+  bool obscureText = true;
+
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+    
+  final GlobalKey<FormState> loginFormKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height;
     final loginViewModel = Provider.of<AuthViewModel>(context);
 
     return Scaffold(
@@ -27,7 +34,7 @@ class _LoginViewState extends State<LoginView> {
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             child: Form(
-              key: loginViewModel.loginFormKey,
+              key: loginFormKey,
               child: Column(
                 children: [
                   // Título de la pantalla
@@ -37,49 +44,53 @@ class _LoginViewState extends State<LoginView> {
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                   ),
-                  SizedBox(height: screenHeight * 0.03),
+                  SizedBox(height: AppDimensions.screenHeight(context) * 0.03),
                   Image.asset('assets/images/logo.png', width: 150),
-                  SizedBox(height: screenHeight * 0.03),
+                  SizedBox(height: AppDimensions.screenHeight(context) * 0.03),
 
                   // Campo de correo electrónico
                   MiTextFormField(
-                    controller: loginViewModel.emailController,
+                    controller: emailController,
                     labelText: 'Correo electrónico',
                     hintText: 'migaraje@gmail.com',
                     validator: (value) {
                       return loginViewModel.validateEmail(value);
                     },
                   ),
-                  SizedBox(height: 20),
+                  SizedBox(height: AppDimensions.screenHeight(context) * 0.025),
 
                   // Campo de contraseña
                   MiTextFormField(
-                    controller: loginViewModel.passwordController,
-                    obscureText: loginViewModel.obscureText,
+                    controller: passwordController,
+                    obscureText: obscureText,
                     labelText: 'Contraseña',
-                    hintText: loginViewModel.obscureText ? '******' : 'Contraseña',
+                    hintText: obscureText ? '******' : 'Contraseña',
                     validator: (value) {
                       return loginViewModel.validatePassword(value);
                     },
                     suffixIcon: IconButton(
                       icon: Icon(
-                        loginViewModel.obscureText
+                        obscureText
                             ? Icons.visibility_off
                             : Icons.visibility,
                       ),
-                      onPressed: () => loginViewModel.togglePasswordVisibility(),
+                      onPressed: () {
+                        setState(() {
+                          obscureText = !obscureText;
+                        });
+                      },
                     ),
                   ),
-                  SizedBox(height: screenHeight * 0.025),
+                  SizedBox(height: AppDimensions.screenHeight(context) * 0.025),
 
                   // Botón de inicio de sesión
                   MiButton(
                     text: "Iniciar sesión",
                     onPressed: () async {
-                      if (loginViewModel.loginFormKey.currentState!.validate()) {
+                      if (loginFormKey.currentState!.validate()) {
                         String? response = await loginViewModel.signin(
-                          loginViewModel.emailController.text,
-                          loginViewModel.passwordController.text,
+                          emailController.text,
+                          passwordController.text,
                         );
 
                         if (response != null) {
@@ -95,7 +106,7 @@ class _LoginViewState extends State<LoginView> {
                       }
                     },
                   ),
-                  SizedBox(height: screenHeight * 0.025),
+                  SizedBox(height: AppDimensions.screenHeight(context) * 0.025),
 
                   // Olvidar contraseña
                   GestureDetector(
@@ -116,7 +127,7 @@ class _LoginViewState extends State<LoginView> {
                       style: TextStyle(color: Theme.of(context).primaryColor),
                     ),
                   ),
-                  SizedBox(height: screenHeight * 0.13),
+                  SizedBox(height: AppDimensions.screenHeight(context) * 0.13),
 
                   // Botón de Google
                   MiButton(
@@ -136,7 +147,7 @@ class _LoginViewState extends State<LoginView> {
                     },
                     imagen: 'assets/images/google.png',
                   ),
-                  SizedBox(height: screenHeight * 0.025),
+                  SizedBox(height: AppDimensions.screenHeight(context) * 0.025),
 
                   // Botón navegación a registro
                   MiButton(

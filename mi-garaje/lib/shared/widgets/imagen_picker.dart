@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mi_garaje/shared/constants/constants.dart';
 
 class ImagePickerWidget extends StatefulWidget {
   const ImagePickerWidget({super.key});
@@ -30,7 +31,7 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text('Imagen adjunta', style: TextStyle(fontWeight: FontWeight.bold)),
-        const SizedBox(height: 8),
+        SizedBox(height: AppDimensions.screenWidth(context) * 0.02),
 
         imageBytes == null
             ? ElevatedButton.icon(
@@ -49,7 +50,7 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
                       fit: BoxFit.cover,
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  SizedBox(width: AppDimensions.screenWidth(context) * 0.02),
                   Expanded(
                     child: Text(
                       'Imagen cargada',

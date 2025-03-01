@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mi_garaje/data/models/record.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
-import 'package:mi_garaje/view/home/home_tab_view/dialog_wigdet/dialog_add_documento.dart';
-import 'package:mi_garaje/view/home/home_tab_view/dialog_wigdet/dialog_delete_activity.dart';
+import 'package:mi_garaje/shared/widgets/dialogs/home_tab/dialog_add_documento.dart';
+import 'package:mi_garaje/shared/widgets/dialogs/home_tab/dialog_delete_activity.dart';
 import 'package:mi_garaje/shared/widgets/elevated_button_utils.dart';
 import 'package:provider/provider.dart';
 import 'package:mi_garaje/view_model/garage_view_model.dart';
@@ -55,7 +55,7 @@ class _RecordViewState extends State<RecordView> {
                       Icon(
                         Icons.description_rounded,
                       ),
-                      const SizedBox(width: 10),
+                      SizedBox(width: AppDimensions.screenWidth(context) * 0.02),
                       Text(
                         record.getTpye,
                         style: TextStyle(

@@ -5,15 +5,26 @@ import 'package:mi_garaje/data/models/repair.dart';
 enum ActivityType { 
   refuel, 
   repair, 
-  record 
+  record;
+
+  String get getName {
+    switch (this) {
+      case ActivityType.refuel:
+        return "Repostajes";
+      case ActivityType.repair:
+        return "Reparaciones";
+      case ActivityType.record:
+        return "Documentos";
+    }
+  }
 }
 
-abstract class Actividad {
+abstract class Activity {
   String? idActivity;
   DateTime date;
   final ActivityType activityType;
 
-  Actividad({
+  Activity({
     this.idActivity,
     required this.date,
     required this.activityType,
@@ -30,7 +41,7 @@ abstract class Actividad {
   
   Map<String, dynamic> toMap();
 
-  static Actividad fromMap(Map<String, dynamic> map) {
+  static Activity fromMap(Map<String, dynamic> map) {
     try {
       final tipo = ActivityType.values.byName(map['activityType']);
       
@@ -43,7 +54,7 @@ abstract class Actividad {
           return Repair.fromMap(map);
       }
     } catch (e) {
-      throw Exception('Error al convertir Actividad: ${map['activityType']}');
+      throw Exception('************* Error al convertir Actividad: ${map['activityType']} - $e');
     }
   }
 }

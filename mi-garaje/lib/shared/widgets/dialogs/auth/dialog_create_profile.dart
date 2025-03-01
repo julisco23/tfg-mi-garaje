@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:provider/provider.dart';
+import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/shared/widgets/text_form_field.dart';
 import 'package:mi_garaje/shared/widgets/elevated_button_utils.dart';
@@ -13,21 +13,38 @@ class DialogCambioCuenta extends StatefulWidget {
 
   @override
   State<DialogCambioCuenta> createState() => _DialogCambioCuentaState();
+
+  // Método estático para mostrar el diálogo
+  static Future<void> show(
+      BuildContext context, AuthViewModel viewModel) async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return DialogCambioCuenta(viewModel: viewModel);
+      },
+    );
+  }
 }
 
 class _DialogCambioCuentaState extends State<DialogCambioCuenta> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
+  
+  final GlobalKey<FormState> profileFormKey = GlobalKey<FormState>();
+
+  bool obscureText = true;
+
   @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height;
-
     return AlertDialog(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text('Crear cuenta'),
+          Text('Crear cuenta', style: Theme.of(context).textTheme.titleLarge),
           IconButton(
-            icon: Icon(Icons.close),
+            icon: Icon(Icons.close, color: Theme.of(context).primaryColor),
             onPressed: () {
               Navigator.of(context).pop();
             },
@@ -37,47 +54,49 @@ class _DialogCambioCuentaState extends State<DialogCambioCuenta> {
       content: SizedBox(
         width: double.maxFinite,
         child: Form(
-          key: widget.viewModel.profileFormKey,
+          key: profileFormKey,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               // Titulo del dialog
               MiTextFormField(
-                controller: widget.viewModel.nameController,
+                controller: nameController,
                 labelText: 'Nombre en perfil',
                 hintText: 'Mi Garaje',
                 validator: (value) {
                   return widget.viewModel.validateName(value);
                 },
               ),
-              SizedBox(height: screenHeight * 0.02),
+              SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 
               // Campo de correo electrónico
               MiTextFormField(
-                controller: widget.viewModel.emailController,
+                controller: emailController,
                 labelText: 'Correo electrónico',
                 hintText: 'migaraje@gmail.com',
                 validator: (value) {
                   return widget.viewModel.validateEmail(value);
                 },
               ),
-              SizedBox(height: screenHeight * 0.02),
+              SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 
               // Campo de contraseña
               MiTextFormField(
-                controller: widget.viewModel.passwordController,
-                obscureText: widget.viewModel.obscureText,
+                controller: passwordController,
+                obscureText: obscureText,
                 labelText: 'Contraseña',
-                hintText: widget.viewModel.obscureText ? '******' : 'Contraseña',
+                hintText: obscureText ? '******' : 'Contraseña',
                 validator: (value) {
                   return widget.viewModel.validatePassword(value);
                 },
                 suffixIcon: IconButton(
                   icon: Icon(
-                    widget.viewModel.obscureText ? Icons.visibility_off : Icons.visibility,
+                    obscureText ? Icons.visibility_off : Icons.visibility,
                   ),
                   onPressed: () {
-                    widget.viewModel.togglePasswordVisibility();
+                    setState(() {
+                      obscureText = !obscureText;
+                    });
                   },
                 ),
               ),
@@ -90,12 +109,12 @@ class _DialogCambioCuentaState extends State<DialogCambioCuenta> {
         MiButton(
           text: "Crear cuenta",
           onPressed: () async {
-            final formState = widget.viewModel.profileFormKey.currentState;
+            final formState = profileFormKey.currentState;
             if (formState != null && formState.validate()) {
               String? response = await widget.viewModel.crearCuenta(
-                widget.viewModel.emailController.text,
-                widget.viewModel.passwordController.text,
-                widget.viewModel.nameController.text,
+                emailController.text,
+                passwordController.text,
+                nameController.text,
               );
 
               if (response != null) {
@@ -106,7 +125,6 @@ class _DialogCambioCuentaState extends State<DialogCambioCuenta> {
                   backgroundColor: Theme.of(context).primaryColor,
                 );
               } else if (mounted) {
-                Provider.of<AuthViewModel>(context, listen: false).limpiarControladores();
                 Navigator.pushNamedAndRemoveUntil(
                     context, RouteNames.home, (route) => false);
               }

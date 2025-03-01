@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:mi_garaje/view/auth/login/login_view.dart';
 import 'package:mi_garaje/view/auth/signup/signup_view.dart';
 import 'package:mi_garaje/view/garage/garage_view.dart';
-import 'package:mi_garaje/view/home/home_tab_view/record_view/record_view.dart';
-import 'package:mi_garaje/view/home/home_tab_view/refuel_view/refuel_view.dart';
-import 'package:mi_garaje/view/home/home_tab_view/repair_view/repair_view.dart';
+import 'package:mi_garaje/view/home/home_tab/record_view/record_view.dart';
+import 'package:mi_garaje/view/home/home_tab/refuel_view/refuel_view.dart';
+import 'package:mi_garaje/view/home/home_tab/repair_view/repair_view.dart';
 import 'package:mi_garaje/view/home/home_view.dart';
+import 'package:mi_garaje/view/home/profile_tab/settings_view.dart';
 
 import 'route_names.dart';
 
@@ -41,6 +42,10 @@ class AppRoutes {
           record: args['record'],
           carName: args['carName'],
         ));
+
+      case RouteNames.settings:
+        final args = settings.arguments as Map<String, dynamic>;
+        return _slideTransition(SettingsView(viewModel: args['viewModel']));
 
       default:
         return MaterialPageRoute(builder: (context) => HomeView());
