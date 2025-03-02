@@ -128,4 +128,9 @@ class Vehicle {
       vehicleType: VehicleType.values.byName(map['vehicleType']),
     );
   }
+
+  @override
+  String toString() {
+    return 'Vehicle{id: $id, name: $name, brand: $brand, model: $model, isPhoto: ${photo != null}, vehicleType: $vehicleType, activities: $activities}';
+  }
 }

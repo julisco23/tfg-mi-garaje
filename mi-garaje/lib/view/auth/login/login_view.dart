@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
+import 'package:mi_garaje/shared/constants/validator.dart';
+import 'package:mi_garaje/shared/widgets/fluttertoast.dart';
 import 'package:mi_garaje/view_model/auth_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
@@ -54,7 +55,7 @@ class _LoginViewState extends State<LoginView> {
                     labelText: 'Correo electrónico',
                     hintText: 'migaraje@gmail.com',
                     validator: (value) {
-                      return loginViewModel.validateEmail(value);
+                      return Validator.validateEmail(value);
                     },
                   ),
                   SizedBox(height: AppDimensions.screenHeight(context) * 0.025),
@@ -66,7 +67,7 @@ class _LoginViewState extends State<LoginView> {
                     labelText: 'Contraseña',
                     hintText: obscureText ? '******' : 'Contraseña',
                     validator: (value) {
-                      return loginViewModel.validatePassword(value);
+                      return Validator.validatePassword(value);
                     },
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -92,16 +93,12 @@ class _LoginViewState extends State<LoginView> {
                           emailController.text,
                           passwordController.text,
                         );
-
-                        if (response != null) {
-                          Fluttertoast.showToast(
-                            msg: response,
-                            toastLength: Toast.LENGTH_LONG,
-                            gravity: ToastGravity.SNACKBAR,
-                            backgroundColor: Theme.of(context).primaryColor,
-                          );
-                        } else if (mounted) {
-                          Navigator.pushNamedAndRemoveUntil(context, RouteNames.home, (route) => false);
+                        if (context.mounted) {
+                          if (response != null) {
+                            ToastHelper.show(context, response);
+                          } else {
+                            Navigator.pushNamedAndRemoveUntil(context, RouteNames.home, (route) => false);
+                          }
                         }
                       }
                     },
@@ -134,15 +131,13 @@ class _LoginViewState extends State<LoginView> {
                     text: "Inicia sesión con Google",
                     onPressed: () async {
                       String? response = await loginViewModel.signInWithGoogle();
-                      if (response != null) {
-                        Fluttertoast.showToast(
-                          msg: response,
-                          toastLength: Toast.LENGTH_LONG,
-                          gravity: ToastGravity.SNACKBAR,
-                          backgroundColor: Theme.of(context).primaryColor,
-                        );
-                      } else if (mounted) {
-                        Navigator.pushNamedAndRemoveUntil(context, RouteNames.home, (route) => false);
+
+                      if (context.mounted) {
+                        if (response != null) {
+                          ToastHelper.show(context, response);
+                        } else {
+                          Navigator.pushNamedAndRemoveUntil(context, RouteNames.home, (route) => false);
+                        }
                       }
                     },
                     imagen: 'assets/images/google.png',

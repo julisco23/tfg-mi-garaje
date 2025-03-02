@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
+import 'package:mi_garaje/shared/constants/validator.dart';
+import 'package:mi_garaje/shared/widgets/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/shared/widgets/elevated_button_utils.dart';
@@ -28,156 +29,148 @@ class _SignupViewState extends State<SignupView> {
     final loginViewModel = Provider.of<AuthViewModel>(context);
 
     return Scaffold(
-        resizeToAvoidBottomInset: true,
-        body: GestureDetector(
-            onTap: () {
-              FocusScope.of(context).requestFocus(FocusNode());
-            },
-            child: SafeArea(
-                child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              child: Form(
-                key: signupFormKey,
-                child: Column(
-                  children: [
-                    // Título de la pantalla
-                    Center(
-                      child: Text('Bienvenido a Mi Garaje',
-                          style: Theme.of(context).textTheme.titleLarge),
-                    ),
-                    SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
-                    Image.asset('assets/images/logo.png', width: 100),
-                    SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
+      resizeToAvoidBottomInset: true,
+      body: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).requestFocus(FocusNode());
+          },
+          child: SafeArea(
+              child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: Form(
+              key: signupFormKey,
+              child: Column(
+                children: [
+                  // Título de la pantalla
+                  Center(
+                    child: Text('Bienvenido a Mi Garaje',
+                    style: Theme.of(context).textTheme.titleLarge),
+                  ),
+                  SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
+                  Image.asset('assets/images/logo.png', width: 100),
+                  SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 
-                    // Campo de nombre de perfil
-                    MiTextFormField(
-                      controller: nameController,
-                      labelText: 'Nombre en perfil',
-                      hintText: 'Mi Garaje',
-                      validator: (value) {
-                        return loginViewModel.validateName(value);
-                      },
-                    ),
-                    SizedBox(height: AppDimensions.screenHeight(context) * 0.025),
+                  // Campo de nombre de perfil
+                  MiTextFormField(
+                    controller: nameController,
+                    labelText: 'Nombre en perfil',
+                    hintText: 'Mi Garaje',
+                    validator: (value) {
+                      return Validator.validateName(value);
+                    },
+                  ),
+                  SizedBox(height: AppDimensions.screenHeight(context) * 0.025),
 
-                    // Campo de correo electrónico
-                    MiTextFormField(
-                      controller: emailController,
-                      labelText: 'Correo electrónico',
-                      hintText: 'migaraje@gmail.com',
-                      validator: (value) {
-                        return loginViewModel.validateEmail(value);
-                      },
-                    ),
-                    SizedBox(height: AppDimensions.screenHeight(context) * 0.025),
+                  // Campo de correo electrónico
+                  MiTextFormField(
+                    controller: emailController,
+                    labelText: 'Correo electrónico',
+                    hintText: 'migaraje@gmail.com',
+                    validator: (value) {
+                      return Validator.validateEmail(value);
+                    },
+                  ),
+                  SizedBox(height: AppDimensions.screenHeight(context) * 0.025),
 
-                    // Campo de contraseña
-                    MiTextFormField(
-                      controller: passwordController,
-                      obscureText: obscureText,
-                      labelText: 'Contraseña',
-                      hintText: obscureText ? '******' : 'Contraseña',
-                      validator: (value) {
-                        return loginViewModel.validatePassword(value);
-                      },
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          obscureText ? Icons.visibility_off : Icons.visibility,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            obscureText = !obscureText;
-                          });
-                        },
+                  // Campo de contraseña
+                  MiTextFormField(
+                    controller: passwordController,
+                    obscureText: obscureText,
+                    labelText: 'Contraseña',
+                    hintText: obscureText ? '******' : 'Contraseña',
+                    validator: (value) {
+                      return Validator.validatePassword(value);
+                    },
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        obscureText ? Icons.visibility_off : Icons.visibility,
                       ),
+                      onPressed: () {
+                        setState(() {
+                          obscureText = !obscureText;
+                        });
+                      },
                     ),
-                    SizedBox(height: AppDimensions.screenHeight(context) * 0.025),
+                  ),
+                  SizedBox(height: AppDimensions.screenHeight(context) * 0.025),
 
-                    // Botón de registro
-                    MiButton(
-                      text: "Registarse",
-                      onPressed: () async {
-                        if (signupFormKey.currentState!
-                            .validate()) {
-                          String? response = await loginViewModel.signup(
-                            emailController.text,
-                            passwordController.text,
-                            nameController.text,
-                          );
-
+                  // Botón de registro
+                  MiButton(
+                    text: "Registarse",
+                    onPressed: () async {
+                      if (signupFormKey.currentState!
+                          .validate()) {
+                        String? response = await loginViewModel.signup(
+                          emailController.text,
+                          passwordController.text,
+                          nameController.text,
+                        );
+                        if (context.mounted) {
                           if (response != null) {
-                            Fluttertoast.showToast(
-                              msg: response,
-                              toastLength: Toast.LENGTH_LONG,
-                              gravity: ToastGravity.SNACKBAR,
-                              backgroundColor: Theme.of(context).primaryColor,
-                            );
-                          } else if (mounted) {
+                            ToastHelper.show(context, response);
+                          } else {
                             Navigator.pushNamedAndRemoveUntil(
                                 context, RouteNames.home, (route) => false);
                           }
                         }
-                      },
-                    ),
-                    SizedBox(height: AppDimensions.screenHeight(context) * 0.08),
+                      }
+                    },
+                  ),
+                  SizedBox(height: AppDimensions.screenHeight(context) * 0.08),
 
-                    // Botón de invitado
-                    MiButton(
-                      text: "Continuar como invitado",
-                      onPressed: () async {
-                        String? message =
-                            await loginViewModel.signInAnonymously();
+                  // Botón de invitado
+                  MiButton(
+                    text: "Continuar como invitado",
+                    onPressed: () async {
+                      String? message = await loginViewModel.signInAnonymously();
 
+                      if (context.mounted) {
                         if (message != null) {
-                          Fluttertoast.showToast(
-                            msg: message,
-                            toastLength: Toast.LENGTH_LONG,
-                            gravity: ToastGravity.SNACKBAR,
-                            backgroundColor: Theme.of(context).primaryColor,
-                          );
-                        } else if (mounted) {
+                          ToastHelper.show(context, message);
+                        } else {
                           Navigator.pushNamedAndRemoveUntil(
                               context, RouteNames.home, (route) => false);
                         }
-                      },
-                    ),
-                    SizedBox(height: AppDimensions.screenHeight(context) * 0.025),
+                      }
+                    },
+                  ),
+                  SizedBox(height: AppDimensions.screenHeight(context) * 0.025),
 
-                    // Botón de Google
-                    MiButton(
-                      text: "Crear cuenta con Google",
-                      onPressed: () async {
-                        String? response =
-                            await loginViewModel.signInWithGoogle();
+                  // Botón de Google
+                  MiButton(
+                    text: "Crear cuenta con Google",
+                    onPressed: () async {
+                      String? response = await loginViewModel.signupWithGoogle();
+
+                      if (context.mounted) {
                         if (response != null) {
-                          Fluttertoast.showToast(
-                            msg: response,
-                            toastLength: Toast.LENGTH_LONG,
-                            gravity: ToastGravity.SNACKBAR,
-                            backgroundColor: Theme.of(context).primaryColor,
-                          );
+                          ToastHelper.show(context, response);
                         } else if (mounted) {
                           Navigator.pushNamedAndRemoveUntil(
                               context, RouteNames.home, (route) => false);
                         }
-                      },
-                      imagen: 'assets/images/google.png',
-                    ),
-                    SizedBox(height: AppDimensions.screenHeight(context) * 0.025),
+                      }
+                    },
+                    imagen: 'assets/images/google.png',
+                  ),
+                  SizedBox(height: AppDimensions.screenHeight(context) * 0.025),
 
-                    // Botón de navegación a login
-                    MiButton(
-                      text: "Ya tengo cuenta",
-                      onPressed: () {
-                        Navigator.pushReplacementNamed(
-                            context, RouteNames.login);
-                      },
-                      backgroundColor: Colors.transparent,
-                      side: BorderSide(color: Theme.of(context).primaryColor),
-                    )
-                  ],
-                ),
+                  // Botón de navegación a login
+                  MiButton(
+                    text: "Ya tengo cuenta",
+                    onPressed: () {
+                      Navigator.pushReplacementNamed(
+                          context, RouteNames.login);
+                    },
+                    backgroundColor: Colors.transparent,
+                    side: BorderSide(color: Theme.of(context).primaryColor),
+                  )
+                ],
               ),
-            ))));
+            ),
+          )
+        )
+      )
+    );
   }
 }

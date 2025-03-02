@@ -37,8 +37,6 @@ class CarService {
           .collection('vehicles')
           .get();
 
-      print("Cargando coches... ${querySnapshot.docs}");
-
       List<Vehicle> vehicles = [];
 
       for (var doc in querySnapshot.docs) {
@@ -62,7 +60,7 @@ class CarService {
         vehicles.add(vehicle);
       }
 
-      print('Coches cargados correctamente: $vehicles');
+      print('Coches cargados correctamente: ${vehicles.toString()}');
 
       return vehicles;
     } catch (e) {

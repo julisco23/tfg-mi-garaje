@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:provider/provider.dart';
 import 'package:mi_garaje/view/home/first_car_view.dart';
-import 'package:mi_garaje/view/home/history_tab/history_view.dart';
-import 'package:mi_garaje/view/home/profile_tab/profile_view.dart';
-import 'package:mi_garaje/view/home/home_tab/home_view.dart';
 import 'package:mi_garaje/view_model/garage_view_model.dart';
 
 class HomeView extends StatefulWidget {
@@ -14,13 +12,7 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  final List<Widget> _widgetOptions = [
-    HistoryView(),
-    HomeTabView(),
-    Perfil(),
-  ];
-
-  int _selectedIndex = 1;
+  int _selectedIndex = AppConstants.tabHome;
 
   @override
   void initState() {
@@ -29,27 +21,22 @@ class _HomeViewState extends State<HomeView> {
     _loadCoches();
   }
 
-  Future<void> _loadCoches() async {
-    final garageViewModel =
-        Provider.of<GarageViewModel>(context, listen: false);
+  void _loadCoches() async {
+  final garageViewModel = Provider.of<GarageViewModel>(context, listen: false);
 
-    if (!garageViewModel.isVehiclesCargados) {
-      print("Cargando coches...");
+  if (!garageViewModel.isLoaded) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       await garageViewModel.loadVehicles();
-    }
-
-    if (mounted) {
-      setState(() {
-        garageViewModel.toggleLoadingVehicles();
-      });
-    }
+    });
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
     return Consumer<GarageViewModel>(
       builder: (context, garageViewModel, _) {
-        if (garageViewModel.isLoadingVehicles) {
+        if (!garageViewModel.isLoaded) {
           return Container(
             color: Theme.of(context).colorScheme.onPrimary,
             child: Center(
@@ -64,13 +51,13 @@ class _HomeViewState extends State<HomeView> {
         }
 
         return Scaffold(
-          body: _widgetOptions[_selectedIndex],
+          body: AppConstants.widgetTabs[_selectedIndex](garageViewModel),
           bottomNavigationBar: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
             currentIndex: _selectedIndex,
-            onTap: (index) {
+            onTap: (indexTab) {
               setState(() {
-                _selectedIndex = index;
+                _selectedIndex = indexTab;
               });
             },
             items: const [

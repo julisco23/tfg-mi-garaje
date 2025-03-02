@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
+import 'package:mi_garaje/shared/constants/validator.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
+import 'package:mi_garaje/shared/widgets/fluttertoast.dart';
 import 'package:mi_garaje/shared/widgets/text_form_field.dart';
 import 'package:mi_garaje/shared/widgets/elevated_button_utils.dart';
 import 'package:mi_garaje/view_model/auth_view_model.dart';
 
 class DialogCambioCuenta extends StatefulWidget {
-  final AuthViewModel viewModel;
+  final AuthViewModel authViewModel;
 
-  const DialogCambioCuenta({super.key, required this.viewModel});
+  const DialogCambioCuenta({super.key, required this.authViewModel});
 
   @override
   State<DialogCambioCuenta> createState() => _DialogCambioCuentaState();
 
-  // Método estático para mostrar el diálogo
   static Future<void> show(
-      BuildContext context, AuthViewModel viewModel) async {
+      BuildContext context, AuthViewModel authViewModel) async {
     await showDialog(
       context: context,
       builder: (BuildContext context) {
-        return DialogCambioCuenta(viewModel: viewModel);
+        return DialogCambioCuenta(authViewModel: authViewModel);
       },
     );
   }
@@ -64,7 +64,7 @@ class _DialogCambioCuentaState extends State<DialogCambioCuenta> {
                 labelText: 'Nombre en perfil',
                 hintText: 'Mi Garaje',
                 validator: (value) {
-                  return widget.viewModel.validateName(value);
+                  return Validator.validateName(value);
                 },
               ),
               SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
@@ -75,7 +75,7 @@ class _DialogCambioCuentaState extends State<DialogCambioCuenta> {
                 labelText: 'Correo electrónico',
                 hintText: 'migaraje@gmail.com',
                 validator: (value) {
-                  return widget.viewModel.validateEmail(value);
+                  return Validator.validateEmail(value);
                 },
               ),
               SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
@@ -87,7 +87,7 @@ class _DialogCambioCuentaState extends State<DialogCambioCuenta> {
                 labelText: 'Contraseña',
                 hintText: obscureText ? '******' : 'Contraseña',
                 validator: (value) {
-                  return widget.viewModel.validatePassword(value);
+                  return Validator.validatePassword(value);
                 },
                 suffixIcon: IconButton(
                   icon: Icon(
@@ -109,24 +109,20 @@ class _DialogCambioCuentaState extends State<DialogCambioCuenta> {
         MiButton(
           text: "Crear cuenta",
           onPressed: () async {
-            final formState = profileFormKey.currentState;
-            if (formState != null && formState.validate()) {
-              String? response = await widget.viewModel.crearCuenta(
+            if (profileFormKey.currentState!.validate()) {
+              String? response = await widget.authViewModel.crearCuenta(
                 emailController.text,
                 passwordController.text,
                 nameController.text,
               );
 
-              if (response != null) {
-                Fluttertoast.showToast(
-                  msg: response,
-                  toastLength: Toast.LENGTH_LONG,
-                  gravity: ToastGravity.SNACKBAR,
-                  backgroundColor: Theme.of(context).primaryColor,
-                );
-              } else if (mounted) {
-                Navigator.pushNamedAndRemoveUntil(
+              if (context.mounted) {
+                if (response != null) {
+                  ToastHelper.show(context, response);
+                } else {
+                  Navigator.pushNamedAndRemoveUntil(
                     context, RouteNames.home, (route) => false);
+                }
               }
             }
           },

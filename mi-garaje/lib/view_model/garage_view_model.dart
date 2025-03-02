@@ -5,8 +5,8 @@ import 'package:mi_garaje/data/services/car_service.dart';
 
 class GarageViewModel extends ChangeNotifier {
   CarService carService = CarService();
-  bool _isLoadingVehicles = true;
-  bool _isVehiclesCargados = false;
+  bool _isLoadingVehicles = false;
+  bool _isLoaded = false;  // Controla si ya se han cargado los vehículos.
   Vehicle? _selectedVehicle;
 
   // Lista local para almacenar los coches
@@ -14,35 +14,34 @@ class GarageViewModel extends ChangeNotifier {
 
   // Getters
   bool get isLoadingVehicles => _isLoadingVehicles;
-  bool get isVehiclesCargados => _isVehiclesCargados;
+  bool get isLoaded => _isLoaded;
 
   // METODOS
-  // Cambiar el estado de carga de los coches
-  void toggleLoadingVehicles() {
-    _isLoadingVehicles = !_isLoadingVehicles;
-    notifyListeners();
-  }
-
   // Cerrar la sesión del usuario
-  void cerrarSesion() {
+  Future<void> cerrarSesion() async{
     _vehicles.clear();
     _selectedVehicle = null;
-    _isVehiclesCargados = false;
-    toggleLoadingVehicles();
+    _isLoadingVehicles = false;
+    _isLoaded = false;
     notifyListeners();
   }
 
-  // Cargar los coches del usuario
+  // Método para cargar vehículos
   Future<void> loadVehicles() async {
-    if (_isVehiclesCargados) return;
+    if (_isLoadingVehicles || _isLoaded) return;  // Evitar la carga si ya está cargando o ya se cargaron.
+
+    _isLoadingVehicles = true;  // Indica que la carga está en proceso
+    notifyListeners();
 
     final vehicles = await carService.getAllVehicles();
     _vehicles.addAll(vehicles);
     if (_vehicles.isNotEmpty) {
       _selectedVehicle = _vehicles.first;
     }
-    _isVehiclesCargados = true;
-    notifyListeners();
+
+    _isLoadingVehicles = false;  // Indica que la carga terminó
+    _isLoaded = true;  // Marca que los vehículos ya fueron cargados
+    notifyListeners();  // Notifica a los listeners de los cambios
   }
 
   // Obtener todos los coches locales (visualización)
@@ -106,11 +105,5 @@ class GarageViewModel extends ChangeNotifier {
     carService.updateActivity(_selectedVehicle!.id!, activity);
     _selectedVehicle!.updateActivity(activity);
     notifyListeners();
-  }
-
-  // Eliminar garaje
-  Future<void> deleteGarage() async {
-    await carService.eliminarGaraje();
-    cerrarSesion();
   }
 }

@@ -38,7 +38,7 @@ class _DialogAddRefuelState extends State<DialogAddRefuel> {
   final TextEditingController precioLitroController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   DateTime? selectedDate;
-  RecordType? selectedTipoRepostaje;
+  RefuelType? selectedTipoRepostaje;
 
   @override
   void initState() {
@@ -80,7 +80,7 @@ class _DialogAddRefuelState extends State<DialogAddRefuel> {
                   SizedBox(height: AppDimensions.screenHeight(context) * 0.05),
 
                   // Tipo de Combustible
-                  DropdownButtonFormField<RecordType>(
+                  DropdownButtonFormField<RefuelType>(
                     value: selectedTipoRepostaje,
                     decoration: InputDecoration(
                       floatingLabelStyle:
@@ -96,13 +96,13 @@ class _DialogAddRefuelState extends State<DialogAddRefuel> {
                       ),
                       filled: true,
                     ),
-                    onChanged: (RecordType? newValue) {
+                    onChanged: (RefuelType? newValue) {
                       setState(() {
                         selectedTipoRepostaje = newValue;
                       });
                     },
-                    items: RecordType.values.map((tipo) {
-                      return DropdownMenuItem<RecordType>(
+                    items: RefuelType.values.map((tipo) {
+                      return DropdownMenuItem<RefuelType>(
                         value: tipo,
                         child: Text(tipo.getName,
                             style: Theme.of(context).textTheme.bodyMedium),

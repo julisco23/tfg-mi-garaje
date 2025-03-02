@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 
+// SIN UTILIZAR
+// Widget que permite seleccionar una imagen de la galería
+
 class ImagePickerWidget extends StatefulWidget {
   const ImagePickerWidget({super.key});
 

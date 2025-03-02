@@ -24,8 +24,8 @@ class ActivityCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        String routeName = "";
-        Map<String, dynamic> arguments = {};
+        String routeName;
+        Map<String, dynamic> arguments;
 
         switch (activity.activityType) {
           case ActivityType.refuel:
@@ -64,10 +64,9 @@ class ActivityCard extends StatelessWidget {
             children: [
               SizedBox(width: AppDimensions.screenWidth(context) * 0.01),
 
-              // Ícono representando el tipo de actividad
+              // Ícono del tipo de actividad
               CircleAvatar(
-                backgroundColor:
-                    context.read<ThemeNotifier>().currentTheme.primaryColor,
+                backgroundColor: context.read<ThemeNotifier>().currentTheme.primaryColor,
                 child: Builder(
                   builder: (context) {
                     IconData? icon;
@@ -107,7 +106,7 @@ class ActivityCard extends StatelessWidget {
                 ),
               ),
 
-              // Precio de la actividad (si lo hay)
+              // Precio de la actividad
               Text(
                 activity.isCost ? '${activity.getCost}€' : '',
                 style: context.read<ThemeNotifier>().currentTheme.textTheme.labelMedium,

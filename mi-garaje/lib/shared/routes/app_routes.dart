@@ -45,7 +45,7 @@ class AppRoutes {
 
       case RouteNames.settings:
         final args = settings.arguments as Map<String, dynamic>;
-        return _slideTransition(SettingsView(viewModel: args['viewModel']));
+        return _slideTransition(SettingsView(garageViewModel: args['garageViewModel']));
 
       default:
         return MaterialPageRoute(builder: (context) => HomeView());

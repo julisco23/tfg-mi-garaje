@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:mi_garaje/data/models/user.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/widgets/cards/vehicle_card.dart';
 import 'package:provider/provider.dart';
@@ -7,13 +10,11 @@ import 'package:mi_garaje/view_model/auth_view_model.dart';
 import 'package:mi_garaje/view_model/garage_view_model.dart';
 
 class Perfil extends StatelessWidget {
-  const Perfil({super.key});
+  final GarageViewModel garageViewModel;
+  const Perfil({super.key, required this.garageViewModel});
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = Provider.of<AuthViewModel>(context);
-    final garageViewModel = Provider.of<GarageViewModel>(context);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text("Mi Perfil"),
@@ -22,7 +23,7 @@ class Perfil extends StatelessWidget {
             icon: const Icon(Icons.settings),
             onPressed: () {
               Navigator.pushNamed(context, RouteNames.settings,
-                  arguments: {"viewModel": viewModel});
+                  arguments: {"garageViewModel": garageViewModel});
             },
           ),
         ],
@@ -34,7 +35,7 @@ class Perfil extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                _buildProfileHeader(context, viewModel),
+                _buildProfileHeader(context),
                 SizedBox(height: AppDimensions.screenHeight(context) * 0.05),
                 _buildVehicleList(context, garageViewModel),
               ],
@@ -45,38 +46,49 @@ class Perfil extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileHeader(BuildContext context, AuthViewModel viewModel) {
+  Widget _buildProfileHeader(BuildContext context) {
+    final viewModel = Provider.of<AuthViewModel>(context);
+    final UserMy user = viewModel.user!;
+    
     return Column(
       children: [
         CircleAvatar(
           radius: 50,
-          backgroundColor: Colors.grey.shade300,
-          child: viewModel.esGoogle
-              ? ClipOval(
-                  child: Image.network(
-                    viewModel.usuario.photoURL!,
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.cover,
-                  ),
-                )
-              : Icon(
+          backgroundColor: Colors.blue,
+          child: user.isPhoto
+              ? user.hasPhotoChanged
+                  ? ClipOval(
+                      child: Image.memory(
+                        base64Decode(user.photoURL!),
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: double.infinity,
+                      ),
+                    )
+                  : ClipOval(
+                      child: Image.network(
+                        user.photoURL!,
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                : Icon(
                   Icons.person,
                   size: 50,
-                  color: Colors.grey.shade600,
-                ),
+                  color: Colors.white,
+                )
         ),
         SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
         Text(
-          viewModel.nombreUsuario,
+          user.name!,
           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
       ],
     );
   }
 
-  Widget _buildVehicleList(
-      BuildContext context, GarageViewModel garageViewModel) {
+  Widget _buildVehicleList(BuildContext context, GarageViewModel garageViewModel) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

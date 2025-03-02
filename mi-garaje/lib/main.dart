@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:mi_garaje/view/auth/login/login_view.dart';
 import 'package:mi_garaje/view_model/auth_view_model.dart';
-import 'package:mi_garaje/data/services/auth_service.dart';
 import 'package:mi_garaje/firebase_options.dart';
 import 'package:mi_garaje/shared/routes/app_routes.dart';
 
@@ -46,7 +45,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Mi Garage',
         home: FutureBuilder<bool>(
-          future: AuthService().comprobarUsuarioAutenticado(),
+          future: Provider.of<AuthViewModel>(context).checkUser(),
           builder: (context, snapshot) {
             if (snapshot.data == true) {
               return HomeView();
