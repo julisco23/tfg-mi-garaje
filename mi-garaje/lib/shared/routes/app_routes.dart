@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:mi_garaje/view/auth/login/login_view.dart';
-import 'package:mi_garaje/view/auth/signup/signup_view.dart';
-import 'package:mi_garaje/view/garage/garage_view.dart';
-import 'package:mi_garaje/view/home/home_tab/record_view/record_view.dart';
-import 'package:mi_garaje/view/home/home_tab/refuel_view/refuel_view.dart';
-import 'package:mi_garaje/view/home/home_tab/repair_view/repair_view.dart';
-import 'package:mi_garaje/view/home/home_view.dart';
-import 'package:mi_garaje/view/home/profile_tab/settings_view.dart';
+import 'package:mi_garaje/view/screens/auth/login/login_view.dart';
+import 'package:mi_garaje/view/screens/auth/signup/signup_view.dart';
+import 'package:mi_garaje/view/screens/home/car_tab/garage/garage_view.dart';
+import 'package:mi_garaje/view/screens/home/car_tab/record_view/record_view.dart';
+import 'package:mi_garaje/view/screens/home/car_tab/refuel_view/refuel_view.dart';
+import 'package:mi_garaje/view/screens/home/car_tab/repair_view/repair_view.dart';
+import 'package:mi_garaje/view/screens/home/home_view.dart';
+import 'package:mi_garaje/view/screens/home/profile_tab/settings_views/types_view.dart';
+import 'package:mi_garaje/view/screens/home/profile_tab/settings_view.dart';
 
 import 'route_names.dart';
 
@@ -18,34 +19,35 @@ class AppRoutes {
   };
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
+    final args = settings.arguments != null ? settings.arguments as Map<String, dynamic> : {};
     switch (settings.name) {
       case RouteNames.garage:
         return _slideTransition(const GarageView());
 
       case RouteNames.refuel:
-        final args = settings.arguments as Map<String, dynamic>;
         return _slideTransition(RefuelView(
           refuel: args['refuel'],
           carName: args['carName'],
         ));
 
       case RouteNames.repair:
-        final args = settings.arguments as Map<String, dynamic>;
         return _slideTransition(RepairView(
           repair: args['repair'],
           carName: args['carName'],
         ));
 
       case RouteNames.record:
-        final args = settings.arguments as Map<String, dynamic>;
         return _slideTransition(RecordView(
           record: args['record'],
           carName: args['carName'],
         ));
 
       case RouteNames.settings:
-        final args = settings.arguments as Map<String, dynamic>;
         return _slideTransition(SettingsView(garageViewModel: args['garageViewModel']));
+
+      case RouteNames.types:
+        return _slideTransition(TypesView(type: args['type']));
+
 
       default:
         return MaterialPageRoute(builder: (context) => HomeView());

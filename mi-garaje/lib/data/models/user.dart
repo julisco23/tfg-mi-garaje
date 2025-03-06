@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mi_garaje/data/models/vehicle.dart';
 
 class UserMy {
@@ -38,6 +39,10 @@ class UserMy {
   }
 
   bool get hasPhotoChanged => isPhotoChanged;
+
+  String get displayName {
+    return name ?? email ?? 'Cuenta anónima id: $id';
+  }
 
   // Método para convertir el objeto Usuario en un Map (para guardar en Firestore)
   Map<String, dynamic> toMap() {
@@ -108,5 +113,19 @@ class UserMy {
   // Método para eliminar un tipo de actividad eliminado por el usuario
   void deleteTypeDeleted(int type, int id) {
     typesDeleted[type]!.remove(id);
+  }
+
+  // From user
+  factory UserMy.fromUser(User user) {
+    return UserMy(
+      id: user.uid,
+      name: user.displayName,
+      email: user.email,
+      photoURL: user.photoURL,
+      isAnonymous: user.isAnonymous,
+      isGoogle: user.providerData.any((element) => element.providerId == 'google.com'),
+      creationDate: user.metadata.creationTime!,
+      isPhotoChanged: false,
+    );
   }
 }

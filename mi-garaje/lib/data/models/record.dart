@@ -1,21 +1,7 @@
 import 'package:mi_garaje/data/models/activity.dart';
 
-enum RecordType {
-  seguro,
-  itv;
-
-  String get getName {
-    switch (this) {
-      case RecordType.seguro:
-        return "Seguro del Vehículo";
-      case RecordType.itv:
-        return "Inspección Técnica (ITV)";
-    }
-  }
-}
-
 class Record extends Activity {
-  RecordType recordType;
+  String recordType;
   String? photo;
   String? details;
   double? cost;
@@ -30,7 +16,7 @@ class Record extends Activity {
   }) : super(activityType: ActivityType.record);
 
   @override
-  String get getTpye => recordType.getName;
+  String get getTpye => recordType;
 
   @override
   double? get getCost => cost;
@@ -44,7 +30,7 @@ class Record extends Activity {
       'photo': photo,
       'details': details,
       'cost': cost,
-      'recordType': recordType.name,
+      'recordType': recordType,
     };
   }
 
@@ -55,7 +41,12 @@ class Record extends Activity {
       photo: map['photo'],
       details: map['details'],
       cost: map['cost'],
-      recordType: RecordType.values.byName(map['recordType']),
+      recordType: map['recordType'],
     );
+  }
+
+  @override
+  String toString() {
+    return 'Record{idActivity: $idActivity, date: $date, photo: $photo, details: $details, cost: $cost, recordType: $recordType}';
   }
 }

@@ -6,5 +6,6 @@ class RouteNames {
   static const String refuel = '/home/refuel';
   static const String repair = '/home/repair';
   static const String record = '/home/record';
-  static const String settings = '/home/settings';
+  static const String settings = '/home/profile/settings';
+  static const String types = '/home/profile/settings/types';
 }

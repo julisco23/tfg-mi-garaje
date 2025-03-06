@@ -1,201 +1,189 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:mi_garaje/data/models/activity.dart';
 import 'package:mi_garaje/data/models/vehicle.dart';
 
 class CarService {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  late User user;
 
-  // Añadir un vehículo (se genera un ID único)
-  Future<String?> addVehicle(Vehicle vehicle) async {
+  // Obtener un stream de vehículos 
+  Stream<List<Vehicle>> getVehiclesStream(String userId) {
     try {
-      final docRef = await _firestore
+      return _firestore
         .collection('users')
-        .doc(_auth.currentUser!.uid)
+        .doc(userId)
         .collection('vehicles')
-        .add(vehicle.toMap());
-
-      vehicle.setId(docRef.id);
-
-      print("Añadiendo coche a Firestore: ${vehicle.toMap()}");
-
-      return null;
+        .snapshots()
+        .map((snapshot) {
+          debugPrint("Vehículos obtenidos: ${snapshot.docs.length}");
+          return snapshot.docs.map((doc) {
+            final data = doc.data();
+            return Vehicle.fromMap(data)..id = doc.id;
+          }).toList();
+        });
     } catch (e) {
-      print("Error al añdir el coche" + e.toString());
-      return 'Error al añadir el coche';
+      debugPrint("Error al obtener todos los vehículos: $e");
+      rethrow;
     }
   }
 
-  // Obtener todos los vehiculos del usuario
-  Future<List<Vehicle>> getAllVehicles() async {
+  /// Obtener el primer vehículo 
+  Future<Vehicle?> getFirstVehicle(String userId) async {
     try {
       final querySnapshot = await _firestore
-          .collection('users')
-          .doc(_auth.currentUser!.uid)
-          .collection('vehicles')
-          .get();
+        .collection('users')
+        .doc(userId)
+        .collection('vehicles')
+        .limit(1)
+        .get();
 
-      List<Vehicle> vehicles = [];
-
-      for (var doc in querySnapshot.docs) {
-        final data = doc.data();
-        Vehicle vehicle = Vehicle.fromMap(data)..id = doc.id;
-
-        // Cargar las opciones de este coche
-        final actividadesSnapshot = await _firestore
-            .collection('users')
-            .doc(_auth.currentUser!.uid)
-            .collection('vehicles')
-            .doc(vehicle.id)
-            .collection('activities')
-            .get();
-
-        vehicle.activities = actividadesSnapshot.docs.map((activityDoc) {
-          final activitData = activityDoc.data();
-          return Activity.fromMap(activitData)..idActivity = activityDoc.id;
-        }).toList();
-
-        vehicles.add(vehicle);
+      if (querySnapshot.docs.isNotEmpty) {
+        final doc = querySnapshot.docs.first;
+        final vehicle = Vehicle.fromMap(doc.data())..id = doc.id;
+        debugPrint("Primer vehículo obtenido: ${vehicle.toString()}");
+        return vehicle;
       }
 
-      print('Coches cargados correctamente: ${vehicles.toString()}');
-
-      return vehicles;
+      debugPrint("No hay vehículos disponibles.");
+      return null;
     } catch (e) {
-      print('Error al obtener los coches y sus opciones: $e');
-      return [];
+      print("Error al obtener el primer vehículo: $e");
+      debugPrint("Error al obtener el primer vehículo: $e");
+      rethrow;
+    }
+  }
+
+  // Añadir un vehículo
+  Future<void> addVehicle(Vehicle vehicle, String userId) async {
+    try {
+      final docRef = _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('vehicles')
+          .doc();
+
+      vehicle.setId(docRef.id);
+      await docRef.set(vehicle.toMap());
+
+      debugPrint("Vehículo añadido: ${vehicle.toString()}");
+    } catch (e) {
+      debugPrint("Error al añadir vehículo: $e");
+      rethrow;
     }
   }
 
   // Actualizar un vehículo
-  Future<void> updateVehicle(Vehicle vehicle) async {
+  Future<void> updateVehicle(Vehicle vehicle, String userId) async {
     try {
       await _firestore
-        .collection('users')
-        .doc(_auth.currentUser!.uid)
-        .collection('vehicles')
-        .doc(vehicle.id)
-        .update(vehicle.toMap());
-
-        print("Coche actualizado en Firestore: ${vehicle.toMap()}");
-    } catch (e) {
-      print("Error al actualizar el coche: $e");
-    }
-  }
-
-  /// Eliminar un vehículo específico por su ID
-  Future<void> deleteVehicle(String vehicleId) async {
-    try {
-      await _firestore
-        .collection('users')
-        .doc(_auth.currentUser!.uid)
-        .collection('vehicles')
-        .doc(vehicleId)
-        .delete();
-
-      print('Coche eliminado correctamente. ID: $vehicleId');
-    } catch (e) {
-      print('Error al eliminar el coche: $e');
-    }
-  }
-
-
-
-  // Añadir una actividad a un coche
-  Future<void> addActivity(String carId, Activity activity) async {
-    try {
-      DocumentReference activityRef = await _firestore
-        .collection('users')
-        .doc(_auth.currentUser!.uid)
-        .collection('vehicles')
-        .doc(carId)
-        .collection('activities')
-        .add(activity.toMap());
-
-        activity.setId(activityRef.id);
-
-      await _firestore
-        .collection('users')
-        .doc(_auth.currentUser!.uid)
-        .collection('vehicles')
-        .doc(carId)
-        .collection('activities')
-        .doc(activityRef.id)
-        .update({'idActivity': activityRef.id});
-
-        print("Actividad añadida a Firestore: ${activity.toMap()}");
-
-    } catch (e) {
-      print("Error al añadir la actividad: $e");
-    }
-  }
-
-  // Eliminar una actividad de un coche
-  Future<void> deleteActivity(String carId, String activityId) async {
-    try {
-      await _firestore
-        .collection('users')
-        .doc(_auth.currentUser!.uid)
-        .collection('vehicles')
-        .doc(carId)
-        .collection('activities')
-        .doc(activityId)
-        .delete();
-
-        print("Actividad eliminada en Firestore ID: $activityId");
-    } catch (e) {
-      print("Error al eliminar la actividad: $e");
-    }
-  }
-
-  // Actualizar una actividad de un coche
-  Future<void> updateActivity(String carId, Activity activity) async {
-    try {
-      await _firestore
-        .collection('users')
-        .doc(_auth.currentUser!.uid)
-        .collection('vehicles')
-        .doc(carId)
-        .collection('activities')
-        .doc(activity.idActivity)
-        .update(activity.toMap());
-
-        print("Actividad actualizada en Firestore: ${activity.toMap()}");
-    } catch (e) {
-      print("Error al actualizar la actividad: $e");
-    }
-  }
-
-  // Eliminar garaje
-  Future<void> eliminarGaraje() async {
-    try {
-      final vehicles = await getAllVehicles();
-
-      for (var vehicle in vehicles) {
-        await _firestore
           .collection('users')
-          .doc(_auth.currentUser!.uid)
+          .doc(userId)
           .collection('vehicles')
           .doc(vehicle.id)
+          .update(vehicle.toMap());
+
+      debugPrint("Vehículo actualizado: ${vehicle.toString()}");
+    } catch (e) {
+      debugPrint("Error al actualizar vehículo: $e");
+      rethrow;
+    }
+  }
+
+  // Eliminar un vehículo
+  Future<void> deleteVehicle(String vehicleId, String userId) async {
+    try {
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('vehicles')
+          .doc(vehicleId)
           .delete();
 
-        for (var activity in vehicle.activities) {
-          await _firestore
-            .collection('users')
-            .doc(_auth.currentUser!.uid)
-            .collection('vehicles')
-            .doc(vehicle.id)
-            .collection('activities')
-            .doc(activity.idActivity)
-            .delete();
-        }
-      }
-
-      print("Garaje eliminado correctamente");
+      debugPrint("Vehículo eliminado: $vehicleId");
     } catch (e) {
-      print("Error al eliminar el garaje: $e");
+      debugPrint("Error al eliminar vehículo: $e");
+      rethrow;
+    }
+  }
+
+  // Obtener un stream de actividades
+  Future<List<Activity>> getActivities(String carId, String userId) async {
+    try {
+      return await _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('vehicles')
+        .doc(carId)
+        .collection('activities')
+        .get()
+        .then((querySnapshot) {
+          return querySnapshot.docs.map((doc) {
+            final data = doc.data();
+            return Activity.fromMap(data)..idActivity = doc.id;
+          }).toList();
+        });
+    } catch (e) {
+      debugPrint("Error al obtener todas las actividades: $e");
+      rethrow;
+    }
+  }
+
+  // Añadir actividad a un coche
+  Future<void> addActivity(String carId, Activity activity, String userId) async {
+    try {
+      final docRef = _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('vehicles')
+          .doc(carId)
+          .collection('activities')
+          .doc();
+
+      activity.setId(docRef.id);
+      await docRef.set(activity.toMap());
+
+      debugPrint("Actividad añadida: ${activity.toMap()}");
+    } catch (e) {
+      debugPrint("Error al añadir actividad: $e");
+      rethrow;
+    }
+  }
+
+  // Eliminar actividad
+  Future<void> deleteActivity(String carId, String activityId, String userId) async {
+    try {
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('vehicles')
+          .doc(carId)
+          .collection('activities')
+          .doc(activityId)
+          .delete();
+
+      debugPrint("Actividad eliminada: $activityId");
+    } catch (e) {
+      debugPrint("Error al eliminar actividad: $e");
+      rethrow;
+    }
+  }
+
+  // Actualizar actividad
+  Future<void> updateActivity(String carId, Activity activity, String userId) async {
+    try {
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('vehicles')
+          .doc(carId)
+          .collection('activities')
+          .doc(activity.idActivity)
+          .update(activity.toMap());
+
+      debugPrint("Actividad actualizada: ${activity.toMap()}");
+    } catch (e) {
+      debugPrint("Error al actualizar actividad: $e");
+      rethrow;
     }
   }
 }

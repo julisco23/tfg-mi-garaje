@@ -49,6 +49,10 @@ class Vehicle {
     required this.vehicleType,
   });
 
+  void setActivities(List<Activity> activities) {
+    this.activities = activities;
+  }
+
   void addActivity(Activity activity) {
     activities.add(activity);
   }
@@ -133,4 +137,13 @@ class Vehicle {
   String toString() {
     return 'Vehicle{id: $id, name: $name, brand: $brand, model: $model, isPhoto: ${photo != null}, vehicleType: $vehicleType, activities: $activities}';
   }
+
+  @override
+  bool operator ==(Object other) {
+    return other is Vehicle && other.id == id;
+  }
+
+  @override
+  int get hashCode => id.hashCode;
+
 }

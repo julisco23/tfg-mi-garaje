@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart';
-import 'package:mi_garaje/view/home/history_tab/history_view.dart';
-import 'package:mi_garaje/view/home/home_tab/home_view.dart';
-import 'package:mi_garaje/view/home/profile_tab/profile_view.dart';
-import 'package:mi_garaje/view_model/garage_view_model.dart';
+import 'package:mi_garaje/view/screens/home/history_tab/history_view.dart';
+import 'package:mi_garaje/view/screens/home/car_tab/car_view.dart';
+import 'package:mi_garaje/view/screens/home/profile_tab/profile_view.dart';
+import 'package:mi_garaje/data/provider/garage_provider.dart';
 
 class AppDimensions {
   static double screenHeight(BuildContext context) => MediaQuery.of(context).size.height;
@@ -18,9 +18,9 @@ class AppConstants {
   static const int repair = 1;
   static const int record = 2;
 
-  static final List<Widget Function(GarageViewModel)> widgetTabs = [
+  static final List<Widget Function(GarageProvider)> widgetTabs = [
     (viewModel) => HistoryView(garageViewModel: viewModel),
-    (viewModel) => HomeTabView(garageViewModel: viewModel),
+    (viewModel) => CarTabView(),
     (viewModel) => Perfil(garageViewModel: viewModel),
   ];
 }

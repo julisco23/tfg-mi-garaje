@@ -1,27 +1,7 @@
 import 'package:mi_garaje/data/models/activity.dart';
 
-enum RefuelType {
-  gasolina,
-  diesel,
-  electrico,
-  hibrido;
-
-  String get getName {
-    switch (this) {
-      case RefuelType.gasolina:
-        return "Gasolina";
-      case RefuelType.diesel:
-        return "Diésel";
-      case RefuelType.electrico:
-        return "Eléctrico";
-      case RefuelType.hibrido:
-        return "Híbrido";
-    }
-  }
-}
-
 class Refuel extends Activity {
-  RefuelType recordType;
+  String recordType;
   double costLiter;
   double? cost;
 
@@ -37,7 +17,7 @@ class Refuel extends Activity {
   double get getLiters => (cost! / costLiter);
 
   @override
-  String get getTpye => recordType.getName;
+  String get getTpye => recordType;
 
   @override
   double? get getCost => cost;
@@ -50,7 +30,7 @@ class Refuel extends Activity {
       'idActivity': idActivity,
       'date': date.toIso8601String(),
       'activityType': activityType.name,
-      'recordType': recordType.name,
+      'recordType': recordType,
       'costLiter': costLiter,
       'cost': cost,
     };
@@ -60,9 +40,9 @@ class Refuel extends Activity {
     return Refuel(
       idActivity: map['idActivity'],
       date: DateTime.parse(map['date']),
-      recordType: RefuelType.values.byName(map['recordType']),
-      costLiter: map['costLiter'],
-      cost: map['cost'],
+      recordType: map['recordType'],
+      costLiter: map['costLiter'].toDouble(),
+      cost: map['cost'].toDouble(),
     );
   }
 }

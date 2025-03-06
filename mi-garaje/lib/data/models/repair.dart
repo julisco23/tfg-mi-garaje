@@ -1,43 +1,7 @@
 import 'package:mi_garaje/data/models/activity.dart';
 
-enum RepairType {
-  frenoDelantero,
-  frenoTrasero,
-  aceite,
-  filtroAceite,
-  filtroAire,
-  filtroCombustible,
-  bateria,
-  neumaticos,
-  correaDistribucion;
-
-  String get getName {
-    switch (this) {
-      case RepairType.frenoDelantero:
-        return "Freno Delantero";
-      case RepairType.frenoTrasero:
-        return "Freno Trasero";
-      case RepairType.aceite:
-        return "Cambio de Aceite";
-      case RepairType.filtroAceite:
-        return "Filtro de Aceite";
-      case RepairType.filtroAire:
-        return "Filtro de Aire";
-      case RepairType.filtroCombustible:
-        return "Filtro de Combustible";
-      case RepairType.bateria:
-        return "Cambio de Batería";
-      case RepairType.neumaticos:
-        return "Cambio de Neumáticos";
-      case RepairType.correaDistribucion:
-        return "Correa de Distribución";
-    }
-  }
-}
-
-
 class Repair extends Activity {
-  RepairType repairType;
+  String repairType;
   String? photo;
   String? details;
   double? cost;
@@ -52,7 +16,7 @@ class Repair extends Activity {
   }) : super(activityType: ActivityType.repair);
 
   @override
-  String get getTpye => repairType.getName;
+  String get getTpye => repairType;
 
   @override
   double? get getCost => cost;
@@ -66,7 +30,7 @@ class Repair extends Activity {
       'photo': photo,
       'details': details,
       'cost': cost,
-      'repairType': repairType.name,
+      'repairType': repairType,
     };
   }
 
@@ -77,7 +41,7 @@ class Repair extends Activity {
       photo: map['photo'],
       details: map['details'],
       cost: map['cost'],
-      repairType: RepairType.values.byName(map['repairType']),
+      repairType: map['repairType'],
     );
   }
 }

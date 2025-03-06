@@ -8,11 +8,11 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  User? get user => _auth.currentUser;
+  User? get getUser => _auth.currentUser;
   Future<UserMy?> get currentUser async {
-    if (user == null) return null;
+    if (getUser == null) return null;
 
-    DocumentSnapshot doc = await _firestore.collection('users').doc(user!.uid).get();
+    DocumentSnapshot doc = await _firestore.collection('users').doc(getUser!.uid).get();
 
     if (!doc.exists || doc.data() == null) return null;
 
@@ -20,17 +20,17 @@ class AuthService {
   }
 
   Future<bool> checkUser() async {
-    return user != null;
+    return getUser != null;
   }
 
   Future<bool> hasAccount() async {
-    return _firestore.collection('users').doc(user!.uid).get().then((doc) {
+    return _firestore.collection('users').doc(getUser!.uid).get().then((doc) {
       return doc.exists;
     });
   }
 
   Future<void> createUser() async {
-    UserMy userMy = UserMapper.fromUser(user!);
+    UserMy userMy = UserMapper.fromUser(getUser!);
     await _firestore.collection('users').doc(userMy.id).set(userMy.toMap());
   }
 
@@ -143,19 +143,19 @@ class AuthService {
         idToken: googleAuth.idToken,
       );
 
-      await user!.linkWithCredential(credential);
+      await getUser!.linkWithCredential(credential);
       print("Cuenta vinculada exitosamente con Google.");
 
-      await _firestore.collection('users').doc(user!.uid).update({
+      await _firestore.collection('users').doc(getUser!.uid).update({
         'name': googleUser.displayName,
         'email': googleUser.email,
         'photoURL': googleUser.photoUrl,
         'isAnonymous': false,
         'isGoogle': true
       });
-      print(user.toString());
+      print(getUser.toString());
 
-      print("Documento de usuario actualizado con éxito ${_firestore.collection('users').doc(user!.uid).get().toString()}");
+      print("Documento de usuario actualizado con éxito ${_firestore.collection('users').doc(getUser!.uid).get().toString()}");
       return null;
     } catch (e) {
       print("Error al vincular cuenta con Google: $e");
@@ -195,7 +195,7 @@ class AuthService {
 
       print("Con exito user: ${FirebaseAuth.instance.currentUser!.toString()}");
 
-      await _firestore.collection('users').doc(user!.uid).update({
+      await _firestore.collection('users').doc(getUser!.uid).update({
         'name': displayName,
         'email': email,
         'isAnonymous': false,
@@ -244,7 +244,7 @@ class AuthService {
 
   Future<String?> updateProfile(String name, String? photo, bool isPhotoChanged) async {
     try {
-        await _firestore.collection('users').doc(user!.uid).update({
+        await _firestore.collection('users').doc(getUser!.uid).update({
           'name': name,
           'photoURL': photo,
           'isPhotoChanged': isPhotoChanged,
