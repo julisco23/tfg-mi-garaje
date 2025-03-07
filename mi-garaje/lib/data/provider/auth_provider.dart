@@ -85,14 +85,15 @@ class AuthViewModel extends ChangeNotifier {
     } else {
       response = await _authService.signout();
     }
-    setUser(null);
+    _user = user;
+    print('User: $user');
     return response;
   }
 
   // Método de eliminación de cuenta
   Future<String?> eliminarCuenta() async {
     String? response = await _authService.deleteUserAccount();
-    setUser(null);
+    _user = user;
     return response;
   }
 

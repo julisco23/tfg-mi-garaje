@@ -28,12 +28,13 @@ class GlobalTypesViewModel extends ChangeNotifier {
     _globalTypes["refuelTypes"] = await _userTypeService.getGlobalTypes("refuelTypes");
     _globalTypes["recordTypes"] = await _userTypeService.getGlobalTypes("recordTypes");
     _globalTypes["repairTypes"] = await _userTypeService.getGlobalTypes("repairTypes");
+    _globalTypes["vehicles"] = await _userTypeService.getGlobalTypes("vehicles");
   }
 
   // Método que retorna el Stream de tipos
   Stream<List<String>> getTypesStream(String typeName, String add, String remove) {
-    _emitTypes(typeName, add, remove); // Emitir los tipos por primera vez
-    return _refuelTypesController.stream; // Devuelve el stream
+    _emitTypes(typeName, add, remove);
+    return _refuelTypesController.stream;
   }
 
   // Método para emitir los tipos de repostaje
@@ -79,14 +80,12 @@ class GlobalTypesViewModel extends ChangeNotifier {
     try {
       if (_globalTypes[typeName]!.contains(type)) {
         await _userTypeService.removeType(_userId, type, remove);
-        _emitTypes(typeName, add, remove);
-        _emitRemovedTypes(add, remove);
       }
       else {
          await _userTypeService.removeType(_userId, type, add);
-        _emitTypes(typeName, add, remove);
-        _emitRemovedTypes(add, remove);
       }
+      _emitTypes(typeName, add, remove);
+       _emitRemovedTypes(add, remove);
     } catch (e) {
       print("Error al eliminar el tipo: $e");
     }

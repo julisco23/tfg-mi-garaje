@@ -75,4 +75,15 @@ class Validator {
     return null;
   }
 
+  // Validación del nombre de tipo
+  static String? validateNameType(String? value) {
+    if (value == null || value.isEmpty) {
+      return '* Nombre es obligatorio.';
+    }
+    if (!value.startsWith(RegExp(r'[A-Z]'))) {
+      return '* Debe empezar por mayúscula.';
+    }
+    return null;
+  }
+
 }

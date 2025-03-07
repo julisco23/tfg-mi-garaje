@@ -6,7 +6,7 @@ import 'package:mi_garaje/view/widgets/cards/settings_card.dart';
 import 'package:mi_garaje/view/widgets/dialogs/auth/dialog_create_profile.dart';
 import 'package:mi_garaje/view/widgets/dialogs/auth/dialog_edit_profile.dart';
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_confirm.dart';
-import 'package:mi_garaje/view/widgets/fluttertoast.dart';
+import 'package:mi_garaje/view/widgets/toastFlutter/fluttertoast.dart';
 import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:provider/provider.dart';
@@ -26,13 +26,14 @@ class SettingsView extends StatelessWidget {
         title: Text("Ajustes"),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(  // Añadido SingleChildScrollView para permitir el desplazamiento
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // SECCIÓN: CUENTA
             _buildSectionTitle(context, "Cuenta"),
+            SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
             user.isAnonymous
                 ? SettingCard(
                     icon: Icons.person_add_alt_1_rounded,
@@ -116,6 +117,7 @@ class SettingsView extends StatelessWidget {
 
             // SECCIÓN: APARIENCIA
             _buildSectionTitle(context, "Apariencia"),
+            SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
             SettingCard(
               icon: Icons.color_lens,
               title: "Cambiar tema",
@@ -128,6 +130,7 @@ class SettingsView extends StatelessWidget {
                 if (!confirm) return;
 
                 if (context.mounted) {
+                  //ToastHelper.show(context, "Funcionalidad no disponible.")
                   Provider.of<ThemeNotifier>(context, listen: false).toggleTheme();
                 }
               },
@@ -136,103 +139,111 @@ class SettingsView extends StatelessWidget {
               icon: Icons.language_rounded,
               title: "Cambiar idioma",
               onTap: () {
-                //DialogChangeLanguage.show(context);
+                ToastHelper.show(context, "Funcionalidad no disponible.");
               },
             ),
             SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 
             // SECCIÓN: NOTIFICACIONES
             _buildSectionTitle(context, "Notificaciones"),
+            SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
             SettingCard(
               icon: Icons.notifications_active_rounded,
               title: "Activar/Desactivar",
               onTap: () {
-                //NotificationSettings.toggleNotifications(context);
+                ToastHelper.show(context, "Funcionalidad no disponible.");
               },
             ),
             SettingCard(
               icon: Icons.alarm_rounded,
               title: "Alertas personalizadas",
               onTap: () {
-                //DialogNotificationSettings.show(context);
+                ToastHelper.show(context, "Funcionalidad no disponible.");
               },
             ),
             SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 
             // SECCIÓN: PERSONALIZACIÓN
             _buildSectionTitle(context, "Personalización"),
+            SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
             SettingCard(
               icon: Icons.add_rounded, 
               title: "Tipos de repostaje", 
               onTap: () {
                 Navigator.pushNamed(context, RouteNames.types, arguments: {"type": "Repostaje"});
-              }),
+              }
+            ),
             SettingCard(
               icon: Icons.add_rounded, 
               title: "Tipos de mantenimiento", 
               onTap: () {
               Navigator.pushNamed(context, RouteNames.types, arguments: {"type": "Mantenimiento"});
-            }),
+              }
+            ),
             SettingCard(
               icon: Icons.add_rounded, 
-              title: "Tipos de documentos", 
+              title: "Tipos de documentos",
               onTap: () {
-              Navigator.pushNamed(context, RouteNames.types, arguments: {"type": "Documento"});
-            }),
+                Navigator.pushNamed(context, RouteNames.types, arguments: {"type": "Documento"});
+              }
+            ),
             SettingCard(
               icon: Icons.add_rounded, 
               title: "Tipos de vehículos", 
               onTap: () {
-              // POR HACER
-              }),
+                Navigator.pushNamed(context, RouteNames.types, arguments: {"type": "Vehicle"});
+              }
+            ),
             SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 
             // SECCIÓN: FAMILIA
             _buildSectionTitle(context, "Familia"),
+            SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
             SettingCard(
               icon: Icons.group_add_rounded,
               title: "Crear una familia",
               onTap: () {
-                //DialogCreateFamily.show(context);
+                ToastHelper.show(context, "Funcionalidad no disponible.");
               },
             ),
             SettingCard(
               icon: Icons.group_rounded,
               title: "Unirse a una familia",
               onTap: () {
-                //DialogJoinFamily.show(context);
+                ToastHelper.show(context, "Funcionalidad no disponible.");
               },
             ),
             SettingCard(
               icon: Icons.history_rounded,
               title: "Últimos movimientos",
               onTap: () {
-                //Navigator.pushNamed(context, RouteNames.familyMovements);
+                ToastHelper.show(context, "Funcionalidad no disponible.");
               },
             ),
             SettingCard(
               icon: Icons.exit_to_app_rounded,
               title: "Salir de la familia",
               onTap: () {
-                //DialogLeaveFamily.show(context);
+                ToastHelper.show(context, "Funcionalidad no disponible.");
               },
             ),
             SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 
             // SECCIÓN: SOPORTE Y AYUDA
             _buildSectionTitle(context, "Soporte y Ayuda"),
+            SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
             SettingCard(
               icon: Icons.help_rounded,
               title: "Prreguntas frecuentes",
               onTap: () {
-                //Navigator.pushNamed(context, RouteNames.helpCenter);
+                ToastHelper.show(context, "Funcionalidad no disponible.");
               },
             ),
             SettingCard(
               icon: Icons.feedback_rounded,
               title: "Enviar comentarios",
               onTap: () {
-                //DialogSendFeedback.show(context);
+                ToastHelper.show(context, "Funcionalidad no disponible.");
               },
             ),
           ],

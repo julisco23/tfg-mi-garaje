@@ -121,7 +121,7 @@ class _VehicleCardState extends State<VehicleCard> {
                 ),
               ),
               Text(
-                vehicle.vehicleType.getName,
+                vehicle.getVehicleType(),
                 style: TextStyle(color: Theme.of(context).primaryColor),
               ),
             ],

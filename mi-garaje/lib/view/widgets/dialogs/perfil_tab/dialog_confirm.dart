@@ -18,7 +18,6 @@ class ConfirmDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

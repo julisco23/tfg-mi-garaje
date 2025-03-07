@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:mi_garaje/data/provider/garage_provider.dart';
+import 'package:mi_garaje/data/provider/global_types_view_model.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/constants/validator.dart';
-import 'package:mi_garaje/view/widgets/fluttertoast.dart';
+import 'package:mi_garaje/view/widgets/toastFlutter/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/view/widgets/elevated_button_utils.dart';
@@ -109,8 +111,9 @@ class _SignupViewState extends State<SignupView> {
                           if (response != null) {
                             ToastHelper.show(context, response);
                           } else {
-                            Navigator.pushNamedAndRemoveUntil(
-                                context, RouteNames.home, (route) => false);
+                            Provider.of<GlobalTypesViewModel>(context, listen: false).initialize(loginViewModel.id);
+                            Provider.of<GarageProvider>(context, listen: false).initializeUser(loginViewModel.id);
+                            Navigator.pushNamedAndRemoveUntil(context, RouteNames.home, (route) => false);
                           }
                         }
                       }
@@ -128,8 +131,9 @@ class _SignupViewState extends State<SignupView> {
                         if (message != null) {
                           ToastHelper.show(context, message);
                         } else {
-                          Navigator.pushNamedAndRemoveUntil(
-                              context, RouteNames.home, (route) => false);
+                          Provider.of<GlobalTypesViewModel>(context, listen: false).initialize(loginViewModel.id);
+                          Provider.of<GarageProvider>(context, listen: false).initializeUser(loginViewModel.id);
+                          Navigator.pushNamedAndRemoveUntil(context, RouteNames.home, (route) => false);
                         }
                       }
                     },
@@ -146,8 +150,9 @@ class _SignupViewState extends State<SignupView> {
                         if (response != null) {
                           ToastHelper.show(context, response);
                         } else if (mounted) {
-                          Navigator.pushNamedAndRemoveUntil(
-                              context, RouteNames.home, (route) => false);
+                          Provider.of<GlobalTypesViewModel>(context, listen: false).initialize(loginViewModel.id);
+                          Provider.of<GarageProvider>(context, listen: false).initializeUser(loginViewModel.id);
+                          Navigator.pushNamedAndRemoveUntil(context, RouteNames.home, (route) => false);
                         }
                       }
                     },

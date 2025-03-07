@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/view/widgets/cards/types_card.dart';
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_name_type.dart';
 import 'package:mi_garaje/view/widgets/text_form_field.dart';
 import 'package:mi_garaje/data/provider/global_types_view_model.dart';
+import 'package:mi_garaje/view/widgets/toastFlutter/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 class TypesView extends StatefulWidget {
@@ -19,6 +21,7 @@ class _TypesViewState extends State<TypesView> {
   late Stream<List<String>> typesFuture;
   late Stream<List<String>> removedtypesFuture;
   late List<String> getTypesGlobal;
+
 
   @override
   void didChangeDependencies() {
@@ -42,6 +45,11 @@ class _TypesViewState extends State<TypesView> {
         add = 'addedRecordTypes';
         remove = 'removedRecordTypes';
         typeName = 'recordTypes';
+        break;
+      case 'Vehicle':
+        add = 'addedVehicles';
+        remove = 'removedVehicles';
+        typeName = 'vehicles';
         break;
     }
     typesFuture = Provider.of<GlobalTypesViewModel>(context).getTypesStream(typeName, add, remove);
@@ -87,7 +95,6 @@ class _TypesViewState extends State<TypesView> {
             ),
             SizedBox(height: 16),
 
-            // `SingleChildScrollView` para hacer scroll por ambas listas juntas
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
@@ -109,7 +116,7 @@ class _TypesViewState extends State<TypesView> {
                             children: [
                               // Título 'Tipos' dentro del StreamBuilder
                               _buildSectionTitle(context, 'Tipos'),
-                              SizedBox(height: 10),
+                              SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
 
                               // Lista de tipos
                               Column(
@@ -129,7 +136,13 @@ class _TypesViewState extends State<TypesView> {
                                           padding: EdgeInsets.only(right: 20.0),
                                           child: Icon(Icons.delete, color: Colors.white),
                                         ),
-                                        onDismissed: (direction) => removeType(typeItem),
+                                        onDismissed: (direction) {
+                                          if (userTypes.length == 1) {
+                                            ToastHelper.show(context, 'Mínimo un tipo');
+                                          } else {
+                                            removeType(typeItem);
+                                          }
+                                          removeType(typeItem);},
                                         child: TypesCard(
                                           initialTitle: typeItem,
                                           icon: Icons.edit,
@@ -144,7 +157,7 @@ class _TypesViewState extends State<TypesView> {
                                       );
                                     },
                                   ),
-                                  SizedBox(height: 16),
+                                  SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
                                 ],
                               ),
                             ],
@@ -173,7 +186,7 @@ class _TypesViewState extends State<TypesView> {
                           children: [
                             // Título 'Eliminados' solo si hay tipos eliminados
                             _buildSectionTitle(context, 'Eliminados'),
-                            SizedBox(height: 10),
+                            SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
 
                             // Lista de tipos eliminados
                             Column(

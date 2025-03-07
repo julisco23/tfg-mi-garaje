@@ -1,42 +1,12 @@
 import 'package:mi_garaje/data/models/activity.dart';
 
-enum VehicleType {
-  car,
-  motorcycle,
-  truck,
-  bike,
-  electricScooter,
-  van,
-  agriculturalTransport;
-
-  String get getName {
-    switch (this) {
-      case VehicleType.car:
-        return "Coche";
-      case VehicleType.motorcycle:
-        return "Moto";
-      case VehicleType.truck:
-        return "Camión";
-      case VehicleType.bike:
-        return "Bicicleta";
-      case VehicleType.electricScooter:
-        return "Patín Eléctrico";
-      case VehicleType.van:
-        return "Furgoneta";
-      case VehicleType.agriculturalTransport:
-        return "Transporte Agrícola";
-    }
-  }
-}
-
-
 class Vehicle {
   String? id;
   String? name;
   String brand;
   String? model;
   String? photo;
-  VehicleType vehicleType;
+  String vehicleType;
 
   List<Activity> activities = [];
 
@@ -82,7 +52,7 @@ class Vehicle {
   }
 
   String getVehicleType() {
-    return vehicleType.getName;
+    return vehicleType;
   }
 
   String getInitial() {
@@ -119,7 +89,7 @@ class Vehicle {
       'brand': brand,
       'model': model,
       'photo': photo,
-      'vehicleType': vehicleType.toString().split('.').last,
+      'vehicleType': vehicleType,
     };
   }
 
@@ -129,7 +99,7 @@ class Vehicle {
       brand: map['brand'] as String,
       model: map['model'] as String?,
       photo: map['photo'] as String?,
-      vehicleType: VehicleType.values.byName(map['vehicleType']),
+      vehicleType: map['vehicleType'],
     );
   }
 
@@ -145,5 +115,4 @@ class Vehicle {
 
   @override
   int get hashCode => id.hashCode;
-
 }

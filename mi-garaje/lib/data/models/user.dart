@@ -41,7 +41,7 @@ class UserMy {
   bool get hasPhotoChanged => isPhotoChanged;
 
   String get displayName {
-    return name ?? email ?? 'Cuenta anónima id: $id';
+    return name ?? email ?? 'user$id';
   }
 
   // Método para convertir el objeto Usuario en un Map (para guardar en Firestore)

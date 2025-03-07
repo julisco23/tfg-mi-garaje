@@ -3,10 +3,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mi_garaje/data/models/vehicle.dart';
+import 'package:mi_garaje/data/provider/global_types_view_model.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/view/widgets/elevated_button_utils.dart';
 import 'package:mi_garaje/view/widgets/text_form_field.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
+import 'package:provider/provider.dart';
 
 class DialogAddVehicle extends StatefulWidget {
   final GarageProvider viewModel;
@@ -43,8 +45,11 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
   final TextEditingController brandController = TextEditingController();
   final TextEditingController modelController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  VehicleType? selectedVehicleType;
+  String? selectedVehicleType;
   Uint8List? imageBytes;
+
+  late List<String> _vehiclesTypes;
+
 
   @override
   void initState() {
@@ -58,6 +63,8 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
         imageBytes = base64Decode(widget.vehicle!.photo!);
       }
     }
+
+    _vehiclesTypes = Provider.of<GlobalTypesViewModel>(context, listen: false).globalTypes['vehicles']!;
   }
 
   Future<void> _pickImage() async {
@@ -112,7 +119,7 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
                   // Selector de tipo de vehículo
                   SizedBox(
                     width: double.infinity,
-                    child: DropdownButtonFormField<VehicleType>(
+                    child: DropdownButtonFormField<String>(
                       value: selectedVehicleType,
                       decoration: InputDecoration(
                         floatingLabelStyle:
@@ -128,24 +135,27 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
                         ),
                         filled: true,
                       ),
-                      onChanged: (VehicleType? newValue) {
+                      onChanged: (newValue) {
                         setState(() {
                           selectedVehicleType = newValue;
                         });
                       },
-                      items: VehicleType.values.map((tipo) {
-                        return DropdownMenuItem<VehicleType>(
-                          value: tipo,
-                          child: Text(tipo.getName,
+                      items: [
+                        // Opción por defecto
+                        DropdownMenuItem<String>(
+                          value: null,
+                          child: Text("Tipo de Vehiculo",
                               style: Theme.of(context).textTheme.bodyMedium),
-                        );
-                      }).toList(),
-                      validator: (value) {
-                        if (value == null) {
-                          return '* Seleccione el tipo de vehículo.';
-                        }
-                        return null;
-                      },
+                        ),
+                        // Opciones de tipos cargadas dinámicamente
+                        ..._vehiclesTypes.map<DropdownMenuItem<String>>((String tipo) {
+                          return DropdownMenuItem<String>(
+                            value: tipo,
+                            child: Text(tipo,
+                                style: Theme.of(context).textTheme.bodyMedium),
+                          );
+                        }),
+                      ]
                     ),
                   ),
                   SizedBox(height: AppDimensions.screenHeight(context) * 0.03),

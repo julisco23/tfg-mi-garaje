@@ -2,6 +2,7 @@ class RouteNames {
   static const String login = '/login';
   static const String signup = '/signup';
   static const String home = '/home';
+  static const String firstCar = '/first-car';
   static const String garage = '/garage';
   static const String refuel = '/home/refuel';
   static const String repair = '/home/repair';

@@ -141,7 +141,7 @@ class _CarTabViewState extends State<CarTabView>
                   }
                 },
                 tooltip: "Añadir actividad",
-                child: const Icon(Icons.add_rounded, size: 50),
+                child: const Icon(Icons.add_rounded, size: 40),
               ),
             ],
           ),

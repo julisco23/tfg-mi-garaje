@@ -3,7 +3,7 @@ import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:mi_garaje/data/provider/global_types_view_model.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/constants/validator.dart';
-import 'package:mi_garaje/view/widgets/fluttertoast.dart';
+import 'package:mi_garaje/view/widgets/toastFlutter/fluttertoast.dart';
 import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
@@ -52,7 +52,7 @@ class _LoginViewState extends State<LoginView> {
                     children: [
                       IconButton(
                         icon: Icon(Icons.circle, color: Colors.transparent), // Icono invisible
-                        onPressed: () {},
+                        onPressed: null,
                         enableFeedback: false,
                       ),
                       Expanded(
@@ -135,6 +135,8 @@ class _LoginViewState extends State<LoginView> {
                           if (response != null) {
                             ToastHelper.show(context, response);
                           } else {
+                            Provider.of<GlobalTypesViewModel>(context, listen: false).initialize(loginViewModel.id);
+                            Provider.of<GarageProvider>(context, listen: false).initializeUser(loginViewModel.id);
                             Navigator.pushNamedAndRemoveUntil(context, RouteNames.home, (route) => false);
                           }
                         }
@@ -145,18 +147,7 @@ class _LoginViewState extends State<LoginView> {
 
                   // Olvidar contraseña
                   GestureDetector(
-                    onTap: () => showDialog(
-                      context: context,
-                      builder: (_) => AlertDialog(
-                        content: Text("Funcionalidad no implementada"),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.of(context).pop(),
-                            child: Text("Cerrar"),
-                          ),
-                        ],
-                      ),
-                    ),
+                    onTap: () => ToastHelper.show(context, "Funcionalidad no disponible."),
                     child: Text(
                       "¿Has olvidado la contraseña?",
                       style: TextStyle(color: Theme.of(context).primaryColor),

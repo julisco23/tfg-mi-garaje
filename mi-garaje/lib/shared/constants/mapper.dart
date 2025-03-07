@@ -6,7 +6,7 @@ class UserMapper {
   static UserMy fromUser(User user) {
     return UserMy(
       id: user.uid,
-      name: user.displayName == null ? "Cuenta anónima" : user.displayName!,
+      name: user.displayName,
       email: user.email,
       photoURL: user.photoURL,
       isAnonymous: user.isAnonymous,

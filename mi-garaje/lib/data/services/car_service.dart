@@ -30,6 +30,7 @@ class CarService {
   /// Obtener el primer vehículo 
   Future<Vehicle?> getFirstVehicle(String userId) async {
     try {
+      print("User ID: $userId");
       final querySnapshot = await _firestore
         .collection('users')
         .doc(userId)

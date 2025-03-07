@@ -38,7 +38,8 @@ class GarageProvider extends ChangeNotifier {
   Future<void> setSelectedVehicle(Vehicle? vehicle) async {
     if (vehicle == null) {
       _selectedVehicle = null;
-      notifyListeners();
+      //notifyListeners();
+      print("Vehículo seleccionado: $_selectedVehicle");
       return;
     }
     if (vehicle != selectedVehicle) {
@@ -61,7 +62,10 @@ class GarageProvider extends ChangeNotifier {
 
   // Cerrar sesión
   Future<void> cerrarSesion() async {
-    setSelectedVehicle(null);
+    _userId = null;
+    _initialized = false;
+    _selectedVehicle = null;
+    print("User: $_userId, Vehicle: $_selectedVehicle, Initialized: $_initialized");
   }
 
   // Métodos para manejo de vehículos
@@ -75,6 +79,11 @@ class GarageProvider extends ChangeNotifier {
     if (vehicle == selectedVehicle) {
       setSelectedVehicle(await carService.getFirstVehicle(_userId!));
     }
+    if (_selectedVehicle == null) {
+      _initialized = false;
+      notifyListeners();
+    }
+    print("Terminando delteVehicle");
   }
 
   Future<void> updateVehicle(Vehicle vehicle) async {

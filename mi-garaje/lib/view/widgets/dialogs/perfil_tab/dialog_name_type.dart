@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mi_garaje/shared/constants/validator.dart';
+import 'package:mi_garaje/view/widgets/text_form_field.dart';
 
 class EditTypeDialog extends StatelessWidget {
   final String initialName;
@@ -22,23 +24,42 @@ class EditTypeDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     TextEditingController controller = TextEditingController(text: initialName);
 
+    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
     return AlertDialog(
-      title: const Text("Editar nombre"),
-      content: TextField(
-        controller: controller,
-        decoration: const InputDecoration(hintText: "Nuevo nombre"),
+      title: const Text("Cambiar nombre del tipo"),
+      content: Form(
+        key: formKey,
+        child: MiTextFormField(
+          controller: controller, 
+          labelText: "Editar tipo", 
+          hintText: "Nuevo tipo",
+          validator: (value) {
+            return Validator.validateNameType(value);
+          },
+        ),
       ),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text("Cancelar"),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            onNameChanged(controller.text);
-            Navigator.pop(context);
-          },
-          child: const Text("Guardar"),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            TextButton(
+              child: Text("Cancelar",
+                  style: TextStyle(
+                      color: Theme.of(context).primaryColor)),
+              onPressed: () => Navigator.pop(context),
+            ),
+            TextButton(
+              child: Text("Aceptar",
+                  style: TextStyle(
+                      color: Theme.of(context).primaryColor)),
+              onPressed: ()  {
+                if (!formKey.currentState!.validate()) return;
+                  onNameChanged(controller.text);
+                  Navigator.pop(context);
+              },
+            ),
+          ],
         ),
       ],
     );

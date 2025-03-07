@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mi_garaje/data/models/vehicle.dart';
 import 'package:mi_garaje/view/widgets/cards/vehicle_card.dart';
 import 'package:mi_garaje/view/widgets/dialogs/garage_tab/dialog_add_vehicle.dart';
+import 'package:mi_garaje/view/widgets/toastFlutter/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
 
@@ -53,10 +54,6 @@ class _GarageViewState extends State<GarageView> {
 
           final vehicles = snapshot.data ?? [];
 
-          if (vehicles.isEmpty) {
-            return Center(child: Text('No tienes vehículos en el garaje.'));
-          }
-
           return ListView.builder(
             controller: _scrollController,
             padding: const EdgeInsets.only(top: 10, left: 7, right: 7, bottom: 10),
@@ -65,16 +62,15 @@ class _GarageViewState extends State<GarageView> {
               final Vehicle vehicle = vehicles[index];
 
               return Dismissible(
-                key: ValueKey(vehicle.getId()), // Utiliza un ID único para cada vehículo
+                key: ValueKey(vehicle.getId()),
                 direction: DismissDirection.endToStart,
                 onDismissed: (direction) async {
                   // Eliminar el coche
                   await garageProvider.deleteVehicle(vehicle);
-
-                  // Mostrar confirmación
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Coche eliminado')),
-                  );
+                  if (context.mounted) {
+                   ToastHelper.show(context, 'Vehículo eliminado');
+                    Navigator.pop(context);
+                  }
                 },
                 background: Container(
                   color: Colors.red,

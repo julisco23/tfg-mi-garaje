@@ -33,7 +33,7 @@ class _HomeViewState extends State<HomeView> {
 
             // Si no hay vehículos, pide añadir uno
             if (hasVehicles == null || !hasVehicles) {
-              return FirstCar(viewModel: garageViewModel);
+              return FirstCar();
             }
 
             // Si hay vehículos, muestra la pantalla principal

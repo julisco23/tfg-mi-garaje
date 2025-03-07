@@ -49,11 +49,11 @@ class UserTypesService {
   // Metodo para reactivar un type del usuario
   Future<void> removeType(String userId, String type, String addOrRemove) async {
     try {
-      if (addOrRemove == "addedRefuelTypes") {
+      if (addOrRemove.contains("added")) {
         await _firestore.collection("users").doc(userId).update({
           addOrRemove: FieldValue.arrayRemove([type]),
         });
-      } else if (addOrRemove == "removedRefuelTypes") {
+      } else if (addOrRemove.contains("removed")) {
         await _firestore.collection("users").doc(userId).update({
           addOrRemove: FieldValue.arrayUnion([type]),
         });
