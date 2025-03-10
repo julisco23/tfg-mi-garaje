@@ -1,10 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:mi_garaje/data/models/user.dart';
+import 'package:mi_garaje/data/models/user.dart' as App;
 
 class UserMapper {
   // Método para crear un objeto UserMy desde un objeto User de Firebase
-  static UserMy fromUser(User user) {
-    return UserMy(
+  static App.User fromUser(User user) {
+    return App.User(
       id: user.uid,
       name: user.displayName,
       email: user.email,

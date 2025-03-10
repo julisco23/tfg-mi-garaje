@@ -8,6 +8,7 @@ import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/view/widgets/elevated_button_utils.dart';
 import 'package:mi_garaje/view/widgets/text_form_field.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
+import 'package:mi_garaje/view/widgets/toastFlutter/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 class DialogAddVehicle extends StatefulWidget {
@@ -274,6 +275,9 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
                               if (widget.vehicle == null) {
                                 // Añadir vehículo
                                 widget.viewModel.addVehicle(vehicle);
+                                if (context.mounted) {
+                                  ToastHelper.show(context, 'Vehículo añadido');
+                                }
                               } else {
                                 // Actualizar vehículo
                                 vehicle.id = widget.vehicle!.id;

@@ -1,23 +1,21 @@
 import 'package:mi_garaje/data/models/activity.dart';
 
 class Refuel extends Activity {
-  String recordType;
+  String refuelType;
   double costLiter;
-  double? cost;
 
   Refuel({
     super.idActivity,
     required super.date,
-
-    required this.recordType,
+    required super.cost,
+    required this.refuelType,
     required this.costLiter,
-    this.cost,
   }) : super(activityType: ActivityType.refuel);
 
   double get getLiters => (cost! / costLiter);
 
   @override
-  String get getTpye => recordType;
+  String get getTpye => refuelType;
 
   @override
   double? get getCost => cost;
@@ -30,7 +28,7 @@ class Refuel extends Activity {
       'idActivity': idActivity,
       'date': date.toIso8601String(),
       'activityType': activityType.name,
-      'recordType': recordType,
+      'refuelType': refuelType,
       'costLiter': costLiter,
       'cost': cost,
     };
@@ -40,7 +38,7 @@ class Refuel extends Activity {
     return Refuel(
       idActivity: map['idActivity'],
       date: DateTime.parse(map['date']),
-      recordType: map['recordType'],
+      refuelType: map['refuelType'],
       costLiter: map['costLiter'].toDouble(),
       cost: map['cost'].toDouble(),
     );

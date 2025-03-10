@@ -10,8 +10,19 @@ class GarageProvider extends ChangeNotifier {
   Vehicle? _selectedVehicle;
   bool _initialized = false;
 
+  int _tabIndex = 0;
+
+  int get tabIndex => _tabIndex;
+
+  set tabIndex(int index) {
+    _tabIndex = index;
+  }
+
   // Getters
   Vehicle? get selectedVehicle => _selectedVehicle;
+
+  late List<Vehicle> _vehicles;
+  List<Vehicle> get vehicles => _vehicles;
 
   void initializeUser(String userId) {
     _userId = userId;
@@ -24,31 +35,44 @@ class GarageProvider extends ChangeNotifier {
     }
     _initialized = true;
 
-    setSelectedVehicle(await carService.getFirstVehicle(_userId!));
+    _vehicles = await carService.getVehiclesFuture(_userId!);
+    if (_vehicles.isNotEmpty) {
+      _selectedVehicle = _vehicles.first;
+      await loadActivities();
+    }
     
     return _selectedVehicle != null;
   }
 
-  // Stream para obtener vehículos
-  Stream<List<Vehicle>> get vehiclesStream {
-    return carService.getVehiclesStream(_userId!);
-  }
-
   // Cambiar de vehículo
   Future<void> setSelectedVehicle(Vehicle? vehicle) async {
-    if (vehicle == null) {
-      _selectedVehicle = null;
-      //notifyListeners();
-      print("Vehículo seleccionado: $_selectedVehicle");
+    _selectedVehicle = vehicle;
+    print("Vehículo seleccionado: $_selectedVehicle");
+
+    notifyListeners();
+    print("Notificando cambio de vehículo");
+
+    if (_selectedVehicle == null) {
       return;
+    } else {
+      await loadActivities();
     }
-    if (vehicle != selectedVehicle) {
-      _selectedVehicle = vehicle;
-    } 
-    
-    loadActivities();
   }
 
+  Future<void> refreshGarage() async {
+    List<Vehicle> newVehicles = await carService.getVehiclesFuture(_userId!);
+    _vehicles.clear();
+    _vehicles = newVehicles;
+
+    print("Vehículos cargados: ${_vehicles.toString()}");
+
+    await setSelectedVehicle( _vehicles.firstWhere(
+      (vehicle) => vehicle.id == _selectedVehicle?.id, 
+      orElse: () => _vehicles.first,
+    ));
+  }
+
+  // Cargar actividades
   Future<void> loadActivities() async {
     if (_selectedVehicle != null) {
       await carService.getActivities(_selectedVehicle!.id!, _userId!).then((activities) {
@@ -56,8 +80,9 @@ class GarageProvider extends ChangeNotifier {
         print("Actividades cargadas [${_selectedVehicle!.activities.length}]: ${_selectedVehicle!.activities}");
       });
     }
-    
+
     notifyListeners();
+    print("Notificando cambio de actividades");
   }
 
   // Cerrar sesión
@@ -71,24 +96,30 @@ class GarageProvider extends ChangeNotifier {
   // Métodos para manejo de vehículos
   Future<void> addVehicle(Vehicle vehicle) async {
     await carService.addVehicle(vehicle, _userId!);
+    _vehicles.add(vehicle);
     setSelectedVehicle(vehicle);
   }
 
   Future<void> deleteVehicle(Vehicle vehicle) async {
     await carService.deleteVehicle(vehicle.id!, _userId!);
+    _vehicles.remove(vehicle);
+
     if (vehicle == selectedVehicle) {
-      setSelectedVehicle(await carService.getFirstVehicle(_userId!));
+      setSelectedVehicle(_vehicles.isNotEmpty ? _vehicles.first : null);
     }
+
     if (_selectedVehicle == null) {
       _initialized = false;
-      notifyListeners();
     }
     print("Terminando delteVehicle");
   }
 
   Future<void> updateVehicle(Vehicle vehicle) async {
     await carService.updateVehicle(vehicle, _userId!);
+    _vehicles[_vehicles.indexWhere((element) => element.id == vehicle.id)] = vehicle;
+
     setSelectedVehicle(vehicle);
+    notifyListeners();
   }
 
   // Métodos para manejo de actividades
@@ -114,5 +145,9 @@ class GarageProvider extends ChangeNotifier {
       _selectedVehicle!.updateActivity(activity);
       notifyListeners();
     }
+  }
+
+  void notify() {
+    notifyListeners();
   }
 }

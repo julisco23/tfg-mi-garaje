@@ -36,8 +36,13 @@ class _RepairViewState extends State<RepairView> {
         actions: [
           IconButton(
             icon: const Icon(Icons.delete),
-            onPressed: () {
-              DeleteActivityDialog.show(context, repair);
+            onPressed: () async{
+              bool result = await DeleteActivityDialog.show(context, repair);
+
+              if (result && context.mounted) {
+                Provider.of<GarageProvider>(context, listen: false).deleteActivity(repair);
+                Navigator.pop(context);
+              }
             },
           ),
         ],

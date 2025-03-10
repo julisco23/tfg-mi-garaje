@@ -4,6 +4,7 @@ import 'package:mi_garaje/data/models/activity.dart';
 import 'package:mi_garaje/data/models/record.dart';
 import 'package:mi_garaje/data/models/repair.dart';
 import 'package:mi_garaje/data/models/refuel.dart';
+import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/shared/themes/theme_notifier.dart';
@@ -53,8 +54,10 @@ class ActivityCard extends StatelessWidget {
 
         Navigator.pushNamed(context, routeName, arguments: arguments);
       },
-      onLongPress: () {
-        DeleteActivityDialog.show(context, activity);
+      onLongPress: () async {
+        if (await DeleteActivityDialog.show(context, activity) && context.mounted) {
+          Provider.of<GarageProvider>(context, listen: false).deleteActivity(activity);
+        }
       },
       child: Card(
         child: Padding(
@@ -84,7 +87,7 @@ class ActivityCard extends StatelessWidget {
                     return Icon(
                       icon,
                       color: context.read<ThemeNotifier>().currentTheme.colorScheme.onPrimary,
-                      size: AppDimensions.screenWidth(context) * 0.06,
+                      size: 30,
                     );
                   },
                 ),

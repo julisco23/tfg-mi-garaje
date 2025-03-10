@@ -47,7 +47,7 @@ class _DialogAddDocumentState extends State<DialogAddDocument> {
   String? selectedTipoDocumento;
   Uint8List? imageBytes;
 
-  late List<String> _recordTypesFuture;
+  late Future<List<String>> _recordTypesFuture;
 
   @override
   void initState() {
@@ -63,7 +63,7 @@ class _DialogAddDocumentState extends State<DialogAddDocument> {
       }
     }
 
-    _recordTypesFuture = Provider.of<GlobalTypesViewModel>(context, listen: false).globalTypes["recordTypes"]!;
+    _recordTypesFuture = Provider.of<GlobalTypesViewModel>(context, listen: false).getTypes('recordTypes', 'addedRecordTypes', 'removedRecordTypes');
   }
 
   Future<void> _pickImage() async {
@@ -110,7 +110,10 @@ class _DialogAddDocumentState extends State<DialogAddDocument> {
                   // Selector de tipo de repostaje
                   SizedBox(
                     width: double.infinity,
-                    child: DropdownButtonFormField<String>(
+                    child: FutureBuilder<List<String>>(
+                      future: _recordTypesFuture,
+                      builder: (context, snapshot) {
+                        return DropdownButtonFormField<String>(
                       value: selectedTipoDocumento, // Puede ser null al inicio
                       decoration: InputDecoration(
                         floatingLabelStyle: TextStyle(
@@ -135,19 +138,28 @@ class _DialogAddDocumentState extends State<DialogAddDocument> {
                         // Opción por defecto
                         DropdownMenuItem<String>(
                           value: null,
-                          child: Text("Tipo de Repostaje",
+                          child: Text("Tipo de Documento",
                               style: Theme.of(context).textTheme.bodyMedium),
                         ),
-                        // Opciones de tipos cargadas dinámicamente
-                        ..._recordTypesFuture.map<DropdownMenuItem<String>>((String tipo) {
+                        if (snapshot.connectionState != ConnectionState.waiting)
+                              ...snapshot.data!.map<DropdownMenuItem<String>>((String tipo) {
                           return DropdownMenuItem<String>(
                             value: tipo,
                             child: Text(tipo,
                                 style: Theme.of(context).textTheme.bodyMedium),
                           );
                         }),
+                        if (snapshot.connectionState == ConnectionState.waiting &&
+                          selectedTipoDocumento != null)
+                          DropdownMenuItem<String>(
+                            value: selectedTipoDocumento,
+                            child: Text(selectedTipoDocumento!,
+                                style: Theme.of(context).textTheme.bodyMedium),
+                          ),
                       ],
                       validator: Validator.validateDropdown,
+                    );
+                      },
                     ),
                   ),
                   SizedBox(height: AppDimensions.screenHeight(context) * 0.03),
@@ -283,7 +295,7 @@ class _DialogAddDocumentState extends State<DialogAddDocument> {
                                 widget.onDocumentoUpdated!(record);
                               }
 
-                              Navigator.of(context).pop();
+                              Navigator.pop(context);
                             }
                           },
                         ),

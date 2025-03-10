@@ -13,65 +13,71 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   int _selectedIndex = AppConstants.tabHome;
+  bool _hasVehicles = false;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadVehicles();
+  }
+
+  Future<void> _loadVehicles() async {
+    final garageViewModel = context.read<GarageProvider>();
+    try {
+      final result = await garageViewModel.hasVehicles();
+      setState(() {
+        _hasVehicles = result;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<GarageProvider>(
-      builder: (context, garageViewModel, _) {
-        return FutureBuilder<bool>(
-          future: garageViewModel.hasVehicles(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return _loadingScreen(context);
-            }
+    if (_isLoading) {
+      return _loadingScreen(context);
+    }
 
-            if (snapshot.hasError) {
-              return Center(child: Text('Error al cargar vehículos'));
-            }
+    if (!_hasVehicles) {
+      return FirstCar();
+    }
 
-            final hasVehicles = snapshot.data;
-
-            // Si no hay vehículos, pide añadir uno
-            if (hasVehicles == null || !hasVehicles) {
-              return FirstCar();
-            }
-
-            // Si hay vehículos, muestra la pantalla principal
-            return Scaffold(
-              body: AppConstants.widgetTabs[_selectedIndex](garageViewModel),
-              bottomNavigationBar: BottomNavigationBar(
-                type: BottomNavigationBarType.fixed,
-                currentIndex: _selectedIndex,
-                onTap: (indexTab) {
-                  setState(() {
-                    _selectedIndex = indexTab;
-                  });
-                },
-                items: const [
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.work_history_outlined),
-                    label: 'HistoryTab',
-                    activeIcon: Icon(Icons.work_history_rounded),
-                    tooltip: "Historial",
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.home_outlined),
-                    label: 'HomeTab',
-                    activeIcon: Icon(Icons.home_rounded),
-                    tooltip: "Inicio",
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.person_outline),
-                    label: 'ProfileTab',
-                    activeIcon: Icon(Icons.person_rounded),
-                    tooltip: "Perfil",
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
+    return Scaffold(
+      body: AppConstants.widgetTabs[_selectedIndex](context.read<GarageProvider>()),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        currentIndex: _selectedIndex,
+        onTap: (indexTab) {
+          setState(() {
+            _selectedIndex = indexTab;
+          });
+        },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.work_history_outlined),
+            label: 'HistoryTab',
+            activeIcon: Icon(Icons.work_history_rounded),
+            tooltip: "Historial",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            label: 'HomeTab',
+            activeIcon: Icon(Icons.home_rounded),
+            tooltip: "Inicio",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline),
+            label: 'ProfileTab',
+            activeIcon: Icon(Icons.person_rounded),
+            tooltip: "Perfil",
+          ),
+        ],
+      ),
     );
   }
 

@@ -22,12 +22,14 @@ enum ActivityType {
 abstract class Activity {
   String? idActivity;
   DateTime date;
+  double? cost;
   final ActivityType activityType;
 
   Activity({
     this.idActivity,
     required this.date,
     required this.activityType,
+    this.cost,
   });
 
   void setId(String id) {
@@ -54,7 +56,12 @@ abstract class Activity {
           return Repair.fromMap(map);
       }
     } catch (e) {
-      throw Exception('************* Error al convertir Actividad: ${map['activityType']} - $e');
+      throw Exception('Error al convertir Actividad: ${map['activityType']} - $e');
     }
+  }
+
+    @override
+  String toString() {
+    return 'Activty{idActivity: $idActivity, activityType: ${activityType.getName}, cost: $cost}';
   }
 }

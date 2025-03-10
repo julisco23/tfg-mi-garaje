@@ -74,7 +74,7 @@ class _LoginViewState extends State<LoginView> {
                             if (response != null) {
                               ToastHelper.show(context, response);
                             } else {
-                              Provider.of<GlobalTypesViewModel>(context, listen: false).initialize(loginViewModel.id);
+                              Provider.of<GlobalTypesViewModel>(context, listen: false).initializeUser(loginViewModel.id);
                               Provider.of<GarageProvider>(context, listen: false).initializeUser(loginViewModel.id);
                               Navigator.pushNamedAndRemoveUntil(context, RouteNames.home, (route) => false);
                             }
@@ -135,7 +135,7 @@ class _LoginViewState extends State<LoginView> {
                           if (response != null) {
                             ToastHelper.show(context, response);
                           } else {
-                            Provider.of<GlobalTypesViewModel>(context, listen: false).initialize(loginViewModel.id);
+                            Provider.of<GlobalTypesViewModel>(context, listen: false).initializeUser(loginViewModel.id);
                             Provider.of<GarageProvider>(context, listen: false).initializeUser(loginViewModel.id);
                             Navigator.pushNamedAndRemoveUntil(context, RouteNames.home, (route) => false);
                           }

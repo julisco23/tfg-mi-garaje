@@ -4,7 +4,6 @@ class Repair extends Activity {
   String repairType;
   String? photo;
   String? details;
-  double? cost;
 
   Repair({
     super.idActivity,
@@ -12,7 +11,7 @@ class Repair extends Activity {
     this.photo,
     this.details,
     required this.repairType,
-    this.cost,
+    super.cost,
   }) : super(activityType: ActivityType.repair);
 
   @override
@@ -40,7 +39,7 @@ class Repair extends Activity {
       date: DateTime.parse(map['date']),
       photo: map['photo'],
       details: map['details'],
-      cost: map['cost'],
+      cost: map['cost'].toDouble(),
       repairType: map['repairType'],
     );
   }

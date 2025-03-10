@@ -21,6 +21,7 @@ class _TypesViewState extends State<TypesView> {
   late Stream<List<String>> typesFuture;
   late Stream<List<String>> removedtypesFuture;
   late List<String> getTypesGlobal;
+  bool isActivity = false;
 
 
   @override
@@ -51,10 +52,18 @@ class _TypesViewState extends State<TypesView> {
         remove = 'removedVehicles';
         typeName = 'vehicles';
         break;
+      case 'Activity':
+        add = 'addedActivities';
+        remove = 'removedActivities';
+        typeName = 'activities';
+        isActivity = true;
+        break;
     }
     typesFuture = Provider.of<GlobalTypesViewModel>(context).getTypesStream(typeName, add, remove);
+    print('typesFuture: $typesFuture');
     removedtypesFuture = Provider.of<GlobalTypesViewModel>(context).getRemovedTypesStream(add, remove);
     getTypesGlobal = Provider.of<GlobalTypesViewModel>(context).globalTypes[typeName]!;
+    print('getTypesGlobal: $getTypesGlobal');
   }
 
   @override
@@ -129,20 +138,23 @@ class _TypesViewState extends State<TypesView> {
                                       String typeItem = userTypes[index];
                                       return Dismissible(
                                         key: Key(typeItem),
-                                        direction: DismissDirection.endToStart,
+                                        direction: (isActivity && getTypesGlobal.contains(typeItem)) ? DismissDirection.none : DismissDirection.endToStart,
                                         background: Container(
                                           color: Colors.red,
                                           alignment: Alignment.centerRight,
                                           padding: EdgeInsets.only(right: 20.0),
                                           child: Icon(Icons.delete, color: Colors.white),
                                         ),
-                                        onDismissed: (direction) {
+                                        confirmDismiss: (direction) async {
                                           if (userTypes.length == 1) {
-                                            ToastHelper.show(context, 'Mínimo un tipo');
-                                          } else {
-                                            removeType(typeItem);
+                                            ToastHelper.show(context, 'No puedes eliminar el último ${widget.type}');
+                                            return false;
                                           }
-                                          removeType(typeItem);},
+                                          return true;
+                                        },
+                                        onDismissed: (direction) {
+                                          removeType(typeItem);
+                                        },
                                         child: TypesCard(
                                           initialTitle: typeItem,
                                           icon: Icons.edit,
@@ -166,42 +178,9 @@ class _TypesViewState extends State<TypesView> {
                       },
                     ),
 
-                    // StreamBuilder para tipos eliminados
-                    StreamBuilder<List<String>>(
-                      stream: removedtypesFuture,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return Center(child: CircularProgressIndicator());
-                        }
-
-                        List<String> removedTypes = snapshot.data!;
-
-                        // Verifica si la lista está vacía
-                        if (removedTypes.isEmpty) {
-                          return SizedBox();  // Retorna un SizedBox vacío si no hay tipos eliminados
-                        }
-
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Título 'Eliminados' solo si hay tipos eliminados
-                            _buildSectionTitle(context, 'Eliminados'),
-                            SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
-
-                            // Lista de tipos eliminados
-                            Column(
-                              children: removedTypes.map((removedItem) {
-                                return TypesCard(
-                                  initialTitle: removedItem,
-                                  icon: Icons.restore,
-                                  onPressed: () => typeViewModel.reactivateType(removedItem, typeName, add, remove),
-                                );
-                              }).toList(),
-                            ),
-                          ],
-                        );
-                      },
-                    )
+                    isActivity 
+                    ? _buildDeletedList(typeViewModel)
+                    : SizedBox(),
                   ],  
                 ),
               ),
@@ -209,6 +188,44 @@ class _TypesViewState extends State<TypesView> {
           ],
         ),
       ),
+    );
+  }
+
+  StreamBuilder<List<String>> _buildDeletedList(GlobalTypesViewModel typeViewModel) {
+    return StreamBuilder<List<String>>(
+      stream: removedtypesFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+
+        List<String> removedTypes = snapshot.data!;
+
+        // Verifica si la lista está vacía
+        if (removedTypes.isEmpty) {
+          return SizedBox();  // Retorna un SizedBox vacío si no hay tipos eliminados
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Título 'Eliminados' solo si hay tipos eliminados
+            _buildSectionTitle(context, 'Eliminados'),
+            SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
+
+            // Lista de tipos eliminados
+            Column(
+              children: removedTypes.map((removedItem) {
+                return TypesCard(
+                  initialTitle: removedItem,
+                  icon: Icons.restore,
+                  onPressed: () => typeViewModel.reactivateType(removedItem, typeName, add, remove),
+                );
+              }).toList(),
+            ),
+          ],
+        );
+      },
     );
   }
 

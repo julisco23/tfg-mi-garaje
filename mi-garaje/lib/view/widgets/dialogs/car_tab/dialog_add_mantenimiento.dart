@@ -47,7 +47,7 @@ class _DialogAddRepairState extends State<DialogAddRepair> {
   String? selectedTipoMantenimiento;
   Uint8List? imageBytes;
 
-  late List<String> _repairTypesFuture;
+  late Future<List<String>> _repairTypesFuture;
 
   @override
   void initState() {
@@ -63,7 +63,7 @@ class _DialogAddRepairState extends State<DialogAddRepair> {
       }
     }
 
-    _repairTypesFuture = Provider.of<GlobalTypesViewModel>(context, listen: false).globalTypes["repairTypes"]!;
+    _repairTypesFuture = Provider.of<GlobalTypesViewModel>(context, listen: false).getTypes('repairTypes', 'addedRepairTypes', 'removedRepairTypes');
   }
 
   Future<void> _pickImage() async {
@@ -109,7 +109,10 @@ class _DialogAddRepairState extends State<DialogAddRepair> {
                   // Selector de tipo de repostaje
                   SizedBox(
                     width: double.infinity,
-                    child: DropdownButtonFormField<String>(
+                    child: FutureBuilder<List<String>>(
+                      future: _repairTypesFuture,
+                      builder: (context, snapshot) {
+                        return DropdownButtonFormField<String>(
                       value: selectedTipoMantenimiento,
                       decoration: InputDecoration(
                         floatingLabelStyle: TextStyle(
@@ -134,19 +137,28 @@ class _DialogAddRepairState extends State<DialogAddRepair> {
                         // Opción por defecto
                         DropdownMenuItem<String>(
                           value: null,
-                          child: Text("Tipo de Repostaje",
+                          child: Text("Tipo de Mantenimiento",
                               style: Theme.of(context).textTheme.bodyMedium),
                         ),
-                        // Opciones de tipos cargadas dinámicamente
-                        ..._repairTypesFuture.map<DropdownMenuItem<String>>((String tipo) {
-                          return DropdownMenuItem<String>(
-                            value: tipo,
-                            child: Text(tipo,
+                        if (snapshot.connectionState != ConnectionState.waiting)
+                          ...snapshot.data!.map<DropdownMenuItem<String>>((String tipo) {
+                            return DropdownMenuItem<String>(
+                              value: tipo,
+                              child: Text(tipo,
+                                  style: Theme.of(context).textTheme.bodyMedium),
+                            );
+                          }),
+                        if (snapshot.connectionState == ConnectionState.waiting &&
+                          selectedTipoMantenimiento != null)
+                          DropdownMenuItem<String>(
+                            value: selectedTipoMantenimiento,
+                            child: Text(selectedTipoMantenimiento!,
                                 style: Theme.of(context).textTheme.bodyMedium),
-                          );
-                        }),
+                          ),
                       ],
                       validator: Validator.validateDropdown,
+                    );
+                      },
                     ),
                   ),
                   SizedBox(height: AppDimensions.screenHeight(context) * 0.03),
@@ -283,7 +295,7 @@ class _DialogAddRepairState extends State<DialogAddRepair> {
                                 widget.onRepairUpdated!(repair);
                               }
 
-                              Navigator.of(context).pop();
+                              Navigator.pop(context);
                             }
                           },
                         ),

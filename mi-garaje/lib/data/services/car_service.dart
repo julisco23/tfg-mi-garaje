@@ -27,6 +27,28 @@ class CarService {
     }
   }
 
+  // Obtener un future de vehículos
+  Future<List<Vehicle>> getVehiclesFuture(String userId) async {
+    try {
+      final snapshot = await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('vehicles')
+          .get();
+
+      debugPrint("Vehículos obtenidos: ${snapshot.docs.length}");
+
+      return snapshot.docs.map((doc) {
+        final data = doc.data();
+        return Vehicle.fromMap(data)..id = doc.id;
+      }).toList();
+    } catch (e) {
+      debugPrint("Error al obtener todos los vehículos: $e");
+      rethrow;
+    }
+  }
+
+
   /// Obtener el primer vehículo 
   Future<Vehicle?> getFirstVehicle(String userId) async {
     try {
@@ -41,7 +63,6 @@ class CarService {
       if (querySnapshot.docs.isNotEmpty) {
         final doc = querySnapshot.docs.first;
         final vehicle = Vehicle.fromMap(doc.data())..id = doc.id;
-        debugPrint("Primer vehículo obtenido: ${vehicle.toString()}");
         return vehicle;
       }
 

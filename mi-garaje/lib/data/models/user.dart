@@ -1,7 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mi_garaje/data/models/vehicle.dart';
 
-class UserMy {
+class User {
   String? id;
   String? name;
   String? email;
@@ -23,7 +22,7 @@ class UserMy {
     2: [],
   };
 
-  UserMy({
+  User({
     this.id,
     this.name,
     this.email,
@@ -58,8 +57,8 @@ class UserMy {
   }
 
   // Método para crear un objeto Usuario desde un Map (para leer desde Firestore)
-  factory UserMy.fromMap(Map<String, dynamic> map) {
-    return UserMy(
+  factory User.fromMap(Map<String, dynamic> map) {
+    return User(
       name: map['name'],
       email: map['email'],
       photoURL: map['photoURL'],
@@ -113,19 +112,5 @@ class UserMy {
   // Método para eliminar un tipo de actividad eliminado por el usuario
   void deleteTypeDeleted(int type, int id) {
     typesDeleted[type]!.remove(id);
-  }
-
-  // From user
-  factory UserMy.fromUser(User user) {
-    return UserMy(
-      id: user.uid,
-      name: user.displayName,
-      email: user.email,
-      photoURL: user.photoURL,
-      isAnonymous: user.isAnonymous,
-      isGoogle: user.providerData.any((element) => element.providerId == 'google.com'),
-      creationDate: user.metadata.creationTime!,
-      isPhotoChanged: false,
-    );
   }
 }

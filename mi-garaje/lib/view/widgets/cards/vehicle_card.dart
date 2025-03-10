@@ -36,15 +36,13 @@ class _VehicleCardState extends State<VehicleCard> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () async {
-        if (!profile) {
-          await widget.garageProvider.setSelectedVehicle(vehicle);
-          if (context.mounted){
-            Navigator.pop(context);
-          }
+      onTap: !profile ? () async {
+        await widget.garageProvider.setSelectedVehicle(vehicle);
+        if (context.mounted){
+          Navigator.pop(context);
         }
-      },
-      onLongPress: () {
+      } : null,
+      onLongPress:  !profile ? () {
         if (!profile) {
           DialogAddVehicle.show(
             context, 
@@ -57,7 +55,7 @@ class _VehicleCardState extends State<VehicleCard> {
             }
           );
         }
-      },
+      } : null,
       child: Card(
         elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -68,14 +66,7 @@ class _VehicleCardState extends State<VehicleCard> {
               vehicle.photo != null
                   ? CircleAvatar(
                       radius: 25,
-                      child: ClipOval(
-                        child: Image.memory(
-                          base64Decode(vehicle.photo!),
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          height: double.infinity,
-                        ),
-                      ),
+                      backgroundImage: MemoryImage(base64Decode(vehicle.photo!)),
                     )
                   : CircleAvatar(
                       backgroundColor: Theme.of(context).primaryColor,

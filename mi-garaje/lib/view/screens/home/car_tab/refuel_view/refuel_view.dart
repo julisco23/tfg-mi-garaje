@@ -42,8 +42,13 @@ class _RefuelViewState extends State<RefuelView> {
         actions: [
           IconButton(
             icon: const Icon(Icons.delete),
-            onPressed: () {
-              DeleteActivityDialog.show(context, refuel);
+            onPressed: () async {
+              bool result = await DeleteActivityDialog.show(context, refuel);
+
+              if (result && context.mounted) {
+                Provider.of<GarageProvider>(context, listen: false).deleteActivity(refuel);
+                Navigator.pop(context);
+              }
             },
             tooltip: 'Eliminar',
           ),

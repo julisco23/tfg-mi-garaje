@@ -15,35 +15,45 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
+  // Inicializar los Providers antes de runApp()
+  final themeNotifier = ThemeNotifier(AppThemes.lightTheme);
+  final authViewModel = AuthViewModel();
+  final garageProvider = GarageProvider();
+  final globalTypesViewModel = GlobalTypesViewModel();
+
+  // Cargar tipos globales
+  await globalTypesViewModel.loadGlobalTypes();
+
+  // Cargar autenticación
+  final bool isAuthenticated = await authViewModel.checkUser();
+
+  // Si el usuario está autenticado, cargar sus datos antes de iniciar la app
+  if (isAuthenticated) {
+    garageProvider.initializeUser(authViewModel.user!.id!);
+    globalTypesViewModel.initializeUser(authViewModel.user!.id!);
+  }
+
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => ThemeNotifier(AppThemes.lightTheme)),
-        ChangeNotifierProvider(create: (_) => AuthViewModel()),
-        ChangeNotifierProvider(create: (_) => GarageProvider()),
-        ChangeNotifierProvider(create: (_) => GlobalTypesViewModel()),
+        ChangeNotifierProvider(create: (_) => themeNotifier),
+        ChangeNotifierProvider(create: (_) => authViewModel),
+        ChangeNotifierProvider(create: (_) => garageProvider),
+        ChangeNotifierProvider(create: (_) => globalTypesViewModel),
       ],
-      child: const MyApp(),
+      child: MyApp(isAuthenticated: isAuthenticated),
     ),
   );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-  
+  final bool isAuthenticated;
+
+  const MyApp({super.key, required this.isAuthenticated});
 
   @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
-    final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
-    final garageProvider = Provider.of<GarageProvider>(context, listen: false);
-
-    final isAuthenticated = authViewModel.checkUser();
-
-    if (isAuthenticated) {
-      garageProvider.initializeUser(authViewModel.user!.id!);
-      Provider.of<GlobalTypesViewModel>(context, listen: false).initialize(authViewModel.user!.id!);
-    }
 
     return MaterialApp(
       theme: themeNotifier.currentTheme,
@@ -51,9 +61,7 @@ class MyApp extends StatelessWidget {
       onGenerateRoute: AppRoutes.onGenerateRoute,
       debugShowCheckedModeBanner: false,
       title: 'Mi Garage',
-      home: isAuthenticated
-        ? const HomeView() 
-        : const LoginView(),
+      home: isAuthenticated ? const HomeView() : const LoginView(),
     );
   }
 }

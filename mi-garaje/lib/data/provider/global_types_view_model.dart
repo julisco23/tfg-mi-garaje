@@ -1,16 +1,17 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:mi_garaje/data/services/user_types_service.dart';
 import 'package:mi_garaje/data/services/global_types_service.dart';
 
 class GlobalTypesViewModel extends ChangeNotifier {
-  GlobalTypesViewModel() : _globalTypes = {};
+  GlobalTypesViewModel();
   final UserTypesService _userTypeService = UserTypesService();
 
   final _refuelTypesController = StreamController<List<String>>.broadcast();
   final _removedrefuelTypesController = StreamController<List<String>>.broadcast();
-  final Map<String, List<String>> _globalTypes;
 
+  late final Map<String, List<String>> _globalTypes;
   Map<String, List<String>> get globalTypes => _globalTypes;
 
   late String _userId;
@@ -23,12 +24,28 @@ class GlobalTypesViewModel extends ChangeNotifier {
   }
 
   // Método para inicializar
-  Future<void> initialize(String userId) async {
+  void initializeUser(String userId) {
     _userId = userId;
-    _globalTypes["refuelTypes"] = await _userTypeService.getGlobalTypes("refuelTypes");
-    _globalTypes["recordTypes"] = await _userTypeService.getGlobalTypes("recordTypes");
-    _globalTypes["repairTypes"] = await _userTypeService.getGlobalTypes("repairTypes");
-    _globalTypes["vehicles"] = await _userTypeService.getGlobalTypes("vehicles");
+  }
+
+  // Método para obtener los tipos
+  Future<List<String>> getActivitiesType(String typeName, String add, String remove) async {
+    Map<String, List<String>> userRefuelData = await _userTypeService.getUserData(_userId, add, remove);
+
+    return userRefuelData['added'] ?? [];
+  }
+
+  // Método que retorna los tipos
+  Future<List<String>> getTypes(String typeName, String add, String remove) async {
+    Map<String, List<String>> userRefuelData = await _userTypeService.getUserData(_userId, add, remove);
+    List<String> addedRefuelTypes = userRefuelData['added'] ?? [];
+    List<String> removedRefuelTypes = userRefuelData['removed'] ?? [];
+
+    List<String> refuelTypes = _globalTypes[typeName]!;
+    refuelTypes = refuelTypes.where((type) => !removedRefuelTypes.contains(type)).toList();
+    refuelTypes.addAll(addedRefuelTypes);
+
+    return refuelTypes;
   }
 
   // Método que retorna el Stream de tipos
@@ -122,5 +139,20 @@ class GlobalTypesViewModel extends ChangeNotifier {
     } catch (e) {
       print("Error al editar el tipo: $e");
     }
+  }
+
+  // Cargar los tipos desde el servicio
+  Future<void> loadGlobalTypes() async {
+    await GlobalTypesService.loadTypes();
+    _globalTypes = {
+      "refuelTypes": GlobalTypesService.getTypes("tipos_repostaje"),
+      "repairTypes": GlobalTypesService.getTypes("tipos_mantenimiento"),
+      "recordTypes": GlobalTypesService.getTypes("tipos_documentos"),
+      "vehicles": GlobalTypesService.getTypes("tipos_vehiculo"),
+      "activities": GlobalTypesService.getTypes("tipos_actividad"),
+    };
+
+    print("Tipos globales cargados: $_globalTypes");
+    //notifyListeners();
   }
 }

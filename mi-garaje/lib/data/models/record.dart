@@ -4,14 +4,13 @@ class Record extends Activity {
   String recordType;
   String? photo;
   String? details;
-  double? cost;
 
   Record({
     super.idActivity,
     required super.date,
+    super.cost,
     this.photo,
     this.details,
-    this.cost,
     required this.recordType,
   }) : super(activityType: ActivityType.record);
 
@@ -40,13 +39,8 @@ class Record extends Activity {
       date: DateTime.parse(map['date']),
       photo: map['photo'],
       details: map['details'],
-      cost: map['cost'],
+      cost: map['cost'].toDouble(),
       recordType: map['recordType'],
     );
-  }
-
-  @override
-  String toString() {
-    return 'Record{idActivity: $idActivity, date: $date, photo: $photo, details: $details, cost: $cost, recordType: $recordType}';
   }
 }

@@ -43,7 +43,7 @@ class _DialogAddRefuelState extends State<DialogAddRefuel> {
   DateTime? selectedDate;
   String? selectedTipoRepostaje;
 
-  late List<String> _refuelTypesFuture;
+  late Future<List<String>> _refuelTypesFuture;
 
   @override
   void initState() {
@@ -52,11 +52,13 @@ class _DialogAddRefuelState extends State<DialogAddRefuel> {
     if (widget.repostaje != null) {
       costeController.text = widget.repostaje!.getCost.toString();
       selectedDate = widget.repostaje!.date;
-      selectedTipoRepostaje = widget.repostaje!.recordType;
+      selectedTipoRepostaje = widget.repostaje!.refuelType;
       precioLitroController.text = widget.repostaje!.costLiter.toString();
     }
 
-    _refuelTypesFuture = Provider.of<GlobalTypesViewModel>(context, listen: false).globalTypes["refuelTypes"]!;
+    // Cargamos los tipos de repostaje
+    _refuelTypesFuture = Provider.of<GlobalTypesViewModel>(context, listen: false)
+        .getTypes('refuelTypes', 'addedRefuelTypes', 'removedRefuelTypes');
   }
 
   @override
@@ -89,47 +91,58 @@ class _DialogAddRefuelState extends State<DialogAddRefuel> {
                   // Selector de tipo de repostaje
                   SizedBox(
                     width: double.infinity,
-                    child: DropdownButtonFormField<String>(
-                      value: selectedTipoRepostaje,
-                      decoration: InputDecoration(
-                        floatingLabelStyle: TextStyle(color: Theme.of(context).primaryColor),
-                        labelText: 'Tipo de Repostaje',
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide.none,
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide.none,
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        filled: true,
-                      ),
-                      onChanged: (newValue) {
-                        setState(() {
-                          selectedTipoRepostaje = newValue;
-                        });
-                      },
-                      items: [
-                        DropdownMenuItem<String>(
-                          value: null,
-                          child: Text("Tipo de Repostaje",
-                              style: Theme.of(context).textTheme.bodyMedium),
-                        ),
-                        ..._refuelTypesFuture.map<DropdownMenuItem<String>>((String tipo) {
-                          return DropdownMenuItem<String>(
-                            value: tipo,
-                            child: Text(
-                              tipo,
-                              style: Theme.of(context).textTheme.bodyMedium
+                    child: FutureBuilder<List<String>>(
+                      future: _refuelTypesFuture,
+                      builder: (context, snapshot) {
+                        return DropdownButtonFormField<String>(
+                          value: selectedTipoRepostaje,
+                          decoration: InputDecoration(
+                            floatingLabelStyle: TextStyle(color: Theme.of(context).primaryColor),
+                            labelText: 'Tipo de Repostaje',
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius: BorderRadius.circular(14),
                             ),
-                          );
-                        }),
-                      ],
-                      validator: Validator.validateDropdown,
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            filled: true,
+                          ),
+                          onChanged: (newValue) {
+                            setState(() {
+                              selectedTipoRepostaje = newValue;
+                            });
+                          },
+                          items: [
+                            DropdownMenuItem<String>(
+                              value: null,
+                              child: Text("Tipo de Repostaje",
+                                  style: Theme.of(context).textTheme.bodyMedium),
+                            ),
+                            if (snapshot.connectionState != ConnectionState.waiting)
+                              ...snapshot.data!.map<DropdownMenuItem<String>>(
+                                (String tipo) {
+                                  return DropdownMenuItem<String>(
+                                    value: tipo,
+                                    child: Text(tipo, style: Theme.of(context).textTheme.bodyMedium),
+                                  );
+                                },
+                              ),
+                            if (snapshot.connectionState == ConnectionState.waiting &&
+                                selectedTipoRepostaje != null)
+                              DropdownMenuItem<String>(
+                                value: selectedTipoRepostaje,
+                                child: Text(selectedTipoRepostaje!,
+                                    style: Theme.of(context).textTheme.bodyMedium),
+                              ),
+                          ],
+                          validator: Validator.validateDropdown,
+                        );
+                      },
                     ),
                   ),
                   SizedBox(height: AppDimensions.screenHeight(context) * 0.03),
-
 
                   // Fecha
                   DatePickerField(
@@ -168,32 +181,23 @@ class _DialogAddRefuelState extends State<DialogAddRefuel> {
                     children: [
                       Expanded(
                         child: TextButton(
-                          style: TextButton.styleFrom(
-                              padding: EdgeInsets.symmetric(vertical: 12)),
-                          child: Text('Cancelar',
-                              style: TextStyle(
-                                  color: Theme.of(context).primaryColor)),
+                          style: TextButton.styleFrom(padding: EdgeInsets.symmetric(vertical: 12)),
+                          child: Text('Cancelar', style: TextStyle(color: Theme.of(context).primaryColor)),
                           onPressed: () => Navigator.of(context).pop(),
                         ),
                       ),
-                      SizedBox(
-                          width: AppDimensions.screenWidth(context) * 0.05),
+                      SizedBox(width: AppDimensions.screenWidth(context) * 0.05),
                       Expanded(
                         child: TextButton(
-                          style: TextButton.styleFrom(
-                              padding: EdgeInsets.symmetric(vertical: 12)),
-                          child: Text('Añadir',
-                              style: TextStyle(
-                                  color: Theme.of(context).primaryColor)),
+                          style: TextButton.styleFrom(padding: EdgeInsets.symmetric(vertical: 12)),
+                          child: Text('Añadir', style: TextStyle(color: Theme.of(context).primaryColor)),
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
-                              final double coste =
-                                  double.parse(costeController.text);
-                              final double precioLitro =
-                                  double.parse(precioLitroController.text);
+                              final double coste = double.parse(costeController.text);
+                              final double precioLitro = double.parse(precioLitroController.text);
 
                               final Refuel activity = Refuel(
-                                recordType: selectedTipoRepostaje!,
+                                refuelType: selectedTipoRepostaje!,
                                 date: selectedDate!,
                                 cost: coste,
                                 costLiter: precioLitro,
@@ -204,13 +208,12 @@ class _DialogAddRefuelState extends State<DialogAddRefuel> {
                                 widget.viewModel.addActivity(activity);
                               } else {
                                 // Actualizar documento existente
-                                activity.idActivity =
-                                    widget.repostaje!.idActivity;
+                                activity.idActivity = widget.repostaje!.idActivity;
                                 widget.viewModel.updateActivity(activity);
                                 widget.onRefuelUpdated!(activity);
                               }
 
-                              Navigator.of(context).pop();
+                              Navigator.pop(context);
                             }
                           },
                         ),

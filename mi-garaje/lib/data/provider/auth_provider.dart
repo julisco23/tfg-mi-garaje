@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mi_garaje/data/models/user.dart';
 import 'package:mi_garaje/data/services/auth_service.dart';
@@ -6,33 +5,27 @@ import 'package:mi_garaje/data/services/auth_service.dart';
 class AuthViewModel extends ChangeNotifier {
   final AuthService _authService = AuthService();
 
-  UserMy? _user;
+  User? _user;
 
-  UserMy? get user => _user;
+  User? get user => _user;
 
   String get id => user!.id!;
-
-  bool get isAnonymous => user == null ? false : user!.isAnonymous;
+  
   bool get isGoogle => user == null ? false : user!.isGoogle;
   bool get isPhotoURL => user == null ? false : user!.photoURL != null;
-  bool get isPhotoChanged => user == null ? false : user!.isPhotoChanged;
 
-  void setUser(UserMy? user) {
+  void setUser(User? user) {
     _user = user;
     notifyListeners();
   }
 
-  Future<void> inicialiteUser() async {
-    setUser(await _authService.currentUser);
-  }
-
   // Método de verificación de usuario
-  bool checkUser() {
-    User? user = _authService.getUser;
-    
-    _user = user == null ? null : UserMy.fromUser(user);
+  Future<bool> checkUser() async{
+    _user = await _authService.currentUser;
 
-    return this.user != null;
+    print('CheckUser: ${_user != null}');
+
+    return _user != null;
   }
   
   // Método de inicio de sesión

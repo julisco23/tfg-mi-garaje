@@ -25,13 +25,13 @@ class _CarTabViewState extends State<CarTabView>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    final tabIndex = Provider.of<GarageProvider>(context, listen: false).tabIndex;
+    _tabController = TabController(length: 3, initialIndex: tabIndex, vsync: this);
   }
 
 
   @override
   Widget build(BuildContext context) {
-    // Usamos un Consumer para escuchar los cambios en selectedVehicle
     return Consumer<GarageProvider>(
       builder: (context, garageProvider, _) {
         final vehicle = garageProvider.selectedVehicle;
@@ -55,19 +55,11 @@ class _CarTabViewState extends State<CarTabView>
               children: [
                 if (vehicle.photo != null) ...[
                   CircleAvatar(
-                    backgroundColor: Colors.blueGrey,
-                    radius: 20,
-                    child: ClipOval(
-                      child: Image.memory(
-                        base64Decode(vehicle.photo!),
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        height: double.infinity,
-                      ),
+                      radius: 20,
+                      backgroundImage: MemoryImage(base64Decode(vehicle.photo!)),
                     ),
-                  ),
-                  SizedBox(width: AppDimensions.screenHeight(context) * 0.01),
                 ],
+                SizedBox(width: 10),
                 Text(vehicle.getNameTittle()),
               ],
             ),
@@ -82,6 +74,9 @@ class _CarTabViewState extends State<CarTabView>
             ],
             bottom: TabBar(
               controller: _tabController,
+              onTap: (index) {
+                  garageProvider.tabIndex = index;
+                },
               tabs: [
                 Tab(
                   child: Padding(

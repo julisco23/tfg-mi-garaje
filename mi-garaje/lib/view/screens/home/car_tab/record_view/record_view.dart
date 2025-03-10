@@ -36,8 +36,13 @@ class _RecordViewState extends State<RecordView> {
         actions: [
           IconButton(
             icon: const Icon(Icons.delete),
-            onPressed: () {
-              DeleteActivityDialog.show(context, record);
+            onPressed: () async{
+              bool result = await DeleteActivityDialog.show(context, record);
+
+              if (result && context.mounted) {
+                Provider.of<GarageProvider>(context, listen: false).deleteActivity(record);
+                Navigator.pop(context);
+              }
             },
           ),
         ],

@@ -19,7 +19,7 @@ class SettingsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authViewModel = Provider.of<AuthViewModel>(context);
-    final UserMy user = authViewModel.user!;
+    final User user = authViewModel.user!;
 
     return Scaffold(
       appBar: AppBar(
@@ -192,6 +192,13 @@ class SettingsView extends StatelessWidget {
               title: "Tipos de vehículos", 
               onTap: () {
                 Navigator.pushNamed(context, RouteNames.types, arguments: {"type": "Vehicle"});
+              }
+            ),
+            SettingCard(
+              icon: Icons.add_rounded, 
+              title: "Nueva actividad", 
+              onTap: () {
+                Navigator.pushNamed(context, RouteNames.types, arguments: {"type": "Activity"});
               }
             ),
             SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
