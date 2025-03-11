@@ -103,23 +103,16 @@ class _CarTabViewState extends State<CarTabView>
             controller: _tabController,
             children: [
               _buildTabContent(vehicle.getActivities(ActivityType.refuel),
-                  vehicle.getNameTittle()),
+                  vehicle.getNameTittle(), garageProvider),
               _buildTabContent(vehicle.getActivities(ActivityType.repair),
-                  vehicle.getNameTittle()),
+                  vehicle.getNameTittle(), garageProvider),
               _buildTabContent(vehicle.getActivities(ActivityType.record),
-                  vehicle.getNameTittle()),
+                  vehicle.getNameTittle(), garageProvider),
             ],
           ),
           floatingActionButton: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              FloatingActionButton(
-                heroTag: "reload",
-                onPressed: garageProvider.loadActivities, 
-                tooltip: "Recargar", 
-                child: const Icon(Icons.refresh_rounded, size: 40)
-              ),
-              SizedBox(width: AppDimensions.screenWidth(context) * 0.01),
               FloatingActionButton(
                 heroTag: "add",
                 onPressed: () {
@@ -146,8 +139,12 @@ class _CarTabViewState extends State<CarTabView>
   }
 
   // Conenido de los tabs
-  Widget _buildTabContent(List<Activity> activities, String carName) {
-    return Column(
+  Widget _buildTabContent(List<Activity> activities, String carName, GarageProvider garageProvider) {
+    return RefreshIndicator(
+          onRefresh: () async {
+            await garageProvider.refreshGarage();
+          },
+          child: Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         SizedBox(height: AppDimensions.screenHeight(context) * 0.007),
@@ -168,6 +165,7 @@ class _CarTabViewState extends State<CarTabView>
           ),
         ),
       ],
+          ),
     );
   }
 }

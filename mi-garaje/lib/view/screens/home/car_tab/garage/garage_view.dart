@@ -15,46 +15,34 @@ class GarageView extends StatefulWidget {
 }
 
 class _GarageViewState extends State<GarageView> {
-  final ScrollController _scrollController = ScrollController();
-
   @override
   Widget build(BuildContext context) {
-    final GarageProvider garageProvider = Provider.of<GarageProvider>(context);
+    final GarageProvider garageProvider =
+        Provider.of<GarageProvider>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh_rounded),
-            onPressed: () async {
-              await garageProvider.refreshGarage();
-            },
-          ),
-          IconButton(
             icon: const Icon(Icons.add_rounded),
             onPressed: () async {
               DialogAddVehicle.show(context, garageProvider);
-
-              // Desplazarse al final de la lista después de agregar el coche
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (_scrollController.hasClients) {
-                  _scrollController
-                      .jumpTo(_scrollController.position.maxScrollExtent);
-                }
-              });
             },
           ),
         ],
         scrolledUnderElevation: 0,
         title: const Text('Garaje'),
       ),
-      body: Consumer<GarageProvider>(
-        builder: (context, garageProvider, _) {
-          print("🔄 Rebuilding Consumer..."); // Verifica si se reconstruye
-          final vehicles = garageProvider.vehicles;
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await garageProvider.refreshGarage();
+        },
+        child: Consumer<GarageProvider>(
+          builder: (context, garageProvider, child) {
+            final vehicles = garageProvider.vehicles;
 
-          return ListView.builder(
-              controller: _scrollController,
-              padding: const EdgeInsets.only(top: 10, left: 7, right: 7, bottom: 10),
+            return ListView.builder(
+              padding:
+                  const EdgeInsets.only(top: 10, left: 7, right: 7, bottom: 10),
               itemCount: vehicles.length,
               itemBuilder: (context, index) {
                 final Vehicle vehicle = vehicles[index];
@@ -64,7 +52,8 @@ class _GarageViewState extends State<GarageView> {
                   direction: DismissDirection.endToStart,
                   confirmDismiss: (direction) async {
                     if (vehicles.length == 1) {
-                      ToastHelper.show(context, 'No puedes eliminar el último vehículo');
+                      ToastHelper.show(
+                          context, 'No puedes eliminar el último vehículo');
                       return false;
                     }
                     return await ConfirmDialog.show(
@@ -79,7 +68,6 @@ class _GarageViewState extends State<GarageView> {
                     if (context.mounted) {
                       ToastHelper.show(context, 'Vehículo eliminado');
                     }
-                    
                   },
                   background: Container(
                     color: Colors.red,
@@ -90,16 +78,20 @@ class _GarageViewState extends State<GarageView> {
                       child: Center(child: Icon(Icons.delete)),
                     ),
                   ),
-                  child: VehicleCard(
-                    vehicle: vehicle,
-                    garageProvider: garageProvider,
+                  child: Column(
+                    children: [
+                      VehicleCard(
+                        vehicle: vehicle,
+                        garageProvider: garageProvider,
+                      ),
+                    ],
                   ),
                 );
               },
             );
-        },
+          },
+        ),
       ),
-
     );
   }
 }

@@ -269,9 +269,6 @@ class _DialogAddRepairState extends State<DialogAddRepair> {
                                   color: Theme.of(context).primaryColor)),
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
-                              final double? coste =
-                                  double.tryParse(costeController.text);
-
                               String? base64Image = imageBytes != null
                                   ? base64Encode(imageBytes!)
                                   : null;
@@ -280,7 +277,7 @@ class _DialogAddRepairState extends State<DialogAddRepair> {
                                 date: selectedDate!,
                                 repairType: selectedTipoMantenimiento!,
                                 photo: base64Image,
-                                cost: coste,
+                                cost: num.parse(costeController.text),
                                 details: detailsController.text,
                               );
 

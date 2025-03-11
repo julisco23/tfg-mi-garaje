@@ -7,6 +7,7 @@ class AppThemes {
   static final azul = const Color.fromARGB(255, 33, 149, 243);
   static final azulClaro = const Color.fromARGB(255, 119, 190, 248);
   static final gris = Colors.grey[600];
+
   static final verde = Colors.green[700];
 
   // Tema Claro
@@ -19,6 +20,18 @@ class AppThemes {
       backgroundColor: azul,
       iconTheme: IconThemeData(color: blanco, size: 40),
       titleTextStyle: TextStyle(color: blanco, fontSize: 20),
+    ),
+    dividerColor: blancoTransparente,
+    colorScheme: ColorScheme(
+    brightness: Brightness.light, // Define si el tema es claro o oscuro
+    primary: azul,         // El color primario
+    onPrimary: blanco,      // El color de los elementos sobre el color primario
+    secondary: azulClaro,     // El color secundario
+    onSecondary: blanco,    // El color de los elementos sobre el color secundario
+    error: Colors.red,            // El color para mensajes de error
+    onError: Colors.grey,        // El color de los elementos sobre el color de error
+    surface: Colors.grey[300]!,   // El color de la superficie (generalmente para tarjetas, etc.)
+    onSurface: gris!,      // El color de los elementos sobre la superficie
     ),
     textTheme: TextTheme(
       titleLarge: TextStyle(color: azul, fontSize: 28), // Titulo login/register/titulos dialog
@@ -39,6 +52,9 @@ class AppThemes {
       filled: true,
       border: OutlineInputBorder(
           borderSide: BorderSide.none, borderRadius: BorderRadius.circular(14)),
+      errorStyle: TextStyle(color: Colors.red),
+      hintStyle: TextStyle(color: Colors.grey),
+      counterStyle: TextStyle(color: Colors.grey),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
@@ -80,6 +96,7 @@ class AppThemes {
         color: const Color.fromARGB(50, 255, 255, 255),
         borderRadius: BorderRadius.circular(30),
       ),
+      dividerColor: blancoTransparente,
     ),
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: azul,
@@ -132,7 +149,7 @@ class AppThemes {
       }),
       todayBorder: BorderSide(color: azul, width: 2),
     ),
-
+    
 
 
   );

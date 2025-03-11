@@ -193,14 +193,11 @@ class _DialogAddRefuelState extends State<DialogAddRefuel> {
                           child: Text('Añadir', style: TextStyle(color: Theme.of(context).primaryColor)),
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
-                              final double coste = double.parse(costeController.text);
-                              final double precioLitro = double.parse(precioLitroController.text);
-
                               final Refuel activity = Refuel(
                                 refuelType: selectedTipoRepostaje!,
                                 date: selectedDate!,
-                                cost: coste,
-                                costLiter: precioLitro,
+                                cost: num.parse(costeController.text),
+                                costLiter: num.parse(precioLitroController.text),
                               );
 
                               if (widget.repostaje == null) {

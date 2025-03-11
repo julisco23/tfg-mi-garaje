@@ -21,35 +21,43 @@ class _PerfilState extends State<Perfil> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-            appBar: AppBar(
-              title: const Text("Mi Perfil"),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.settings),
-                  onPressed: () {
-                    Navigator.pushNamed(context, RouteNames.settings,
-                        arguments: {"garageViewModel": widget.garageViewModel});
-                  },
-                ),
-              ],
-            ),
-            body: SafeArea(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      _buildProfileHeader(context),
-                      SizedBox(
-                          height: AppDimensions.screenHeight(context) * 0.05),
-                      _buildVehicleList(context),
-                    ],
-                  ),
-                ),
+      appBar: AppBar(
+        title: const Text("Mi Perfil"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.pushNamed(context, RouteNames.settings,
+                  arguments: {"garageViewModel": widget.garageViewModel});
+            },
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: RefreshIndicator(
+          onRefresh: _refreshData,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  _buildProfileHeader(context),
+                  SizedBox(
+                      height: AppDimensions.screenHeight(context) * 0.05),
+                  _buildVehicleList(context),
+                ],
               ),
             ),
-          );
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _refreshData() async {
+    await widget.garageViewModel.refreshGarage();
   }
 
   Widget _buildProfileHeader(BuildContext context) {
@@ -69,11 +77,10 @@ class _PerfilState extends State<Perfil> {
             child: user.isPhoto
                 ? null
                 : Icon(
-                  Icons.person,
-                  size: 50,
-                  color: Theme.of(context).colorScheme.onPrimary,
-                )
-                ),
+                    Icons.person,
+                    size: 50,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  )),
         SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
         Text(
           user.displayName,
@@ -118,5 +125,4 @@ class _PerfilState extends State<Perfil> {
       },
     );
   }
-
 }

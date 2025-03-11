@@ -18,7 +18,7 @@ class Repair extends Activity {
   String get getTpye => repairType;
 
   @override
-  double? get getCost => cost;
+  num? get getCost => cost;
 
   @override
   Map<String, dynamic> toMap() {
@@ -39,7 +39,7 @@ class Repair extends Activity {
       date: DateTime.parse(map['date']),
       photo: map['photo'],
       details: map['details'],
-      cost: map['cost'].toDouble(),
+      cost: map['cost'],
       repairType: map['repairType'],
     );
   }

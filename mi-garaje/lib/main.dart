@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:mi_garaje/data/provider/global_types_view_model.dart';
 import 'package:provider/provider.dart';
@@ -60,6 +62,9 @@ class MyApp extends StatelessWidget {
       routes: AppRoutes.routes,
       onGenerateRoute: AppRoutes.onGenerateRoute,
       debugShowCheckedModeBanner: false,
+      scrollBehavior: const MaterialScrollBehavior().copyWith(
+        dragDevices: PointerDeviceKind.values.toSet(),
+      ),
       title: 'Mi Garage',
       home: isAuthenticated ? const HomeView() : const LoginView(),
     );

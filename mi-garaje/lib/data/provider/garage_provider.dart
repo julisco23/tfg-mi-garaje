@@ -49,9 +49,6 @@ class GarageProvider extends ChangeNotifier {
     _selectedVehicle = vehicle;
     print("Vehículo seleccionado: $_selectedVehicle");
 
-    notifyListeners();
-    print("Notificando cambio de vehículo");
-
     if (_selectedVehicle == null) {
       return;
     } else {
@@ -60,14 +57,12 @@ class GarageProvider extends ChangeNotifier {
   }
 
   Future<void> refreshGarage() async {
-    List<Vehicle> newVehicles = await carService.getVehiclesFuture(_userId!);
-    _vehicles.clear();
-    _vehicles = newVehicles;
+    _vehicles = await carService.getVehiclesFuture(_userId!);
 
     print("Vehículos cargados: ${_vehicles.toString()}");
 
     await setSelectedVehicle( _vehicles.firstWhere(
-      (vehicle) => vehicle.id == _selectedVehicle?.id, 
+      (vehicle) => vehicle.id == _selectedVehicle!.id, 
       orElse: () => _vehicles.first,
     ));
   }

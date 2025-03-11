@@ -281,7 +281,7 @@ class _DialogAddDocumentState extends State<DialogAddDocument> {
                                 recordType: selectedTipoDocumento!,
                                 photo: base64Image,
                                 details: detailsController.text,
-                                cost: double.tryParse(costeController.text),
+                                cost: num.tryParse(costeController.text),
                               );
 
                               if (widget.documento == null) {

@@ -108,11 +108,17 @@ class Vehicle {
     return 'Vehicle{id: $id, brand: $brand, vehicleType: $vehicleType}';
   }
 
-  @override
+   @override
   bool operator ==(Object other) {
-    return other is Vehicle && other.id == id;
+    if (identical(this, other)) return true;
+    return other is Vehicle &&
+        other.id == id &&
+        other.brand == brand &&
+        other.model == model;
   }
 
   @override
-  int get hashCode => id.hashCode;
+  int get hashCode {
+    return id.hashCode ^ brand.hashCode ^ (model?.hashCode ?? 0);
+  }
 }

@@ -2,7 +2,7 @@ import 'package:mi_garaje/data/models/activity.dart';
 
 class Refuel extends Activity {
   String refuelType;
-  double costLiter;
+  num costLiter;
 
   Refuel({
     super.idActivity,
@@ -12,15 +12,15 @@ class Refuel extends Activity {
     required this.costLiter,
   }) : super(activityType: ActivityType.refuel);
 
-  double get getLiters => (cost! / costLiter);
+  num get getLiters => (cost! / costLiter);
 
   @override
   String get getTpye => refuelType;
 
   @override
-  double? get getCost => cost;
+  num? get getCost => cost;
 
-  double get getPrecioLitros => costLiter;
+  num get getPrecioLitros => costLiter;
 
   @override
   Map<String, dynamic> toMap() {
@@ -39,8 +39,8 @@ class Refuel extends Activity {
       idActivity: map['idActivity'],
       date: DateTime.parse(map['date']),
       refuelType: map['refuelType'],
-      costLiter: map['costLiter'].toDouble(),
-      cost: map['cost'].toDouble(),
+      costLiter: map['costLiter'],
+      cost: map['cost'],
     );
   }
 }

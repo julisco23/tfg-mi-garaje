@@ -22,7 +22,7 @@ enum ActivityType {
 abstract class Activity {
   String? idActivity;
   DateTime date;
-  double? cost;
+  num? cost;
   final ActivityType activityType;
 
   Activity({
@@ -37,7 +37,7 @@ abstract class Activity {
   }
 
   String get getTpye;
-  double? get getCost;
+  num? get getCost;
 
   bool get isCost => getCost != null;
   

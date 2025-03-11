@@ -23,38 +23,26 @@ class VehicleCard extends StatefulWidget {
 }
 
 class _VehicleCardState extends State<VehicleCard> {
-  late Vehicle vehicle;
-  late bool profile;
-
-  @override
-  void initState() {
-    super.initState();
-    vehicle = widget.vehicle;
-    profile = widget.profile;
-  }
-
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: !profile ? () async {
-        await widget.garageProvider.setSelectedVehicle(vehicle);
+      onTap: !widget.profile ? () async {
+        await widget.garageProvider.setSelectedVehicle(widget.vehicle);
         if (context.mounted){
           Navigator.pop(context);
         }
       } : null,
-      onLongPress:  !profile ? () {
-        if (!profile) {
-          DialogAddVehicle.show(
-            context, 
-            widget.garageProvider,
-            vehicle: vehicle, 
-            onVehicleUpdated: (updatedVehicle) {
-              setState(() {
-                vehicle = updatedVehicle;
-              });
-            }
-          );
-        }
+      onLongPress: !widget.profile ? () {
+        DialogAddVehicle.show(
+          context, 
+          widget.garageProvider,
+          vehicle: widget.vehicle, 
+          onVehicleUpdated: (updatedVehicle) {
+            setState(() {
+              
+            });
+          }
+        );
       } : null,
       child: Card(
         elevation: 3,
@@ -63,16 +51,16 @@ class _VehicleCardState extends State<VehicleCard> {
           padding: const EdgeInsets.all(10),
           child: Row(
             children: [
-              vehicle.photo != null
+              widget.vehicle.photo != null
                   ? CircleAvatar(
                       radius: 25,
-                      backgroundImage: MemoryImage(base64Decode(vehicle.photo!)),
+                      backgroundImage: MemoryImage(base64Decode(widget.vehicle.photo!)),
                     )
                   : CircleAvatar(
                       backgroundColor: Theme.of(context).primaryColor,
                       radius: 25,
                       child: Text(
-                        vehicle.getInitial(),
+                        widget.vehicle.getInitial(),
                         style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
                       ),
                     ),
@@ -81,30 +69,30 @@ class _VehicleCardState extends State<VehicleCard> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (vehicle.name != null && vehicle.name!.isNotEmpty) ...[
+                    if (widget.vehicle.name != null && widget.vehicle.name!.isNotEmpty) ...[
                       Text(
-                        vehicle.name!,
+                        widget.vehicle.name!,
                         style: const TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold),
                       ),
-                      if (vehicle.model != null && vehicle.model!.isNotEmpty)
+                      if (widget.vehicle.model != null && widget.vehicle.model!.isNotEmpty)
                         Text(
-                          "${vehicle.brand} - ${vehicle.model}",
+                          "${widget.vehicle.brand} - ${widget.vehicle.model}",
                           style: TextStyle(color: Colors.grey[700]),
                         )
                       else
                         Text(
-                          vehicle.brand,
+                          widget.vehicle.brand,
                           style: TextStyle(color: Colors.grey[700]),
                         ),
                     ] else ...[
                       Text(
-                        vehicle.brand,
+                        widget.vehicle.brand,
                         style: const TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        vehicle.model ?? '',
+                        widget.vehicle.model ?? '',
                         style: TextStyle(color: Colors.grey[700]),
                       ),
                     ]
@@ -112,7 +100,7 @@ class _VehicleCardState extends State<VehicleCard> {
                 ),
               ),
               Text(
-                vehicle.getVehicleType(),
+                widget.vehicle.getVehicleType(),
                 style: TextStyle(color: Theme.of(context).primaryColor),
               ),
             ],
