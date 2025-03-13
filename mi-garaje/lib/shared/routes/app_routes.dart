@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mi_garaje/view/screens/auth/login/login_view.dart';
 import 'package:mi_garaje/view/screens/auth/signup/signup_view.dart';
+import 'package:mi_garaje/view/screens/home/car_tab/activity_view/custom_view.dart';
 import 'package:mi_garaje/view/screens/home/car_tab/garage/garage_view.dart';
-import 'package:mi_garaje/view/screens/home/car_tab/record_view/record_view.dart';
-import 'package:mi_garaje/view/screens/home/car_tab/refuel_view/refuel_view.dart';
-import 'package:mi_garaje/view/screens/home/car_tab/repair_view/repair_view.dart';
+import 'package:mi_garaje/view/screens/home/car_tab/activity_view/record_view.dart';
+import 'package:mi_garaje/view/screens/home/car_tab/activity_view/refuel_view.dart';
+import 'package:mi_garaje/view/screens/home/car_tab/activity_view/repair_view.dart';
 import 'package:mi_garaje/view/screens/home/first_car_view.dart';
 import 'package:mi_garaje/view/screens/home/home_view.dart';
 import 'package:mi_garaje/view/screens/home/profile_tab/settings_views/types_view.dart';
@@ -41,6 +42,12 @@ class AppRoutes {
       case RouteNames.record:
         return _slideTransition(RecordView(
           record: args['record'],
+          carName: args['carName'],
+        ));
+
+      case RouteNames.custom:
+        return _slideTransition(CustomView(
+          custom: args['custom'],
           carName: args['carName'],
         ));
 

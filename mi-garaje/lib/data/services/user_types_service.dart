@@ -73,4 +73,35 @@ class UserTypesService {
       print(e);
     }
   }
+
+  // TABS
+  // Método para guardar un nuevo activityType (tab) en Firestore
+  Future<void> saveTab(String userId, String activityType) async {
+    final userRef = _firestore.collection('users').doc(userId);
+
+    await userRef.update({
+      'tabs': FieldValue.arrayUnion([activityType]), // Añadir el nuevo tab (activityType)
+    });
+  }
+
+  // Método para obtener los tabs guardados del usuario
+  Future<List<String>> getTabs(String userId) async {
+    final userRef = _firestore.collection('users').doc(userId);
+    final doc = await userRef.get();
+
+    if (doc.exists) {
+      return List<String>.from(doc.data()?['addedActivities'] ?? []);
+    }
+
+    return [];
+  }
+
+  // Método para eliminar un tab (activityType) de Firestore
+  Future<void> deleteTab(String userId, String activityType) async {
+    final userRef = _firestore.collection('users').doc(userId);
+
+    await userRef.update({
+      'tabs': FieldValue.arrayRemove([activityType]), // Eliminar el tab (activityType)
+    });
+  }
 }

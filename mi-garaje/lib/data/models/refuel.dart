@@ -23,6 +23,9 @@ class Refuel extends Activity {
   num get getPrecioLitros => costLiter;
 
   @override
+  String get getActivityType => activityType.getName;
+
+  @override
   Map<String, dynamic> toMap() {
     return {
       'idActivity': idActivity,

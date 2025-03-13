@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:mi_garaje/data/provider/global_types_view_model.dart';
+import 'package:mi_garaje/data/provider/tab_update_notifier.dart';
 import 'package:provider/provider.dart';
 import 'package:mi_garaje/view/screens/auth/login/login_view.dart';
 import 'package:mi_garaje/data/provider/auth_provider.dart';
@@ -23,16 +24,15 @@ Future<void> main() async {
   final garageProvider = GarageProvider();
   final globalTypesViewModel = GlobalTypesViewModel();
 
-  // Cargar tipos globales
   await globalTypesViewModel.loadGlobalTypes();
-
+  
   // Cargar autenticación
   final bool isAuthenticated = await authViewModel.checkUser();
 
   // Si el usuario está autenticado, cargar sus datos antes de iniciar la app
   if (isAuthenticated) {
     garageProvider.initializeUser(authViewModel.user!.id!);
-    globalTypesViewModel.initializeUser(authViewModel.user!.id!);
+    await globalTypesViewModel.initializeUser(authViewModel.user!.id!);
   }
 
   runApp(
@@ -42,6 +42,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => authViewModel),
         ChangeNotifierProvider(create: (_) => garageProvider),
         ChangeNotifierProvider(create: (_) => globalTypesViewModel),
+        ChangeNotifierProvider(create: (_) => TabState()),
       ],
       child: MyApp(isAuthenticated: isAuthenticated),
     ),

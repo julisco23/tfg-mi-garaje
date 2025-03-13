@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mi_garaje/data/provider/tab_update_notifier.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/view/widgets/cards/types_card.dart';
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_name_type.dart';
@@ -75,6 +76,9 @@ class _TypesViewState extends State<TypesView> {
     void addType() {
       if (controller.text.isNotEmpty) {
         typeViewModel.addType(controller.text, typeName, add, remove);
+        if (isActivity) {
+          Provider.of<TabState>(context, listen: false).newTab(controller.text);
+        }
         controller.clear();
         FocusScope.of(context).unfocus();
       }
@@ -83,6 +87,17 @@ class _TypesViewState extends State<TypesView> {
     // Función para eliminar tipos
     void removeType(String type) {
       typeViewModel.removeType(type, typeName, add, remove);
+      if (isActivity) {
+        Provider.of<TabState>(context, listen: false).removeTab(type);
+      }
+    }
+
+    // Función para editar tipos
+    void editType(String oldName, String newName) {
+      typeViewModel.editType(oldName, newName, typeName, add, remove);
+      if (isActivity) {
+        Provider.of<TabState>(context, listen: false).editTab(oldName, newName);
+      }
     }
 
     return Scaffold(
@@ -99,7 +114,9 @@ class _TypesViewState extends State<TypesView> {
               hintText: widget.type,
               suffixIcon: IconButton(
                 icon: Icon(Icons.add),
-                onPressed: addType,
+                onPressed: () {
+                  addType();
+                },
               ),
             ),
             SizedBox(height: 16),
@@ -163,7 +180,7 @@ class _TypesViewState extends State<TypesView> {
                                           onPressed: () => EditTypeDialog.show(
                                             context, 
                                             typeItem, 
-                                            (newName) => typeViewModel.editType(typeItem, newName, typeName, add, remove)
+                                            (newName) => editType(typeItem, newName),
                                           ),
                                         ),
                                       );

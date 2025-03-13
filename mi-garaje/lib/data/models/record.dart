@@ -21,6 +21,9 @@ class Record extends Activity {
   num? get getCost => cost;
 
   @override
+  String get getActivityType => activityType.getName;
+
+  @override
   Map<String, dynamic> toMap() {
     return {
       'idActivity': idActivity,

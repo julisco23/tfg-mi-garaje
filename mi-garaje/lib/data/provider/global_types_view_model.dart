@@ -14,6 +14,8 @@ class GlobalTypesViewModel extends ChangeNotifier {
   late final Map<String, List<String>> _globalTypes;
   Map<String, List<String>> get globalTypes => _globalTypes;
 
+  final List<String> _tabs = [];
+
   late String _userId;
 
   @override
@@ -24,8 +26,9 @@ class GlobalTypesViewModel extends ChangeNotifier {
   }
 
   // Método para inicializar
-  void initializeUser(String userId) {
+  Future<void> initializeUser(String userId) async {
     _userId = userId;
+    await getTabs();
   }
 
   // Método para obtener los tipos
@@ -154,5 +157,15 @@ class GlobalTypesViewModel extends ChangeNotifier {
 
     print("Tipos globales cargados: $_globalTypes");
     //notifyListeners();
+  }
+
+  Future<void> getTabs() async {
+    _tabs.clear();
+    _tabs.addAll(_globalTypes['activities']!);
+    _tabs.addAll(await _userTypeService.getTabs(_userId));
+  }
+
+  List<String> getTabsList() {
+    return _tabs;
   }
 }

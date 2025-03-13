@@ -1,3 +1,4 @@
+import 'package:mi_garaje/data/models/custom.dart';
 import 'package:mi_garaje/data/models/record.dart';
 import 'package:mi_garaje/data/models/refuel.dart';
 import 'package:mi_garaje/data/models/repair.dart';
@@ -5,16 +6,19 @@ import 'package:mi_garaje/data/models/repair.dart';
 enum ActivityType { 
   refuel, 
   repair, 
-  record;
+  record,
+  custom;
 
   String get getName {
     switch (this) {
       case ActivityType.refuel:
-        return "Repostajes";
+        return "Repostaje";
       case ActivityType.repair:
-        return "Reparaciones";
+        return "Mantenimiento";
       case ActivityType.record:
-        return "Documentos";
+        return "Documento";
+      case ActivityType.custom:
+        return "Personalizado";
     }
   }
 }
@@ -36,6 +40,7 @@ abstract class Activity {
     idActivity = id;
   }
 
+  String get getActivityType;
   String get getTpye;
   num? get getCost;
 
@@ -54,6 +59,8 @@ abstract class Activity {
           return Refuel.fromMap(map);
         case ActivityType.repair:
           return Repair.fromMap(map);
+        case ActivityType.custom:
+          return CustomActivity.fromMap(map);
       }
     } catch (e) {
       throw Exception('Error al convertir Actividad: ${map['activityType']} - $e');

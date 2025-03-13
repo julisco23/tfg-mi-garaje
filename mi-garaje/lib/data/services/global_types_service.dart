@@ -18,7 +18,7 @@ class GlobalTypesService {
     };
   }
 
-  /// Obtener los tipos cargados
+  // Obtener los tipos cargados
   static List<String> getTypes(String tipo) {
     return _datos[tipo] ?? [];
   }

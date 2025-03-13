@@ -167,21 +167,21 @@ class SettingsView extends StatelessWidget {
             _buildSectionTitle(context, "Personalización"),
             SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
             SettingCard(
-              icon: Icons.add_rounded, 
+              icon: Icons.local_gas_station_rounded, 
               title: "Tipos de repostaje", 
               onTap: () {
                 Navigator.pushNamed(context, RouteNames.types, arguments: {"type": "Repostaje"});
               }
             ),
             SettingCard(
-              icon: Icons.add_rounded, 
+              icon: Icons.build_rounded, 
               title: "Tipos de mantenimiento", 
               onTap: () {
               Navigator.pushNamed(context, RouteNames.types, arguments: {"type": "Mantenimiento"});
               }
             ),
             SettingCard(
-              icon: Icons.add_rounded, 
+              icon: Icons.description_rounded, 
               title: "Tipos de documentos",
               onTap: () {
                 Navigator.pushNamed(context, RouteNames.types, arguments: {"type": "Documento"});
@@ -195,7 +195,7 @@ class SettingsView extends StatelessWidget {
               }
             ),
             SettingCard(
-              icon: Icons.add_rounded, 
+              icon: Icons.star_rounded, 
               title: "Nueva actividad", 
               onTap: () {
                 Navigator.pushNamed(context, RouteNames.types, arguments: {"type": "Activity"});

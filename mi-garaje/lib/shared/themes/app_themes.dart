@@ -97,6 +97,7 @@ class AppThemes {
         borderRadius: BorderRadius.circular(30),
       ),
       dividerColor: blancoTransparente,
+      labelPadding: EdgeInsets.symmetric(horizontal: 10),
     ),
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: azul,

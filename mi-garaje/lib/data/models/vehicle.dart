@@ -75,9 +75,9 @@ class Vehicle {
     }
   }
 
-  List<Activity> getActivities(ActivityType type) {
+  List<Activity> getActivities(String type) {
     List<Activity> filteredActivities =
-        activities.where((activity) => activity.activityType == type).toList();
+        activities.where((activity) => activity.getActivityType == type).toList();
 
     filteredActivities.sort((a, b) => b.date.compareTo(a.date));
     return filteredActivities;

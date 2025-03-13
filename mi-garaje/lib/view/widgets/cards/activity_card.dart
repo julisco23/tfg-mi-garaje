@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mi_garaje/data/models/activity.dart';
+import 'package:mi_garaje/data/models/custom.dart';
 import 'package:mi_garaje/data/models/record.dart';
 import 'package:mi_garaje/data/models/repair.dart';
 import 'package:mi_garaje/data/models/refuel.dart';
@@ -50,6 +51,13 @@ class ActivityCard extends StatelessWidget {
               "carName": carName
             };
             break;
+          case ActivityType.custom:
+            routeName = RouteNames.custom;
+            arguments = {
+              "custom": activity as CustomActivity,
+              "carName": carName
+            };
+            break;
         }
 
         Navigator.pushNamed(context, routeName, arguments: arguments);
@@ -82,6 +90,9 @@ class ActivityCard extends StatelessWidget {
                         break;
                       case ActivityType.record:
                         icon = Icons.description_rounded;
+                        break;
+                      case ActivityType.custom:
+                        icon = Icons.star_rounded;
                         break;
                     }
                     return Icon(
