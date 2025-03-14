@@ -124,60 +124,59 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
                       future: _vehiclesTypes,
                       builder: (context, snapshot) {
                         return DropdownButtonFormField<String>(
-                          value: selectedVehicleType,
-                          decoration: InputDecoration(
-                            floatingLabelStyle: TextStyle(
-                                color: Theme.of(context).primaryColor),
-                            labelText: 'Tipo de Vehículo',
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            filled: true,
-                          ),
-                          onChanged: (newValue) {
-                            setState(() {
-                              selectedVehicleType = newValue;
-                            });
-                          },
-                          items: [
-                            // Opción por defecto
-                            DropdownMenuItem<String>(
-                              value: null,
-                              child: Text("Tipo de Vehiculo",
-                                  style:
-                                      Theme.of(context).textTheme.bodyMedium),
-                            ),
-                            // Opciones de tipos cargadas dinámicamente
-                            if (snapshot.connectionState !=
-                                ConnectionState.waiting)
-                              ...snapshot.data!.map<DropdownMenuItem<String>>(
-                                (String tipo) {
-                                  return DropdownMenuItem<String>(
-                                    value: tipo,
-                                    child: Text(tipo,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium),
-                                  );
-                                },
+                            value: selectedVehicleType,
+                            decoration: InputDecoration(
+                              floatingLabelStyle: TextStyle(
+                                  color: Theme.of(context).primaryColor),
+                              labelText: 'Tipo de Vehículo',
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius: BorderRadius.circular(14),
                               ),
-                            if (snapshot.connectionState ==
-                                    ConnectionState.waiting &&
-                                selectedVehicleType != null)
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              filled: true,
+                            ),
+                            onChanged: (newValue) {
+                              setState(() {
+                                selectedVehicleType = newValue;
+                              });
+                            },
+                            items: [
+                              // Opción por defecto
                               DropdownMenuItem<String>(
-                                value: selectedVehicleType,
-                                child: Text(selectedVehicleType!,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium),
+                                value: null,
+                                child: Text("Tipo de Vehiculo",
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium),
                               ),
-                          ]
-                        );
+                              // Opciones de tipos cargadas dinámicamente
+                              if (snapshot.connectionState !=
+                                  ConnectionState.waiting)
+                                ...snapshot.data!.map<DropdownMenuItem<String>>(
+                                  (String tipo) {
+                                    return DropdownMenuItem<String>(
+                                      value: tipo,
+                                      child: Text(tipo,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium),
+                                    );
+                                  },
+                                ),
+                              if (snapshot.connectionState ==
+                                      ConnectionState.waiting &&
+                                  selectedVehicleType != null)
+                                DropdownMenuItem<String>(
+                                  value: selectedVehicleType,
+                                  child: Text(selectedVehicleType!,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium),
+                                ),
+                            ]);
                       },
                     ),
                   ),
@@ -219,13 +218,33 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
                                   color: Theme.of(context).primaryColor))
                           : Row(
                               children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.memory(
-                                    imageBytes!,
-                                    height: 50,
-                                    width: 50,
-                                    fit: BoxFit.cover,
+                                GestureDetector(
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return Dialog(
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Image.memory(
+                                                imageBytes!,
+                                                fit: BoxFit.contain,
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Image.memory(
+                                      imageBytes!,
+                                      height: 50,
+                                      width: 50,
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
                                 ),
                                 SizedBox(

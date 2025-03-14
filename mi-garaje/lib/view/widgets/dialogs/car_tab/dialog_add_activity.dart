@@ -78,7 +78,8 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
       } else {
         customType = widget.activity!.getActivityType;
         print(customType);
-        _typesFuture = Provider.of<GlobalTypesViewModel>(context, listen: false).getTypes(customType);
+        _typesFuture = Provider.of<GlobalTypesViewModel>(context, listen: false)
+            .getTypes(customType);
       }
       costController.text = widget.activity!.getCost.toString();
       selectedDate = widget.activity!.getDate;
@@ -93,17 +94,18 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
           imageBytes = base64Decode(widget.activity!.getPhoto!);
         }
         if (widget.activity is CustomActivity) {
-          activityTypeController.text = (widget.activity as CustomActivity).getActivityType;
+          activityTypeController.text =
+              (widget.activity as CustomActivity).getActivityType;
         }
       }
     } else {
       customType = widget.customType!;
       if (["Refuel", "Repair", "Record"].contains(widget.customType)) {
-        _typesFuture = Provider.of<GlobalTypesViewModel>(context, listen: false).getTypes(customType);
+        _typesFuture = Provider.of<GlobalTypesViewModel>(context, listen: false)
+            .getTypes(customType);
       } else {
         isCustom = true;
       }
-      
     }
   }
 
@@ -186,7 +188,8 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
                               DropdownMenuItem<String>(
                                 value: null,
                                 child: Text("Tipo de Repostaje",
-                                    style: Theme.of(context).textTheme.bodyMedium),
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium),
                               ),
                               if (snapshot.connectionState !=
                                   ConnectionState.waiting)
@@ -240,9 +243,10 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
                     validator: Validator.validateCostRequired,
                   ),
                   SizedBox(height: AppDimensions.screenHeight(context) * 0.03),
-                  
+
                   // Campo "Precio por Litro"
-                  if (widget.customType == "Refuel" || widget.activity is Refuel) ...[
+                  if (widget.customType == "Refuel" ||
+                      widget.activity is Refuel) ...[
                     MiTextFormField(
                       controller: costLiterController,
                       labelText: 'Precio por Litro (€)',
@@ -258,7 +262,8 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
                       hintText: 'Descripción del documento',
                       maxLines: 5,
                     ),
-                    SizedBox(height: AppDimensions.screenHeight(context) * 0.03),
+                    SizedBox(
+                        height: AppDimensions.screenHeight(context) * 0.03),
 
                     // Selector de imagen
                     Column(
@@ -276,13 +281,33 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
                               )
                             : Row(
                                 children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: Image.memory(
-                                      imageBytes!,
-                                      height: 50,
-                                      width: 50,
-                                      fit: BoxFit.cover,
+                                  GestureDetector(
+                                    onTap: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return Dialog(
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Image.memory(
+                                                  imageBytes!,
+                                                  fit: BoxFit.contain,
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    },
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image.memory(
+                                        imageBytes!,
+                                        height: 50,
+                                        width: 50,
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
                                   ),
                                   SizedBox(
@@ -341,7 +366,8 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
                                     refuelType: selectedType!,
                                     date: selectedDate!,
                                     cost: num.parse(costController.text),
-                                    costLiter: num.parse(costLiterController.text),
+                                    costLiter:
+                                        num.parse(costLiterController.text),
                                   );
                                   break;
                                 case 'Repair':

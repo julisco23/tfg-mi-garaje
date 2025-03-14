@@ -44,8 +44,7 @@ class _PerfilState extends State<Perfil> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   _buildProfileHeader(context),
-                  SizedBox(
-                      height: AppDimensions.screenHeight(context) * 0.05),
+                  SizedBox(height: AppDimensions.screenHeight(context) * 0.05),
                   _buildVehicleList(context),
                 ],
               ),
@@ -66,21 +65,42 @@ class _PerfilState extends State<Perfil> {
 
     return Column(
       children: [
-        CircleAvatar(
-            radius: 50,
-            backgroundImage: user.isPhoto
-                ? user.hasPhotoChanged
-                    ? MemoryImage(base64Decode(user.photoURL!))
-                    : NetworkImage(user.photoURL!)
-                : null,
-            backgroundColor: Theme.of(context).primaryColor,
-            child: user.isPhoto
-                ? null
-                : Icon(
-                    Icons.person,
-                    size: 50,
-                    color: Theme.of(context).colorScheme.onPrimary,
-                  )),
+        GestureDetector(
+          onTap: () {
+            user.isPhoto
+              ? showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return Dialog(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        user.hasPhotoChanged
+                            ? Image.memory(base64Decode(user.photoURL!))
+                            : Image.network(user.photoURL!)
+                      ],
+                    ),
+                  );
+                },
+              )
+              : null;
+          },
+          child: CircleAvatar(
+              radius: 50,
+              backgroundImage: user.isPhoto
+                  ? user.hasPhotoChanged
+                      ? MemoryImage(base64Decode(user.photoURL!))
+                      : NetworkImage(user.photoURL!)
+                  : null,
+              backgroundColor: Theme.of(context).primaryColor,
+              child: user.isPhoto
+                  ? null
+                  : Icon(
+                      Icons.person,
+                      size: 50,
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    )),
+        ),
         SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
         Text(
           user.displayName,

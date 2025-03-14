@@ -110,21 +110,41 @@ class _DialogEditProfileState extends State<DialogEditProfile> {
                     )
                   : Row(
                     children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: isPhotoChanged
-                        ? Image.memory(
-                          base64Decode(imageBase64!),
-                          height: 50,
-                          width: 50,
-                          fit: BoxFit.cover,
-                        )
-                        : Image.network(
-                          imageBase64!,
-                          width: 50,
-                          height: 50,
-                          fit: BoxFit.cover,
-                        )
+                      GestureDetector(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return Dialog(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Image.memory(
+                                      base64Decode(imageBase64!),
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        },
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: isPhotoChanged
+                          ? Image.memory(
+                            base64Decode(imageBase64!),
+                            height: 50,
+                            width: 50,
+                            fit: BoxFit.cover,
+                          )
+                          : Image.network(
+                            imageBase64!,
+                            width: 50,
+                            height: 50,
+                            fit: BoxFit.cover,
+                          )
+                        ),
                       ),
                       SizedBox(
                         width: AppDimensions.screenHeight(context) * 0.05),
