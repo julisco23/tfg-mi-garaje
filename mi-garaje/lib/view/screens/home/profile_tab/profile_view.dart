@@ -44,6 +44,10 @@ class _PerfilState extends State<Perfil> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   _buildProfileHeader(context),
+                  if (widget.garageViewModel.isFamily) ...[
+                    SizedBox(height: AppDimensions.screenHeight(context) * 0.05),
+                    _buildFamilyList(context),
+                  ],
                   SizedBox(height: AppDimensions.screenHeight(context) * 0.05),
                   _buildVehicleList(context),
                 ],
@@ -145,4 +149,84 @@ class _PerfilState extends State<Perfil> {
       },
     );
   }
+}
+
+Widget _buildFamilyList(BuildContext context) {
+  return Consumer<AuthViewModel>(
+    builder: (context, viewModel, child) {
+      if (viewModel.family == null) {
+        return CircularProgressIndicator();
+      }
+      final members = viewModel.family!.members;
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Mi familia",
+            style: TextStyle(
+              color: Theme.of(context).primaryColor,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
+          Text(
+            "Código de familia: ${viewModel.family!.code}",
+          ),
+          SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
+          SizedBox(
+            height: 140,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: members?.length ?? 0,
+              itemBuilder: (context, index) {
+              final member = members![index];
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 4,
+                    child: SizedBox(
+                      width: 120,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircleAvatar(
+                            radius: 35,
+                            backgroundImage: member.isPhoto
+                                ? member.hasPhotoChanged
+                                    ? MemoryImage(base64Decode(member.photoURL!))
+                                    : NetworkImage(member.photoURL!)
+                                : null,
+                            backgroundColor: Theme.of(context).primaryColor,
+                            child: member.isPhoto
+                                ? null
+                                : Icon(
+                                    Icons.person,
+                                    size: 50,
+                                    color: Theme.of(context).colorScheme.onPrimary,
+                                  )),
+                          SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
+                          Text(
+                            member.displayName,
+                            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                            overflow: TextOverflow.ellipsis,
+                            textWidthBasis: TextWidthBasis.longestLine,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      );
+    },
+  );
 }

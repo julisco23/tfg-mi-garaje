@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:mi_garaje/data/models/user.dart';
+import 'package:mi_garaje/data/provider/global_types_view_model.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/view/widgets/cards/settings_card.dart';
 import 'package:mi_garaje/view/widgets/dialogs/auth/dialog_create_profile.dart';
 import 'package:mi_garaje/view/widgets/dialogs/auth/dialog_edit_profile.dart';
+import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_code_family.dart';
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_confirm.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:mi_garaje/data/provider/auth_provider.dart';
@@ -188,7 +190,7 @@ class SettingsView extends StatelessWidget {
               }
             ),
             SettingCard(
-              icon: Icons.add_rounded, 
+              icon: Icons.commute_rounded, 
               title: "Tipos de vehículos", 
               onTap: () {
                 Navigator.pushNamed(context, RouteNames.types, arguments: {"type": "Vehicle"});
@@ -206,34 +208,86 @@ class SettingsView extends StatelessWidget {
             // SECCIÓN: FAMILIA
             _buildSectionTitle(context, "Familia"),
             SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
-            SettingCard(
-              icon: Icons.group_add_rounded,
-              title: "Crear una familia",
-              onTap: () {
-                ToastHelper.show(context, "Funcionalidad no disponible.");
-              },
-            ),
-            SettingCard(
-              icon: Icons.group_rounded,
-              title: "Unirse a una familia",
-              onTap: () {
-                ToastHelper.show(context, "Funcionalidad no disponible.");
-              },
-            ),
-            SettingCard(
-              icon: Icons.history_rounded,
-              title: "Últimos movimientos",
-              onTap: () {
-                ToastHelper.show(context, "Funcionalidad no disponible.");
-              },
-            ),
-            SettingCard(
-              icon: Icons.exit_to_app_rounded,
-              title: "Salir de la familia",
-              onTap: () {
-                ToastHelper.show(context, "Funcionalidad no disponible.");
-              },
-            ),
+            if (!user.hasFamily) ...[
+              SettingCard(
+                icon: Icons.group_add_rounded,
+                title: "Crear una familia",
+                onTap: () async {
+                  bool confirm = await ConfirmDialog.show(
+                    context,
+                    "Convertir en familia",
+                    "¿Deseas crear una familia y transferir tus datos? Si aceptas se eliminarán tus datos actuales.",
+                  );
+                  if (!confirm) return;
+            
+                  if (context.mounted) {
+                    await authViewModel.convertirEnFamilia();
+            
+                    await garageViewModel.convertToFamily(authViewModel.user!.idFamily!);
+                    if (context.mounted) {
+                      await Provider.of<GlobalTypesViewModel>(context, listen: false).convertToFamily(authViewModel.user!.idFamily!);
+                    }
+
+                    if (context.mounted) {
+                      Navigator.pushNamedAndRemoveUntil(context, RouteNames.home, (route) => false);
+                    }
+                  }
+                },
+              ),
+              SettingCard(
+                icon: Icons.group_rounded,
+                title: "Unirse a una familia",
+                onTap: () async {
+                  String? familyCode = await DialogFamilyCode.show(context);
+                  if (familyCode == null) return;
+
+                  if (context.mounted) {
+                    await authViewModel.unirseAFamilia(familyCode);
+
+                    await garageViewModel.joinFamily(authViewModel.user!.idFamily!);
+
+                    if (context.mounted) {
+                      await Provider.of<GlobalTypesViewModel>(context, listen: false).joinFamily(authViewModel.user!.idFamily!);
+                    }
+
+                    if (context.mounted) {
+                      Navigator.pushNamedAndRemoveUntil(context, RouteNames.home, (route) => false);
+                    }
+                  }
+                },
+              )
+            ] else ...[
+              SettingCard(
+                icon: Icons.history_rounded,
+                title: "Últimos movimientos",
+                onTap: () {
+                  ToastHelper.show(context, "Funcionalidad no disponible.");
+                },
+              ),
+              SettingCard(
+                icon: Icons.exit_to_app_rounded,
+                title: "Salir de la familia",
+                onTap: () async {
+                  bool confirm = await ConfirmDialog.show(
+                    context,
+                    "Abandonar de la familia",
+                    "¿Deseas salir de la familia? Si eres el único miembro, la familia se eliminará.",
+                  );
+                  if (!confirm) return;
+
+                  if (context.mounted) {
+                    bool isLastMember = authViewModel.isLastMember;
+                    await authViewModel.salirDeFamilia();
+
+                    await garageViewModel.leaveFamily(isLastMember);
+
+                    if (context.mounted) {
+                      Navigator.pushNamedAndRemoveUntil(context, RouteNames.home, (route) => false);
+                    }
+                  }
+                },
+              ),
+            ],
             SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 
             // SECCIÓN: SOPORTE Y AYUDA

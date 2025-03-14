@@ -9,6 +9,7 @@ class User {
   bool isGoogle;
   DateTime creationDate;
   bool isPhotoChanged;
+  String? idFamily;
   List<Vehicle> vehiculos = [];
 
   Map<int, List<String>> typesCreated = {
@@ -31,7 +32,11 @@ class User {
     required this.isGoogle,
     required this.creationDate,
     required this.isPhotoChanged,
+    this.idFamily,
   });
+
+  /// Propiedad calculada para verificar si el usuario tiene una familia
+  bool get hasFamily => idFamily != null;
 
   bool get isPhoto {
     return photoURL != null;
@@ -53,6 +58,7 @@ class User {
       'isGoogle': isGoogle,
       'creationDate': creationDate.toIso8601String(),
       'isPhotoChanged': isPhotoChanged,
+      'idFamily': idFamily,
     };
   }
 
@@ -66,7 +72,18 @@ class User {
       isGoogle: map['isGoogle'],
       creationDate: DateTime.parse(map['creationDate']),
       isPhotoChanged: map['isPhotoChanged'],
+      idFamily: map['idFamily'],
     );
+  }
+
+  /// Método para unirse a una familia
+  void joinFamily(String idFamily) {
+    this.idFamily = idFamily;
+  }
+
+  /// Método para salir de la familia
+  void leaveFamily() {
+    idFamily = null;
   }
 
   // Método para actualizar el nombre del usuario

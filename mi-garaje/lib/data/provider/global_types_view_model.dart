@@ -17,6 +17,8 @@ class GlobalTypesViewModel extends ChangeNotifier {
   final List<String> _tabs = [];
 
   late String _userId;
+  late String? _idFamily;
+  bool get isFamily => _idFamily != null;
 
   @override
   void dispose() {
@@ -171,5 +173,15 @@ class GlobalTypesViewModel extends ChangeNotifier {
 
   List<String> getTabsList() {
     return _tabs;
+  }
+
+  Future<void> convertToFamily(String idFamily) async {
+    _idFamily = idFamily;
+    await _userTypeService.convertToFamily(_userId, idFamily);
+  }
+
+  Future<void> joinFamily(String idFamily) async {
+    _idFamily = idFamily;
+    await _userTypeService.joinFamily(_userId, idFamily);
   }
 }

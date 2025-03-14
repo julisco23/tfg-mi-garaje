@@ -44,7 +44,11 @@ class _HomeViewState extends State<HomeView> {
     }
 
     if (!_hasVehicles) {
-      return FirstCar();
+      return FirstCar(onVehicleAdded: () {
+        setState(() {
+          _hasVehicles = true;
+        });
+      });
     }
 
     return Scaffold(

@@ -61,16 +61,6 @@ class UserTypesService {
     }
   }
 
-  // TABS
-  // Método para guardar un nuevo activityType (tab) en Firestore
-  Future<void> saveTab(String userId, String activityType) async {
-    final userRef = _firestore.collection('users').doc(userId);
-
-    await userRef.update({
-      'tabs': FieldValue.arrayUnion([activityType]), // Añadir el nuevo tab (activityType)
-    });
-  }
-
   // Método para obtener los tabs guardados del usuario
   Future<List<String>> getTabs(String userId) async {
     final userRef = _firestore.collection('users').doc(userId);
@@ -83,12 +73,38 @@ class UserTypesService {
     return [];
   }
 
-  // Método para eliminar un tab (activityType) de Firestore
-  Future<void> deleteTab(String userId, String activityType) async {
-    final userRef = _firestore.collection('users').doc(userId);
+  // Método para transpasar los types de un usuario a una familia
+  Future<void> convertToFamily(String userId, String idFamily) async {
+    for (String typeName in ["Refuel", "Repair", "Record", "Vehicle", "Activity"]) {
+      await getUserData(userId, typeName).then((userData) {
+        List<String> addedTypes = userData["added"] ?? [];
+        if (addedTypes.isNotEmpty) {
+          _firestore.collection("families").doc(idFamily).update({
+            "added$typeName": FieldValue.arrayUnion(addedTypes),
+          });
+        }
 
-    await userRef.update({
-      'tabs': FieldValue.arrayRemove([activityType]), // Eliminar el tab (activityType)
-    });
+        List<String> removedTypes = userData["removed"] ?? [];
+        if (removedTypes.isNotEmpty) {
+          _firestore.collection("families").doc(idFamily).update({
+            "removed$typeName": FieldValue.arrayUnion(removedTypes),
+          });
+        }
+      });
+
+      await _firestore.collection("users").doc(userId).update({
+        "added$typeName": FieldValue.delete(),
+        "removed$typeName": FieldValue.delete(),
+      });
+    }
+  }
+
+  Future<void> joinFamily(String userId, String idFamily) async {
+    for (String typeName in ["Refuel", "Repair", "Record", "Vehicle", "Activity"]) {
+      _firestore.collection("users").doc(userId).update({
+        "added$typeName": FieldValue.delete(),
+        "removed$typeName": FieldValue.delete(),
+      });
+    }
   }
 }

@@ -15,12 +15,14 @@ class AppRoutes {
     RouteNames.login: (context) => LoginView(),
     RouteNames.signup: (context) => SignupView(),
     RouteNames.home: (context) => HomeView(),
-    RouteNames.firstCar: (context) => FirstCar(),
   };
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     final args = settings.arguments != null ? settings.arguments as Map<String, dynamic> : {};
     switch (settings.name) {
+      case RouteNames.firstCar:
+        return _slideTransition(FirstCar(onVehicleAdded: args['onVehicleAdded']));
+        
       case RouteNames.garage:
         return _slideTransition(const GarageView());
 
@@ -34,10 +36,11 @@ class AppRoutes {
 
       case RouteNames.types:
         return _slideTransition(TypesView(type: args['type']));
-
-
+        
       default:
-        return MaterialPageRoute(builder: (context) => HomeView());
+        return MaterialPageRoute(builder: (context) => Scaffold(
+          body: Center(child: Text('No route defined for ${settings.name}')),
+        ));
     }
   }
 

@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:mi_garaje/data/models/family.dart';
 import 'package:mi_garaje/data/models/user.dart';
 import 'package:mi_garaje/data/services/auth_service.dart';
 
@@ -9,6 +12,10 @@ class AuthViewModel extends ChangeNotifier {
 
   User? get user => _user;
 
+  Family? _family;
+
+  Family? get family => _family;
+
   String get id => user!.id!;
   
   bool get isGoogle => user == null ? false : user!.isGoogle;
@@ -16,16 +23,22 @@ class AuthViewModel extends ChangeNotifier {
 
   void setUser(User? user) {
     _user = user;
+    if (_user != null && _user!.hasFamily) {
+      getFamily();
+    }
     notifyListeners();
   }
 
   // Método de verificación de usuario
   Future<bool> checkUser() async{
-    _user = await _authService.currentUser;
-
-    print('CheckUser: ${_user != null}');
+    setUser(await _authService.currentUser);
 
     return _user != null;
+  }
+
+  // Método para obtener la familia del usuario
+  Future<void> getFamily() async {
+    _family = await _authService.getFamily(_user!.idFamily!);
   }
   
   // Método de inicio de sesión
@@ -102,5 +115,39 @@ class AuthViewModel extends ChangeNotifier {
     setUser(await _authService.currentUser);
     return response;
   }
+
+  String generateFamilyCode() {
+    const String chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    Random random = Random();
+    return String.fromCharCodes(Iterable.generate(6, (_) => chars.codeUnitAt(random.nextInt(chars.length))));
+  }
+
+  Future<void> convertirEnFamilia() async {
+    Family family = Family(
+      name: "Familia de ${user!.displayName}",
+      code: generateFamilyCode(),
+      members: [user!],
+    );
+    await _authService.convertToFamily(family);
+    setUser(await _authService.currentUser);
+    getFamily();
+  }
+
+  Future<void> unirseAFamilia(String familyCode) async {
+    await _authService.joinFamily(familyCode);
+    setUser(await _authService.currentUser);
+  }
+
+  Future<void> salirDeFamilia() async {
+    // Chequear si el usuario es el único miembro de la familia
+    await _authService.leaveFamily(isLastMember);
+    if (isLastMember) {
+      _family = null;
+    }
+    setUser(await _authService.currentUser);
+  }
+
+  bool get isLastMember => family!.members!.length == 1;
+  
 }
 

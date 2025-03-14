@@ -15,19 +15,21 @@ class DialogAddVehicle extends StatefulWidget {
   final GarageProvider viewModel;
   final Vehicle? vehicle;
   final Function(Vehicle)? onVehicleUpdated;
+  final VoidCallback? onVehicleAdded;
 
   const DialogAddVehicle({
     super.key,
     required this.viewModel,
     this.vehicle,
     this.onVehicleUpdated,
+    this.onVehicleAdded,
   });
 
   @override
   State<DialogAddVehicle> createState() => _DialogAddVehicleState();
 
   static Future<void> show(BuildContext context, GarageProvider viewModel,
-      {Vehicle? vehicle, Function(Vehicle)? onVehicleUpdated}) {
+      {Vehicle? vehicle, Function(Vehicle)? onVehicleUpdated,  VoidCallback? onVehicleAdded}) {
     return showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -35,6 +37,7 @@ class DialogAddVehicle extends StatefulWidget {
           viewModel: viewModel,
           vehicle: vehicle,
           onVehicleUpdated: onVehicleUpdated,
+          onVehicleAdded: onVehicleAdded,
         );
       },
     );
@@ -297,7 +300,7 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
                               widget.vehicle == null ? 'Añadir' : 'Actualizar',
                               style: TextStyle(
                                   color: Theme.of(context).primaryColor)),
-                          onPressed: () {
+                          onPressed: () async {
                             if (_formKey.currentState!.validate()) {
                               final Vehicle vehicle = Vehicle(
                                 name: nameController.text.isEmpty
@@ -315,18 +318,23 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
 
                               if (widget.vehicle == null) {
                                 // Añadir vehículo
-                                widget.viewModel.addVehicle(vehicle);
+                                await widget.viewModel.addVehicle(vehicle);
                                 if (context.mounted) {
                                   ToastHelper.show(context, 'Vehículo añadido');
+                                }
+                                if (widget.onVehicleAdded != null) {
+                                  widget.onVehicleAdded!();
                                 }
                               } else {
                                 // Actualizar vehículo
                                 vehicle.id = widget.vehicle!.id;
-                                widget.viewModel.updateVehicle(vehicle);
+                                await widget.viewModel.updateVehicle(vehicle);
                                 widget.onVehicleUpdated!(vehicle);
                               }
-
-                              Navigator.of(context).pop();
+                              
+                              if (context.mounted) {
+                                Navigator.of(context).pop();
+                              }
                             }
                           },
                         ),

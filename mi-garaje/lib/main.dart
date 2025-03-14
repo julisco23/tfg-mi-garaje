@@ -31,7 +31,7 @@ Future<void> main() async {
 
   // Si el usuario está autenticado, cargar sus datos antes de iniciar la app
   if (isAuthenticated) {
-    garageProvider.initializeUser(authViewModel.user!.id!);
+    garageProvider.initializeUser(authViewModel.user!.id!, idFamily: authViewModel.user!.idFamily);
     await globalTypesViewModel.initializeUser(authViewModel.user!.id!);
   }
 

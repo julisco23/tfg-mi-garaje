@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:mi_garaje/data/models/family.dart';
 import 'package:mi_garaje/data/models/user.dart' as app;
 import 'package:mi_garaje/shared/constants/mapper.dart';
 
@@ -262,4 +263,82 @@ class AuthService {
       return "Error al actualizar el perfil";
     }
   }
+
+  // Método para crear a una familia
+  Future<void> convertToFamily(Family family) async {
+    app.User user = (await currentUser)!;
+    String familyId = _firestore.collection('families').doc().id; 
+
+    await _firestore.collection('families').doc(familyId).set({
+      'name': family.name,
+      'members': [family.members!.first.id],
+      'code': family.code,
+      'creationDate': family.creationDate!.toIso8601String(),
+    });
+
+    await _firestore.collection('users').doc(user.id).update({
+      'idFamily': familyId,
+    });
+
+    print("Familia creada con éxito");
+  }
+
+  // Método para abandonar la familia
+  Future<void> leaveFamily(bool eliminar) async {
+    app.User user = (await currentUser)!;
+
+    await _firestore.collection('families').doc(user.idFamily).update({
+      'members': FieldValue.arrayRemove([user.id]),
+    });
+
+    await _firestore.collection('users').doc(user.id).update({
+      'idFamily': null,
+    });
+
+    print("Salida de la familia con éxito");
+
+    if (eliminar) {
+      await _firestore.collection('families').doc(user.idFamily).delete();
+      print("Familia eliminada con éxito");
+    }
+  }
+
+  // Método para unirse a una familia
+  Future<void> joinFamily(String familyCode) async {
+    app.User user = (await currentUser)!;
+
+    QuerySnapshot snapshot = await _firestore.collection('families').where('code', isEqualTo: familyCode).get();
+
+    if (snapshot.docs.isEmpty) {
+      throw Exception("No se encontró la familia");
+    }
+
+    DocumentSnapshot doc = snapshot.docs.first;
+
+    await _firestore.collection('families').doc(doc.id).update({
+      'members': FieldValue.arrayUnion([user.id]),
+    });
+
+    await _firestore.collection('users').doc(user.id).update({
+      'idFamily': doc.id,
+    });
+  }
+
+  Future<Family> getFamily(String idFamily) async {
+    DocumentSnapshot doc = await _firestore.collection('families').doc(idFamily).get();
+
+    Family family = Family.fromMap(doc.data() as Map<String, dynamic>)..id = doc.id;
+
+    List<String> members = List<String>.from(doc.get('members'));
+
+    List<app.User> users = [];
+    for (String id in members) {
+      DocumentSnapshot userDoc = await _firestore.collection('users').doc(id).get();
+      users.add(app.User.fromMap(userDoc.data() as Map<String, dynamic>)..id = userDoc.id);
+    }
+    family.addMembers(users);
+    return family;
+  }
+
+
 }

@@ -96,4 +96,14 @@ class Validator {
     return null;
   }
 
+  static String? validateFamilyCode(String? value) {
+    if (value == null || value.isEmpty) {
+      return '* Código de familia es obligatorio.';
+    }
+    if (value.length != 6) {
+      return '* Código de familia inválido.\n  (6 caracteres)';
+    }
+    return null;
+  }
+
 }
