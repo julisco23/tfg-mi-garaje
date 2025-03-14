@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mi_garaje/data/models/custom.dart';
+import 'package:mi_garaje/data/models/activity.dart';
+import 'package:mi_garaje/data/models/refuel.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_delete_activity.dart';
 import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_add_activity.dart';
@@ -9,38 +10,37 @@ import 'package:provider/provider.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'dart:convert';
 
-class CustomView extends StatefulWidget {
-  final CustomActivity custom;
-  final String carName;
+class ActivityView extends StatefulWidget {
+  final Activity activity;
 
-  const CustomView({super.key, required this.custom, required this.carName});
+  const ActivityView({super.key, required this.activity});
 
   @override
-  State<CustomView> createState() => _CustomViewState();
+  State<ActivityView> createState() => _ActivityViewState();
 }
 
-class _CustomViewState extends State<CustomView> {
-  late CustomActivity custom;
+class _ActivityViewState extends State<ActivityView> {
+  late Activity activity;
 
   @override
   void initState() {
     super.initState();
-    custom = widget.custom;
+    activity = widget.activity;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(custom.getType),
+        title: Text(activity.getType),
         actions: [
           IconButton(
             icon: const Icon(Icons.delete),
             onPressed: () async{
-              bool result = await DeleteActivityDialog.show(context, custom);
+              bool result = await DeleteActivityDialog.show(context, activity);
 
               if (result && context.mounted) {
-                Provider.of<GarageProvider>(context, listen: false).deleteActivity(custom);
+                Provider.of<GarageProvider>(context, listen: false).deleteActivity(activity);
                 Navigator.pop(context);
               }
             },
@@ -55,29 +55,42 @@ class _CustomViewState extends State<CustomView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ListTile(
-                    title: Text('Tipo'),
-                    subtitle: Text(custom.getActivityType),
-                  ),
+                  // Fecha
                   ListTile(
                     title: Text('Fecha'),
-                    subtitle:
-                        Text(DateFormat('dd/MM/yyyy').format(custom.date)),
+                    subtitle: Text(DateFormat('dd/MM/yyyy').format(activity.date)),
                   ),
-                  if (custom.getCost != null) ...[
+
+                  // Coste
+                  if (activity.getCost != null) ...[
                     ListTile(
                       title: Text('Coste'),
-                      subtitle: Text('${custom.getCost} €'),
+                      subtitle: Text('${activity.getCost} €'),
                     ),
                   ],
-                  if (custom.details != null &&
-                      custom.details!.isNotEmpty) ...[
+
+                  if (activity is Refuel) ...[
+                    ListTile(
+                      title: Text('Precio por litro'),
+                      subtitle: Text('${(activity as Refuel).getPrecioLitros} €'),
+                    ),
+                    ListTile(
+                      title: Text('Litros'),
+                      subtitle: Text('${(activity as Refuel).getLiters.toStringAsFixed(3)} L'),
+                    ),
+                  ],
+
+                  // Detalles
+                  if (activity.getDetails != null &&
+                      activity.getDetails!.isNotEmpty) ...[
                     ListTile(
                       title: Text('Descripción'),
-                      subtitle: Text(custom.details!),
+                      subtitle: Text(activity.getDetails!),
                     ),
                   ],
-                  if (custom.photo != null) ...[
+
+                  // Foto
+                  if (activity.isPhoto) ...[
                     ListTile(
                       title: Text('Imagen'),
                     ),
@@ -91,7 +104,7 @@ class _CustomViewState extends State<CustomView> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Image.memory(
-                                    base64Decode(custom.photo!),
+                                    base64Decode(activity.getPhoto!),
                                     fit: BoxFit.contain,
                                   ),
                                 ],
@@ -104,7 +117,7 @@ class _CustomViewState extends State<CustomView> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(10),
                           child: Image.memory(
-                            base64Decode(custom.photo!),
+                            base64Decode(activity.getPhoto!),
                             width: double.infinity,
                             height: 150,
                             fit: BoxFit.cover,
@@ -122,10 +135,10 @@ class _CustomViewState extends State<CustomView> {
                       DialogAddActivity.show(
                         context,
                         Provider.of<GarageProvider>(context, listen: false),
-                        activity: custom,
-                        onActivityUpdated: (updatedCustom) {
+                        activity: activity,
+                        onActivityUpdated: (updatedActivity) {
                           setState(() {
-                            custom = updatedCustom as CustomActivity;
+                            activity = updatedActivity;
                           });
                         },
                       );

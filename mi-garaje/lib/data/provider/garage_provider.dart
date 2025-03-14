@@ -11,14 +11,6 @@ class GarageProvider extends ChangeNotifier {
   Vehicle? _selectedVehicle;
   bool _initialized = false;
 
-  int _tabIndex = 0;
-
-  int get tabIndex => _tabIndex;
-
-  set tabIndex(int index) {
-    _tabIndex = index;
-  }
-
   // Getters
   Vehicle? get selectedVehicle => _selectedVehicle;
 
@@ -82,7 +74,6 @@ class GarageProvider extends ChangeNotifier {
     }
 
     notifyListeners();
-    print("Notificando cambio de actividades");
   }
 
   // Cerrar sesión
@@ -111,7 +102,6 @@ class GarageProvider extends ChangeNotifier {
     if (_selectedVehicle == null) {
       _initialized = false;
     }
-    print("Terminando delteVehicle");
   }
 
   Future<void> updateVehicle(Vehicle vehicle) async {
@@ -172,7 +162,7 @@ class GarageProvider extends ChangeNotifier {
         for (var activity in vehicle.activities) {
           if (activity.getType == oldName) {
             activity as CustomActivity;
-            activity.setType(newName);
+            activity.setCustomType(newName);
           }
         }
       }

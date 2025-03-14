@@ -1,4 +1,5 @@
 import 'package:mi_garaje/data/models/activity.dart';
+import 'package:mi_garaje/data/models/custom.dart';
 
 class Vehicle {
   String? id;
@@ -86,11 +87,10 @@ class Vehicle {
   List<Activity> getActivities(String type) {
     List<Activity> filteredActivities;
     if (!["Repair", "Refuel", "Record"].contains(type)){
-      filteredActivities = activities.where((activity) => activity.getType == type).toList();
+      filteredActivities = activities.where((activity) => (activity is CustomActivity) && activity.getCustomType == type).toList();
     } else {
       filteredActivities = activities.where((activity) => activity.getActivityType == type).toList();
     }
-    
     filteredActivities.sort((a, b) => b.date.compareTo(a.date));
     return filteredActivities;
   }

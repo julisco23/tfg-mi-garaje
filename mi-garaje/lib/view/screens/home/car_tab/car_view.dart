@@ -34,7 +34,7 @@ class _CarTabViewState extends State<CarTabView> with SingleTickerProviderStateM
     tabs = _tabState.activityTypes.map((type) => Tab(text: type)).toList();
     tabContents = _tabState.activityTypes.map((type) => _buildTabContent(type)).toList();
 
-    final tabIndex = Provider.of<GarageProvider>(context, listen: false).tabIndex;
+    final tabIndex = _tabState.tabIndex;
     _tabController = TabController(length: tabs.length, vsync: this, initialIndex: tabIndex);
   }
 
@@ -102,7 +102,6 @@ class _CarTabViewState extends State<CarTabView> with SingleTickerProviderStateM
   }
 
   Widget _buildTabContent(String activityType) {
-    print("Building tab content for $activityType");
     return Consumer<GarageProvider>(
       builder: (context, garageProvider, _) {
         final vehicle = garageProvider.selectedVehicle;

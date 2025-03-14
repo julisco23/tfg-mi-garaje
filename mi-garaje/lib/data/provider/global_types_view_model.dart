@@ -52,7 +52,7 @@ class GlobalTypesViewModel extends ChangeNotifier {
 
     return refuelTypes;
     } catch (e) {
-      print("****Error al obtener tipos de $typeName: $e");
+      print("Error al obtener tipos de $typeName: $e");
       return [];
     }
   }
@@ -161,9 +161,6 @@ class GlobalTypesViewModel extends ChangeNotifier {
       "Vehicle": GlobalTypesService.getTypes("tipos_vehiculo"),
       "Activity": GlobalTypesService.getTypes("tipos_actividad"),
     };
-
-    print("Tipos globales cargados: $_globalTypes");
-    //notifyListeners();
   }
 
   Future<void> getTabs() async {

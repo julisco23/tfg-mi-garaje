@@ -4,6 +4,8 @@ class TabState with ChangeNotifier {
   List<String> _activityTypes = [];
   bool _isScrollable = false;
 
+  int tabIndex = 0;
+
   List<String> get activityTypes => _activityTypes;
   bool get isScrollable => _isScrollable;
 

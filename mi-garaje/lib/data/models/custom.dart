@@ -2,7 +2,7 @@ import 'package:mi_garaje/data/models/activity.dart';
 
 class CustomActivity extends Activity {
   String customType;
-  String title;
+  String type;
   String? photo;
   String? details;
 
@@ -10,7 +10,7 @@ class CustomActivity extends Activity {
     super.idActivity,
     required super.date,
     this.details,
-    required this.title,
+    required this.type,
     required this.customType,
     this.photo,
     super.cost,
@@ -20,22 +20,22 @@ class CustomActivity extends Activity {
   String get getActivityType => activityType.getName;
 
   @override
-  String get getType => customType;
+  String get getType => type;
 
-  void setType(String type) {
-    customType = type;
+  void setCustomType(String customType) {
+    customType = customType;
   }
 
-  String get getTitle => title;
+  String get getCustomType => customType;
 
   @override
   num? get getCost => cost;
 
   @override
-  String get getDetails => details!;
+  String? get getDetails => details;
 
   @override
-  String get getPhoto => photo!;
+  String? get getPhoto => photo;
 
   @override
   Map<String, dynamic> toMap() {
@@ -47,7 +47,7 @@ class CustomActivity extends Activity {
       'details': details,
       'customType': customType,
       'photo': photo,
-      'title': title,
+      'type': type,
     };
   }
 
@@ -59,7 +59,7 @@ class CustomActivity extends Activity {
       cost: map['cost'], 
       customType: map['customType'],
       photo: map['photo'],
-      title: map['title'],
+      type: map['type'],
     );
   }
 

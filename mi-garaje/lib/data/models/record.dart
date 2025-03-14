@@ -24,10 +24,10 @@ class Record extends Activity {
   String get getActivityType => activityType.getName;
 
   @override
-  String get getDetails => details!;
+  String? get getDetails => details;
 
   @override
-  String get getPhoto => photo!;
+  String? get getPhoto => photo;
 
   @override
   Map<String, dynamic> toMap() {

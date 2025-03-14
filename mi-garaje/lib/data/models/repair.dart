@@ -23,8 +23,11 @@ class Repair extends Activity {
   @override
   String get getActivityType => activityType.getName;
 
-  String get getDetails => details!;
-  String get getPhoto => photo!;
+  @override
+  String? get getDetails => details;
+
+  @override
+  String? get getPhoto => photo;
 
   @override
   Map<String, dynamic> toMap() {

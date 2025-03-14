@@ -79,7 +79,6 @@ class AuthViewModel extends ChangeNotifier {
       response = await _authService.signout();
     }
     _user = user;
-    print('User: $user');
     return response;
   }
 

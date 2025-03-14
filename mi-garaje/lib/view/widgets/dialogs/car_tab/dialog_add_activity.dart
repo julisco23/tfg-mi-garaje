@@ -63,6 +63,7 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
   Uint8List? imageBytes;
 
   late String customType;
+  bool isCustom = false;
 
   late Future<List<String>> _typesFuture;
 
@@ -70,9 +71,15 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
   void initState() {
     super.initState();
 
-    customType = widget.customType ?? widget.activity!.getType;
-
     if (widget.activity != null) {
+      if (widget.activity is CustomActivity) {
+        customType = widget.activity!.getType;
+        isCustom = true;
+      } else {
+        customType = widget.activity!.getActivityType;
+        print(customType);
+        _typesFuture = Provider.of<GlobalTypesViewModel>(context, listen: false).getTypes(customType);
+      }
       costController.text = widget.activity!.getCost.toString();
       selectedDate = widget.activity!.getDate;
       selectedType = widget.activity!.getType;
@@ -86,14 +93,17 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
           imageBytes = base64Decode(widget.activity!.getPhoto!);
         }
         if (widget.activity is CustomActivity) {
-          activityTypeController.text =
-              (widget.activity as CustomActivity).getActivityType;
+          activityTypeController.text = (widget.activity as CustomActivity).getActivityType;
         }
       }
-    }
-
-    if (["Repair", "Refuel", "Record"].contains(widget.customType)) {
-      _typesFuture = Provider.of<GlobalTypesViewModel>(context, listen: false).getTypes(customType);
+    } else {
+      customType = widget.customType!;
+      if (["Refuel", "Repair", "Record"].contains(widget.customType)) {
+        _typesFuture = Provider.of<GlobalTypesViewModel>(context, listen: false).getTypes(customType);
+      } else {
+        isCustom = true;
+      }
+      
     }
   }
 
@@ -138,7 +148,7 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
                   SizedBox(height: AppDimensions.screenHeight(context) * 0.05),
 
                   // Selección de Tipo
-                  if (!["Repair", "Refuel", "Record"].contains(widget.customType)) ...[
+                  if (isCustom) ...[
                     MiTextFormField(
                       controller: activityTypeController,
                       labelText: 'Tipo de ${customType.toLowerCase()}',
@@ -232,7 +242,7 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
                   SizedBox(height: AppDimensions.screenHeight(context) * 0.03),
                   
                   // Campo "Precio por Litro"
-                  if (widget.customType == "Refuel") ...[
+                  if (widget.customType == "Refuel" || widget.activity is Refuel) ...[
                     MiTextFormField(
                       controller: costLiterController,
                       labelText: 'Precio por Litro (€)',
@@ -365,7 +375,7 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
                                         ? base64Encode(imageBytes!)
                                         : null,
                                     customType: customType,
-                                    title: activityTypeController.text,
+                                    type: activityTypeController.text,
                                   );
                                   break;
                               }
