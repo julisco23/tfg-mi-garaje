@@ -5,10 +5,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mi_garaje/data/models/vehicle.dart';
 import 'package:mi_garaje/data/provider/global_types_view_model.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
-import 'package:mi_garaje/view/widgets/elevated_button_utils.dart';
-import 'package:mi_garaje/view/widgets/text_form_field.dart';
+import 'package:mi_garaje/view/widgets/utils/elevated_button_utils.dart';
+import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
-import 'package:mi_garaje/view/widgets/toastFlutter/fluttertoast.dart';
+import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 class DialogAddVehicle extends StatefulWidget {
@@ -49,8 +49,7 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
   String? selectedVehicleType;
   Uint8List? imageBytes;
 
-  late List<String> _vehiclesTypes;
-
+  late Future<List<String>> _vehiclesTypes;
 
   @override
   void initState() {
@@ -65,7 +64,8 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
       }
     }
 
-    _vehiclesTypes = Provider.of<GlobalTypesViewModel>(context, listen: false).globalTypes['vehicles']!;
+    _vehiclesTypes = Provider.of<GlobalTypesViewModel>(context, listen: false)
+        .getTypes('Vehicle');
   }
 
   Future<void> _pickImage() async {
@@ -120,43 +120,65 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
                   // Selector de tipo de vehículo
                   SizedBox(
                     width: double.infinity,
-                    child: DropdownButtonFormField<String>(
-                      value: selectedVehicleType,
-                      decoration: InputDecoration(
-                        floatingLabelStyle:
-                            TextStyle(color: Theme.of(context).primaryColor),
-                        labelText: 'Tipo de Vehículo',
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide.none,
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide.none,
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        filled: true,
-                      ),
-                      onChanged: (newValue) {
-                        setState(() {
-                          selectedVehicleType = newValue;
-                        });
+                    child: FutureBuilder<List<String>>(
+                      future: _vehiclesTypes,
+                      builder: (context, snapshot) {
+                        return DropdownButtonFormField<String>(
+                          value: selectedVehicleType,
+                          decoration: InputDecoration(
+                            floatingLabelStyle: TextStyle(
+                                color: Theme.of(context).primaryColor),
+                            labelText: 'Tipo de Vehículo',
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            filled: true,
+                          ),
+                          onChanged: (newValue) {
+                            setState(() {
+                              selectedVehicleType = newValue;
+                            });
+                          },
+                          items: [
+                            // Opción por defecto
+                            DropdownMenuItem<String>(
+                              value: null,
+                              child: Text("Tipo de Vehiculo",
+                                  style:
+                                      Theme.of(context).textTheme.bodyMedium),
+                            ),
+                            // Opciones de tipos cargadas dinámicamente
+                            if (snapshot.connectionState !=
+                                ConnectionState.waiting)
+                              ...snapshot.data!.map<DropdownMenuItem<String>>(
+                                (String tipo) {
+                                  return DropdownMenuItem<String>(
+                                    value: tipo,
+                                    child: Text(tipo,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium),
+                                  );
+                                },
+                              ),
+                            if (snapshot.connectionState ==
+                                    ConnectionState.waiting &&
+                                selectedVehicleType != null)
+                              DropdownMenuItem<String>(
+                                value: selectedVehicleType,
+                                child: Text(selectedVehicleType!,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium),
+                              ),
+                          ]
+                        );
                       },
-                      items: [
-                        // Opción por defecto
-                        DropdownMenuItem<String>(
-                          value: null,
-                          child: Text("Tipo de Vehiculo",
-                              style: Theme.of(context).textTheme.bodyMedium),
-                        ),
-                        // Opciones de tipos cargadas dinámicamente
-                        ..._vehiclesTypes.map<DropdownMenuItem<String>>((String tipo) {
-                          return DropdownMenuItem<String>(
-                            value: tipo,
-                            child: Text(tipo,
-                                style: Theme.of(context).textTheme.bodyMedium),
-                          );
-                        }),
-                      ]
                     ),
                   ),
                   SizedBox(height: AppDimensions.screenHeight(context) * 0.03),
@@ -230,7 +252,7 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
                             ),
                     ],
                   ),
-                  SizedBox(height: AppDimensions.screenHeight(context) * 0.1),
+                  SizedBox(height: AppDimensions.screenHeight(context) * 0.05),
 
                   // Botones de acción
                   Row(

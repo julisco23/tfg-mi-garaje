@@ -3,7 +3,7 @@ import 'package:mi_garaje/data/models/vehicle.dart';
 import 'package:mi_garaje/view/widgets/cards/vehicle_card.dart';
 import 'package:mi_garaje/view/widgets/dialogs/garage_tab/dialog_add_vehicle.dart';
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_confirm.dart';
-import 'package:mi_garaje/view/widgets/toastFlutter/fluttertoast.dart';
+import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
 
@@ -59,7 +59,7 @@ class _GarageViewState extends State<GarageView> {
                     return await ConfirmDialog.show(
                       context,
                       'Eliminar vehículo',
-                      '¿Estás seguro de que quieres eliminar este vehículo?',
+                      '¿Estás seguro de que quieres eliminar este vehículo y todas sus actividades?',
                     );
                   },
                   onDismissed: (direction) async {

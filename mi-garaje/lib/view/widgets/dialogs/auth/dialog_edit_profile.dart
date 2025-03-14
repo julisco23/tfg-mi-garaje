@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/constants/validator.dart';
-import 'package:mi_garaje/view/widgets/text_form_field.dart';
+import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
 import 'package:mi_garaje/data/provider/auth_provider.dart';
 
 class DialogEditProfile extends StatefulWidget {

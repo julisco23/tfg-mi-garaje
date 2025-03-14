@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:mi_garaje/data/models/activity.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:mi_garaje/data/provider/global_types_view_model.dart';
 import 'package:mi_garaje/data/provider/tab_update_notifier.dart';
@@ -7,9 +8,6 @@ import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/view/widgets/cards/activity_card.dart';
 import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_add_activity.dart';
 import 'package:provider/provider.dart';
-import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_add_repostaje.dart';
-import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_add_documento.dart';
-import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_add_mantenimiento.dart';
 
 class CarTabView extends StatefulWidget {
   const CarTabView({super.key});
@@ -23,7 +21,7 @@ class _CarTabViewState extends State<CarTabView> with SingleTickerProviderStateM
   late List<String> activityTypes;
   late List<Tab> tabs;
   late List<Widget> tabContents;
-  late TabState _tabState; // Instancia del TabState
+  late TabState _tabState;
 
   @override
   void initState() {
@@ -73,7 +71,7 @@ class _CarTabViewState extends State<CarTabView> with SingleTickerProviderStateM
               controller: _tabController,
               tabs: tabs,
               indicatorSize: TabBarIndicatorSize.tab,
-              isScrollable: _tabState.isScrollable,  // Usa el valor del TabState
+              isScrollable: _tabState.isScrollable,
             ),
           ),
           body: TabBarView(
@@ -100,26 +98,15 @@ class _CarTabViewState extends State<CarTabView> with SingleTickerProviderStateM
     final index = _tabController.index;
     final currentType = _tabState.activityTypes[index];
 
-    switch (currentType) {
-      case "Repostaje":
-        DialogAddRefuel.show(context, garageProvider);
-        break;
-      case "Mantenimiento":
-        DialogAddRepair.show(context, garageProvider);
-        break;
-      case "Documento":
-        DialogAddDocument.show(context, garageProvider);
-        break;
-      default:
-        DialogAddActivity.show(context, garageProvider, customType: currentType);
-    }
+    DialogAddActivity.show(context, garageProvider, customType: currentType);
   }
 
   Widget _buildTabContent(String activityType) {
+    print("Building tab content for $activityType");
     return Consumer<GarageProvider>(
       builder: (context, garageProvider, _) {
         final vehicle = garageProvider.selectedVehicle;
-        final activities = vehicle?.getActivities(activityType) ?? [];
+        late List<Activity> activities = vehicle?.getActivities(activityType) ?? [];
 
         return RefreshIndicator(
           onRefresh: () async {

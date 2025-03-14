@@ -15,13 +15,16 @@ class Repair extends Activity {
   }) : super(activityType: ActivityType.repair);
 
   @override
-  String get getTpye => repairType;
+  String get getType => repairType;
 
   @override
   num? get getCost => cost;
 
   @override
   String get getActivityType => activityType.getName;
+
+  String get getDetails => details!;
+  String get getPhoto => photo!;
 
   @override
   Map<String, dynamic> toMap() {

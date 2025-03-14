@@ -10,20 +10,32 @@ class CustomActivity extends Activity {
     super.idActivity,
     required super.date,
     this.details,
-    required this.customType,
     required this.title,
+    required this.customType,
     this.photo,
     super.cost,
   }) : super(activityType: ActivityType.custom);
 
   @override
-  String get getActivityType => customType;
+  String get getActivityType => activityType.getName;
 
   @override
-  String get getTpye => title;
+  String get getType => customType;
+
+  void setType(String type) {
+    customType = type;
+  }
+
+  String get getTitle => title;
 
   @override
   num? get getCost => cost;
+
+  @override
+  String get getDetails => details!;
+
+  @override
+  String get getPhoto => photo!;
 
   @override
   Map<String, dynamic> toMap() {

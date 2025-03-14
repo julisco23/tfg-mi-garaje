@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mi_garaje/data/models/repair.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
-import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_add_mantenimiento.dart';
 import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_delete_activity.dart';
-import 'package:mi_garaje/view/widgets/elevated_button_utils.dart';
+import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_add_activity.dart';
+import 'package:mi_garaje/view/widgets/utils/elevated_button_utils.dart';
 import 'package:provider/provider.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'dart:convert';
@@ -62,7 +62,7 @@ class _RepairViewState extends State<RepairView> {
                       ),
                       SizedBox(width: AppDimensions.screenWidth(context) * 0.02),
                       Text(
-                        repair.getTpye,
+                        repair.getType,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
@@ -129,13 +129,13 @@ class _RepairViewState extends State<RepairView> {
                   MiButton(
                     text: "Editar",
                     onPressed: () {
-                      DialogAddRepair.show(
+                      DialogAddActivity.show(
                         context,
                         Provider.of<GarageProvider>(context, listen: false),
-                        mantenimiento: repair,
-                        onRepairUpdated: (updatedDocumento) {
+                        activity: repair,
+                        onActivityUpdated: (updatedDocumento) {
                           setState(() {
-                            repair = updatedDocumento;
+                            repair = updatedDocumento as Repair;
                           });
                         },
                       );

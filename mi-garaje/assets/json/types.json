@@ -3,6 +3,6 @@
     "tipos_mantenimiento": ["Cambio de aceite", "Frenos", "Neumáticos", "Batería", "Revisión general"],
     "tipos_documentos": ["Seguro", "ITV", "Permiso de circulación", "Multa"],
     "tipos_vehiculo": ["Coche", "Moto", "Camión", "Autobús", "Bicicleta", "Patinete eléctrico"],
-    "tipos_actividad": ["Repostaje", "Mantenimiento", "Documento"]
+    "tipos_actividad": ["Refuel", "Repair", "Record"]
 }
   

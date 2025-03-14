@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:mi_garaje/data/provider/tab_update_notifier.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/view/widgets/cards/types_card.dart';
+import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_confirm.dart';
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_name_type.dart';
-import 'package:mi_garaje/view/widgets/text_form_field.dart';
+import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
 import 'package:mi_garaje/data/provider/global_types_view_model.dart';
-import 'package:mi_garaje/view/widgets/toastFlutter/fluttertoast.dart';
+import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 class TypesView extends StatefulWidget {
@@ -18,12 +20,11 @@ class TypesView extends StatefulWidget {
 }
 
 class _TypesViewState extends State<TypesView> {
-  late String add, remove, typeName;
   late Stream<List<String>> typesFuture;
   late Stream<List<String>> removedtypesFuture;
   late List<String> getTypesGlobal;
   bool isActivity = false;
-
+  bool isVehicle = false;
 
   @override
   void didChangeDependencies() {
@@ -32,39 +33,18 @@ class _TypesViewState extends State<TypesView> {
   }
 
   void defineTypes() {
-    switch (widget.type) {
-      case 'Repostaje':
-        add = 'addedRefuelTypes';
-        remove = 'removedRefuelTypes';
-        typeName = 'refuelTypes';
-        break;
-      case 'Mantenimiento':
-        add = 'addedRepairTypes';
-        remove = 'removedRepairTypes';
-        typeName = 'repairTypes';
-        break;
-      case 'Documento':
-        add = 'addedRecordTypes';
-        remove = 'removedRecordTypes';
-        typeName = 'recordTypes';
-        break;
-      case 'Vehicle':
-        add = 'addedVehicles';
-        remove = 'removedVehicles';
-        typeName = 'vehicles';
-        break;
-      case 'Activity':
-        add = 'addedActivities';
-        remove = 'removedActivities';
-        typeName = 'activities';
-        isActivity = true;
-        break;
+    isActivity = widget.type == 'Activity';
+    isVehicle = widget.type == 'Vehicle';
+
+    print('isActivity: $isActivity');
+
+    typesFuture =
+        Provider.of<GlobalTypesViewModel>(context).getTypesStream(widget.type);
+
+    if (!isActivity) {
+      removedtypesFuture = Provider.of<GlobalTypesViewModel>(context).getRemovedTypesStream(widget.type);
     }
-    typesFuture = Provider.of<GlobalTypesViewModel>(context).getTypesStream(typeName, add, remove);
-    print('typesFuture: $typesFuture');
-    removedtypesFuture = Provider.of<GlobalTypesViewModel>(context).getRemovedTypesStream(add, remove);
-    getTypesGlobal = Provider.of<GlobalTypesViewModel>(context).globalTypes[typeName]!;
-    print('getTypesGlobal: $getTypesGlobal');
+    getTypesGlobal = Provider.of<GlobalTypesViewModel>(context).globalTypes[widget.type]!;
   }
 
   @override
@@ -75,7 +55,7 @@ class _TypesViewState extends State<TypesView> {
     // Función para agregar nuevos tipos
     void addType() {
       if (controller.text.isNotEmpty) {
-        typeViewModel.addType(controller.text, typeName, add, remove);
+        typeViewModel.addType(controller.text, widget.type);
         if (isActivity) {
           Provider.of<TabState>(context, listen: false).newTab(controller.text);
         }
@@ -85,18 +65,33 @@ class _TypesViewState extends State<TypesView> {
     }
 
     // Función para eliminar tipos
-    void removeType(String type) {
-      typeViewModel.removeType(type, typeName, add, remove);
-      if (isActivity) {
-        Provider.of<TabState>(context, listen: false).removeTab(type);
+    Future<void> removeType(String typeName) async {
+      await typeViewModel.removeType(typeName, widget.type);
+      if (context.mounted) {
+        if (isActivity) {
+          Provider.of<TabState>(context, listen: false).removeTab(typeName);
+          Provider.of<GarageProvider>(context, listen: false).deleteAllActivities(typeName);
+        } else if (isVehicle) {
+          Provider.of<GarageProvider>(context, listen: false).deleteVehicleType(typeName, widget.type);
+        } else{
+          Provider.of<GarageProvider>(context, listen: false).deleteAllActivities(typeName, type: widget.type);
+        }
       }
     }
 
     // Función para editar tipos
-    void editType(String oldName, String newName) {
-      typeViewModel.editType(oldName, newName, typeName, add, remove);
-      if (isActivity) {
-        Provider.of<TabState>(context, listen: false).editTab(oldName, newName);
+    Future<void> editType(String oldName, String newName) async {
+      await typeViewModel.editType(oldName, newName, widget.type);
+      if (context.mounted) {
+        if (isActivity) {
+          Provider.of<TabState>(context, listen: false).editTab(oldName, newName);
+          print('oldName: $oldName, newName: $newName, type: ${widget.type}');
+          Provider.of<GarageProvider>(context, listen: false).editAllActivities(oldName, newName);
+        } else if (isVehicle) {
+          await Provider.of<GarageProvider>(context, listen: false).updateVehicleType(oldName, newName, widget.type);
+        } else {
+          Provider.of<GarageProvider>(context, listen: false).editAllActivities(oldName, newName, type: widget.type);
+        }
       }
     }
 
@@ -130,7 +125,8 @@ class _TypesViewState extends State<TypesView> {
                     StreamBuilder<List<String>>(
                       stream: typesFuture,
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
                           return Center(child: CircularProgressIndicator());
                         }
 
@@ -142,7 +138,9 @@ class _TypesViewState extends State<TypesView> {
                             children: [
                               // Título 'Tipos' dentro del StreamBuilder
                               _buildSectionTitle(context, 'Tipos'),
-                              SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
+                              SizedBox(
+                                  height: AppDimensions.screenHeight(context) *
+                                      0.01),
 
                               // Lista de tipos
                               Column(
@@ -155,19 +153,31 @@ class _TypesViewState extends State<TypesView> {
                                       String typeItem = userTypes[index];
                                       return Dismissible(
                                         key: Key(typeItem),
-                                        direction: (isActivity && getTypesGlobal.contains(typeItem)) ? DismissDirection.none : DismissDirection.endToStart,
+                                        direction: (isActivity &&
+                                                getTypesGlobal
+                                                    .contains(typeItem))
+                                            ? DismissDirection.none
+                                            : DismissDirection.endToStart,
                                         background: Container(
                                           color: Colors.red,
                                           alignment: Alignment.centerRight,
                                           padding: EdgeInsets.only(right: 20.0),
-                                          child: Icon(Icons.delete, color: Colors.white),
+                                          child: Icon(Icons.delete,
+                                              color: Colors.white),
                                         ),
                                         confirmDismiss: (direction) async {
                                           if (userTypes.length == 1) {
-                                            ToastHelper.show(context, 'No puedes eliminar el último ${widget.type}');
+                                            ToastHelper.show(context,
+                                                'No puedes eliminar el último ${widget.type}');
                                             return false;
                                           }
-                                          return true;
+                                          return await ConfirmDialog.show(
+                                            context,
+                                            'Eliminar $typeItem',
+                                            isVehicle
+                                              ? '¿Estás seguro de que quieres eliminar $typeItem y todos los vehículos asociados?'
+                                              : '¿Estás seguro de que quieres eliminar $typeItem y todas las actividades asociadas?',
+                                          );
                                         },
                                         onDismissed: (direction) {
                                           removeType(typeItem);
@@ -175,18 +185,25 @@ class _TypesViewState extends State<TypesView> {
                                         child: TypesCard(
                                           initialTitle: typeItem,
                                           icon: Icons.edit,
-                                          contains: getTypesGlobal.contains(typeItem),
-                                          onNameChanged: (newName) => typeViewModel.editType(typeItem, newName, typeName, add, remove),
+                                          contains:
+                                              getTypesGlobal.contains(typeItem),
+                                          onNameChanged: (newName) =>
+                                              typeViewModel.editType(typeItem,
+                                                  newName, widget.type),
                                           onPressed: () => EditTypeDialog.show(
-                                            context, 
-                                            typeItem, 
-                                            (newName) => editType(typeItem, newName),
+                                            context,
+                                            typeItem,
+                                            (newName) =>
+                                                editType(typeItem, newName),
                                           ),
                                         ),
                                       );
                                     },
                                   ),
-                                  SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
+                                  SizedBox(
+                                      height:
+                                          AppDimensions.screenHeight(context) *
+                                              0.02),
                                 ],
                               ),
                             ],
@@ -195,10 +212,8 @@ class _TypesViewState extends State<TypesView> {
                       },
                     ),
 
-                    isActivity 
-                    ? _buildDeletedList(typeViewModel)
-                    : SizedBox(),
-                  ],  
+                    isActivity ? SizedBox() : _buildDeletedList(typeViewModel),
+                  ],
                 ),
               ),
             ),
@@ -208,7 +223,8 @@ class _TypesViewState extends State<TypesView> {
     );
   }
 
-  StreamBuilder<List<String>> _buildDeletedList(GlobalTypesViewModel typeViewModel) {
+  StreamBuilder<List<String>> _buildDeletedList(
+      GlobalTypesViewModel typeViewModel) {
     return StreamBuilder<List<String>>(
       stream: removedtypesFuture,
       builder: (context, snapshot) {
@@ -220,7 +236,7 @@ class _TypesViewState extends State<TypesView> {
 
         // Verifica si la lista está vacía
         if (removedTypes.isEmpty) {
-          return SizedBox();  // Retorna un SizedBox vacío si no hay tipos eliminados
+          return SizedBox(); // Retorna un SizedBox vacío si no hay tipos eliminados
         }
 
         return Column(
@@ -236,7 +252,8 @@ class _TypesViewState extends State<TypesView> {
                 return TypesCard(
                   initialTitle: removedItem,
                   icon: Icons.restore,
-                  onPressed: () => typeViewModel.reactivateType(removedItem, typeName, add, remove),
+                  onPressed: () =>
+                      typeViewModel.reactivateType(removedItem, widget.type),
                 );
               }).toList(),
             ),
@@ -249,7 +266,10 @@ class _TypesViewState extends State<TypesView> {
   Widget _buildSectionTitle(BuildContext context, String title) {
     return Text(
       title,
-      style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 18, fontWeight: FontWeight.bold),
+      style: TextStyle(
+          color: Theme.of(context).primaryColor,
+          fontSize: 18,
+          fontWeight: FontWeight.bold),
     );
   }
 }

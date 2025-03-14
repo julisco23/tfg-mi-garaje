@@ -110,7 +110,7 @@ class ActivityCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(activity.getTpye),
+                    Text(activity.getType),
                     SizedBox(height: AppDimensions.screenHeight(context) * 0.005),
                     Text(
                       DateFormat('dd/MM/yyyy').format(activity.date),

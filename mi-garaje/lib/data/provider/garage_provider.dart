@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mi_garaje/data/models/activity.dart';
+import 'package:mi_garaje/data/models/custom.dart';
 import 'package:mi_garaje/data/models/vehicle.dart';
 import 'package:mi_garaje/data/services/car_service.dart';
 
@@ -22,7 +23,10 @@ class GarageProvider extends ChangeNotifier {
   Vehicle? get selectedVehicle => _selectedVehicle;
 
   late List<Vehicle> _vehicles;
-  List<Vehicle> get vehicles => _vehicles;
+  List<Vehicle> get vehicles {
+    _vehicles.sort((a, b) => a.creationDate!.compareTo(b.creationDate!));
+    return _vehicles;
+  }
 
   void initializeUser(String userId) {
     _userId = userId;
@@ -36,6 +40,7 @@ class GarageProvider extends ChangeNotifier {
     _initialized = true;
 
     _vehicles = await carService.getVehiclesFuture(_userId!);
+
     if (_vehicles.isNotEmpty) {
       _selectedVehicle = _vehicles.first;
       await loadActivities();
@@ -143,6 +148,45 @@ class GarageProvider extends ChangeNotifier {
   }
 
   void notify() {
+    notifyListeners();
+  }
+
+  void deleteAllActivities(String typeName, {String? type}) {
+    type ??= "custom";
+
+    carService.removeAllActivities(_userId!, typeName, type);
+    if (type == "custom") {
+      for (var vehicle in _vehicles) {
+        vehicle.activities.removeWhere((activity) => activity.getType == typeName);
+      }
+    }
+    notifyListeners();
+  }
+
+  void editAllActivities(String oldName, String newName, {String? type}) {
+    type ??= "custom";
+
+    carService.editAllActivities(_userId!, oldName, newName, type);
+    if (type == "custom") {
+      for (var vehicle in _vehicles) {
+        for (var activity in vehicle.activities) {
+          if (activity.getType == oldName) {
+            activity as CustomActivity;
+            activity.setType(newName);
+          }
+        }
+      }
+    }
+    notifyListeners();
+  }
+
+  Future<void> deleteVehicleType(String type, String typeName) async {
+    await carService.deleteVehicleType(_userId!, type, typeName);
+    notifyListeners();
+  }
+
+  Future<void> updateVehicleType(String oldName, String newName, String type) async {
+    await carService.updateVehicleType(_userId!, oldName, newName, type);
     notifyListeners();
   }
 }

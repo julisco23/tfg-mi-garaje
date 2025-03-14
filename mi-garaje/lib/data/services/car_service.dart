@@ -208,4 +208,152 @@ class CarService {
       rethrow;
     }
   }
+
+  Future<void> removeAllActivities(String userId, String typeName, String type) async {
+    try {
+      var vehiclesSnapshot = await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('vehicles')
+          .get();
+
+      for (var vehicleDoc in vehiclesSnapshot.docs) {
+        var vehicleId = vehicleDoc.id;
+
+        var activitiesSnapshot = await _firestore
+            .collection('users')
+            .doc(userId)
+            .collection('vehicles')
+            .doc(vehicleId)
+            .collection('activities')
+            .get();
+
+        List<String> activityIdsToDelete = [];
+        for (var activityDoc in activitiesSnapshot.docs) {
+          var activityData = activityDoc.data();
+
+          if (activityData['${type.toLowerCase()}Type'] == typeName) {
+            activityIdsToDelete.add(activityDoc.id);
+          }
+        }
+
+        if (activityIdsToDelete.isNotEmpty) {
+          for (var activityId in activityIdsToDelete) {
+            await _firestore
+                .collection('users')
+                .doc(userId)
+                .collection('vehicles')
+                .doc(vehicleId)
+                .collection('activities')
+                .doc(activityId)
+                .delete();
+          }
+        }
+      }
+
+      print("Todas las actividades eliminadas correctamente.");
+    } catch (e) {
+      print("Error al eliminar actividades: $e");
+    }
+  }
+
+  Future<void> editAllActivities(String userId, String oldName, String newName, String type) async {
+    try {
+      print(type);
+      var vehiclesSnapshot = await _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('vehicles')
+        .get();
+
+      for (var vehicleDoc in vehiclesSnapshot.docs) {
+        var vehicleId = vehicleDoc.id;
+
+        var activitiesSnapshot = await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('vehicles')
+          .doc(vehicleId)
+          .collection('activities')
+          .get();
+
+        for (var activityDoc in activitiesSnapshot.docs) {
+          var activityData = activityDoc.data();
+
+          if (activityData['${type.toLowerCase()}Type'] == oldName) {
+            await _firestore
+              .collection('users')
+              .doc(userId)
+              .collection('vehicles')
+              .doc(vehicleId)
+              .collection('activities')
+              .doc(activityDoc.id)
+              .update({'${type.toLowerCase()}Type': newName});
+          }
+        }
+      }
+
+      print("Todas las actividades editadas correctamente.");
+    } catch (e) {
+      print("Error al editar actividades: $e");
+    }
+  }
+
+  Future<void> updateVehicleType(String userId, String oldName, String newName, String type) async {
+    try {
+      var vehiclesSnapshot = await _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('vehicles')
+        .get();
+
+      for (var vehicleDoc in vehiclesSnapshot.docs) {
+        var vehicleId = vehicleDoc.id;
+        var vehicleData = vehicleDoc.data();
+
+        if (vehicleData['${type.toLowerCase()}Type'] == oldName) {
+          await _firestore
+            .collection('users')
+            .doc(userId)
+            .collection('vehicles')
+            .doc(vehicleId)
+            .update({'${type.toLowerCase()}Type': newName});
+        }
+      }
+
+      print("Todas los vehiculos editadas correctamente.");
+    } catch (e) {
+      print("Error al editar actividades: $e");
+    }
+  }
+
+  Future<void> deleteVehicleType(String userId, String typeName, String type) async {
+    try {
+      var vehiclesSnapshot = await _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('vehicles')
+        .get();
+
+      for (var vehicleDoc in vehiclesSnapshot.docs) {
+        var vehicleId = vehicleDoc.id;
+        var vehicleData = vehicleDoc.data();
+
+        if (vehicleData['${type.toLowerCase()}Type'] == typeName) {
+          await _firestore
+            .collection('users')
+            .doc(userId)
+            .collection('vehicles')
+            .doc(vehicleId)
+            .delete();
+        }
+      }
+
+      print("Todas los vehiculos eliminados correctamente.");
+    } catch (e) {
+      print("Error al editar actividades: $e");
+    }
+  }
+
+
 }

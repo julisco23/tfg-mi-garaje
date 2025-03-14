@@ -7,6 +7,7 @@ class Vehicle {
   String? model;
   String? photo;
   String vehicleType;
+  DateTime? creationDate;
 
   List<Activity> activities = [];
 
@@ -15,9 +16,12 @@ class Vehicle {
     this.name,
     required this.brand,
     required this.model,
+    this.creationDate,
     this.photo,
     required this.vehicleType,
-  });
+  }) {
+    creationDate = creationDate ?? DateTime.now();
+  }
 
   void setActivities(List<Activity> activities) {
     this.activities = activities;
@@ -55,6 +59,10 @@ class Vehicle {
     return vehicleType;
   }
 
+  void setVeicleType(String vehicleType) {
+    this.vehicleType = vehicleType;
+  }
+
   String getInitial() {
     return name != null && name!.isNotEmpty ? name!.substring(0, 1).toUpperCase() : brand.substring(0, 1).toUpperCase();
   }
@@ -76,9 +84,13 @@ class Vehicle {
   }
 
   List<Activity> getActivities(String type) {
-    List<Activity> filteredActivities =
-        activities.where((activity) => activity.getActivityType == type).toList();
-
+    List<Activity> filteredActivities;
+    if (!["Repair", "Refuel", "Record"].contains(type)){
+      filteredActivities = activities.where((activity) => activity.getType == type).toList();
+    } else {
+      filteredActivities = activities.where((activity) => activity.getActivityType == type).toList();
+    }
+    
     filteredActivities.sort((a, b) => b.date.compareTo(a.date));
     return filteredActivities;
   }
@@ -90,6 +102,7 @@ class Vehicle {
       'model': model,
       'photo': photo,
       'vehicleType': vehicleType,
+      'creationDate': creationDate!.toIso8601String(),
     };
   }
 
@@ -100,6 +113,7 @@ class Vehicle {
       model: map['model'] as String?,
       photo: map['photo'] as String?,
       vehicleType: map['vehicleType'],
+      creationDate: DateTime.parse(map['creationDate']),
     );
   }
 

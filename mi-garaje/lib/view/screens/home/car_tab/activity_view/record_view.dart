@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mi_garaje/data/models/record.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
-import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_add_documento.dart';
 import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_delete_activity.dart';
-import 'package:mi_garaje/view/widgets/elevated_button_utils.dart';
+import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_add_activity.dart';
+import 'package:mi_garaje/view/widgets/utils/elevated_button_utils.dart';
 import 'package:provider/provider.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'dart:convert';
@@ -62,7 +62,7 @@ class _RecordViewState extends State<RecordView> {
                       ),
                       SizedBox(width: AppDimensions.screenWidth(context) * 0.02),
                       Text(
-                        record.getTpye,
+                        record.getType,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
@@ -130,13 +130,13 @@ class _RecordViewState extends State<RecordView> {
                   MiButton(
                       text: "Editar",
                       onPressed: () {
-                        DialogAddDocument.show(
+                        DialogAddActivity.show(
                           context,
                           Provider.of<GarageProvider>(context, listen: false),
-                          documento: record,
-                          onDocumentoUpdated: (updatedDocumento) {
+                          activity: record,
+                          onActivityUpdated: (updatedDocumento) {
                             setState(() {
-                              record = updatedDocumento;
+                              record = updatedDocumento as Record;
                             });
                           },
                         );

@@ -7,20 +7,24 @@ class TabState with ChangeNotifier {
   List<String> get activityTypes => _activityTypes;
   bool get isScrollable => _isScrollable;
 
+  void upadteScrpollable() {
+    _isScrollable = _activityTypes.length > 5;
+  }
+
   void inicializar(List<String> types) {
     _activityTypes = types;
-    _isScrollable = types.length > 4; // Ajusta según la cantidad de tabs
+    upadteScrpollable();
   }
 
   void newTab(String text) {
     _activityTypes.add(text);
-    _isScrollable = _activityTypes.length > 4; // Ajusta según la cantidad de tabs
+    upadteScrpollable();
     notifyListeners();
   }
 
   void removeTab(String text) {
     _activityTypes.remove(text);
-    _isScrollable = _activityTypes.length > 4; // Ajusta según la cantidad de tabs
+    upadteScrpollable();
     notifyListeners();
   }
 

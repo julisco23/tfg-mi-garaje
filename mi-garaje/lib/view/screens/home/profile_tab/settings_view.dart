@@ -6,7 +6,7 @@ import 'package:mi_garaje/view/widgets/cards/settings_card.dart';
 import 'package:mi_garaje/view/widgets/dialogs/auth/dialog_create_profile.dart';
 import 'package:mi_garaje/view/widgets/dialogs/auth/dialog_edit_profile.dart';
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_confirm.dart';
-import 'package:mi_garaje/view/widgets/toastFlutter/fluttertoast.dart';
+import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:provider/provider.dart';
@@ -170,21 +170,21 @@ class SettingsView extends StatelessWidget {
               icon: Icons.local_gas_station_rounded, 
               title: "Tipos de repostaje", 
               onTap: () {
-                Navigator.pushNamed(context, RouteNames.types, arguments: {"type": "Repostaje"});
+                Navigator.pushNamed(context, RouteNames.types, arguments: {"type": "Refuel"});
               }
             ),
             SettingCard(
               icon: Icons.build_rounded, 
               title: "Tipos de mantenimiento", 
               onTap: () {
-              Navigator.pushNamed(context, RouteNames.types, arguments: {"type": "Mantenimiento"});
+              Navigator.pushNamed(context, RouteNames.types, arguments: {"type": "Repair"});
               }
             ),
             SettingCard(
               icon: Icons.description_rounded, 
               title: "Tipos de documentos",
               onTap: () {
-                Navigator.pushNamed(context, RouteNames.types, arguments: {"type": "Documento"});
+                Navigator.pushNamed(context, RouteNames.types, arguments: {"type": "Record"});
               }
             ),
             SettingCard(

@@ -15,13 +15,19 @@ class Record extends Activity {
   }) : super(activityType: ActivityType.record);
 
   @override
-  String get getTpye => recordType;
+  String get getType => recordType;
 
   @override
   num? get getCost => cost;
 
   @override
   String get getActivityType => activityType.getName;
+
+  @override
+  String get getDetails => details!;
+
+  @override
+  String get getPhoto => photo!;
 
   @override
   Map<String, dynamic> toMap() {

@@ -22,7 +22,7 @@ class DeleteActivityDialog extends StatelessWidget {
     return AlertDialog(
       title: Center(
         child: Text(
-          'Eliminar ${activity.getTpye}',
+          'Eliminar ${activity.getType}',
           textAlign: TextAlign.center,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),

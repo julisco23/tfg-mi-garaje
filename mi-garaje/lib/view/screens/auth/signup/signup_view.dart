@@ -3,11 +3,11 @@ import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:mi_garaje/data/provider/global_types_view_model.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/constants/validator.dart';
-import 'package:mi_garaje/view/widgets/toastFlutter/fluttertoast.dart';
+import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
-import 'package:mi_garaje/view/widgets/elevated_button_utils.dart';
-import 'package:mi_garaje/view/widgets/text_form_field.dart';
+import 'package:mi_garaje/view/widgets/utils/elevated_button_utils.dart';
+import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
 import 'package:mi_garaje/data/provider/auth_provider.dart';
 
 class SignupView extends StatefulWidget {

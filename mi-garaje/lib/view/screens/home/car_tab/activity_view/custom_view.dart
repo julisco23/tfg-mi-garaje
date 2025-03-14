@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mi_garaje/data/models/custom.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
-import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_add_activity.dart';
 import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_delete_activity.dart';
-import 'package:mi_garaje/view/widgets/elevated_button_utils.dart';
+import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_add_activity.dart';
+import 'package:mi_garaje/view/widgets/utils/elevated_button_utils.dart';
 import 'package:provider/provider.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'dart:convert';
@@ -32,7 +32,7 @@ class _CustomViewState extends State<CustomView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(custom.getActivityType),
+        title: Text(custom.getType),
         actions: [
           IconButton(
             icon: const Icon(Icons.delete),
@@ -57,7 +57,7 @@ class _CustomViewState extends State<CustomView> {
                 children: [
                   ListTile(
                     title: Text('Tipo'),
-                    subtitle: Text(custom.title),
+                    subtitle: Text(custom.getActivityType),
                   ),
                   ListTile(
                     title: Text('Fecha'),
@@ -122,10 +122,10 @@ class _CustomViewState extends State<CustomView> {
                       DialogAddActivity.show(
                         context,
                         Provider.of<GarageProvider>(context, listen: false),
-                        custom: custom,
-                        onCustomUpdated: (updatedCustom) {
+                        activity: custom,
+                        onActivityUpdated: (updatedCustom) {
                           setState(() {
-                            custom = updatedCustom;
+                            custom = updatedCustom as CustomActivity;
                           });
                         },
                       );

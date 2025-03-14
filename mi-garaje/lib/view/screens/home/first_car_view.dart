@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
-import 'package:mi_garaje/view/widgets/elevated_button_utils.dart';
+import 'package:mi_garaje/view/widgets/utils/elevated_button_utils.dart';
 import 'package:mi_garaje/view/widgets/dialogs/garage_tab/dialog_add_vehicle.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:provider/provider.dart';

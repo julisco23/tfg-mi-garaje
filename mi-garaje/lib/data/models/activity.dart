@@ -12,13 +12,13 @@ enum ActivityType {
   String get getName {
     switch (this) {
       case ActivityType.refuel:
-        return "Repostaje";
+        return "Refuel";
       case ActivityType.repair:
-        return "Mantenimiento";
+        return "Repair";
       case ActivityType.record:
-        return "Documento";
+        return "Record";
       case ActivityType.custom:
-        return "Personalizado";
+        return "Custom";
     }
   }
 }
@@ -41,33 +41,40 @@ abstract class Activity {
   }
 
   String get getActivityType;
-  String get getTpye;
+  String get getType;
   num? get getCost;
+  DateTime get getDate => date;
+
+  String? get getDetails;
 
   bool get isCost => getCost != null;
+
+  bool get isPhoto => getPhoto != null;
+  String? get getPhoto;
   
   Map<String, dynamic> toMap();
 
   static Activity fromMap(Map<String, dynamic> map) {
-    try {
-      final tipo = ActivityType.values.byName(map['activityType']);
-      
-      switch (tipo) {
-        case ActivityType.record:
-          return Record.fromMap(map);
-        case ActivityType.refuel:
-          return Refuel.fromMap(map);
-        case ActivityType.repair:
-          return Repair.fromMap(map);
-        case ActivityType.custom:
-          return CustomActivity.fromMap(map);
-      }
-    } catch (e) {
-      throw Exception('Error al convertir Actividad: ${map['activityType']} - $e');
+    final tipoStr = map['activityType'];
+    final tipo = ActivityType.values.firstWhere(
+      (e) => e.name == tipoStr,
+      orElse: () => throw Exception('Tipo de actividad desconocido: $tipoStr'),
+    );
+
+    switch (tipo) {
+      case ActivityType.record:
+        return Record.fromMap(map);
+      case ActivityType.refuel:
+        return Refuel.fromMap(map);
+      case ActivityType.repair:
+        return Repair.fromMap(map);
+      case ActivityType.custom:
+        return CustomActivity.fromMap(map);
     }
   }
 
-    @override
+
+  @override
   String toString() {
     return 'Activty{idActivity: $idActivity, activityType: ${activityType.getName}, cost: $cost}';
   }

@@ -15,7 +15,7 @@ class Refuel extends Activity {
   num get getLiters => (cost! / costLiter);
 
   @override
-  String get getTpye => refuelType;
+  String get getType => refuelType;
 
   @override
   num? get getCost => cost;
@@ -24,6 +24,12 @@ class Refuel extends Activity {
 
   @override
   String get getActivityType => activityType.getName;
+
+  @override
+  String? get getDetails => null;
+
+  @override
+  String? get getPhoto => null;
 
   @override
   Map<String, dynamic> toMap() {

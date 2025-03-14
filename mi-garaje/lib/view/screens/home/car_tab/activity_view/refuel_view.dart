@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mi_garaje/data/models/refuel.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
-import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_add_repostaje.dart';
 import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_delete_activity.dart';
-import 'package:mi_garaje/view/widgets/elevated_button_utils.dart';
+import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_add_activity.dart';
+import 'package:mi_garaje/view/widgets/utils/elevated_button_utils.dart';
 import 'package:provider/provider.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
 
@@ -70,7 +70,7 @@ class _RefuelViewState extends State<RefuelView> {
                       ),
                       SizedBox(width: AppDimensions.screenWidth(context) * 0.02),
                       Text(
-                        refuel.getTpye,
+                        refuel.getType,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
@@ -103,13 +103,13 @@ class _RefuelViewState extends State<RefuelView> {
                   MiButton(
                     text: "Editar",
                     onPressed: () {
-                      DialogAddRefuel.show(
+                      DialogAddActivity.show(
                         context,
                         Provider.of<GarageProvider>(context, listen: false),
-                        repostaje: refuel,
-                        onRefuelUpdated: (updatedRefuel) {
+                        activity: refuel,
+                        onActivityUpdated: (updatedRefuel) {
                           setState(() {
-                            refuel = updatedRefuel;
+                            refuel = updatedRefuel as Refuel;
                           });
                         },
                       );
