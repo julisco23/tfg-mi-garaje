@@ -1,7 +1,6 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:mi_garaje/data/models/user.dart';
+import 'package:mi_garaje/data/provider/image_cache_provider.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/view/widgets/cards/vehicle_card.dart';
 import 'package:provider/provider.dart';
@@ -79,9 +78,7 @@ class _PerfilState extends State<Perfil> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        user.hasPhotoChanged
-                            ? Image.memory(base64Decode(user.photoURL!))
-                            : Image.network(user.photoURL!)
+                        Image(image: Provider.of<ImageCacheProvider>(context).getImage("user", user.id!, user.photoURL!, isNetwork: !user.hasPhotoChanged)),
                       ],
                     ),
                   );
@@ -92,9 +89,7 @@ class _PerfilState extends State<Perfil> {
           child: CircleAvatar(
               radius: 50,
               backgroundImage: user.isPhoto
-                  ? user.hasPhotoChanged
-                      ? MemoryImage(base64Decode(user.photoURL!))
-                      : NetworkImage(user.photoURL!)
+                  ? Provider.of<ImageCacheProvider>(context).getImage("user", user.id!, user.photoURL!, isNetwork: !user.hasPhotoChanged)
                   : null,
               backgroundColor: Theme.of(context).primaryColor,
               child: user.isPhoto
@@ -199,7 +194,7 @@ Widget _buildFamilyList(BuildContext context) {
                             radius: 35,
                             backgroundImage: member.isPhoto
                                 ? member.hasPhotoChanged
-                                    ? MemoryImage(base64Decode(member.photoURL!))
+                                    ? Provider.of<ImageCacheProvider>(context).getImage("user", member.id!, member.photoURL!)
                                     : NetworkImage(member.photoURL!)
                                 : null,
                             backgroundColor: Theme.of(context).primaryColor,

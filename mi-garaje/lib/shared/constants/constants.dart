@@ -19,7 +19,7 @@ class AppConstants {
   static const int record = 2;
 
   static final List<Widget Function(GarageProvider)> widgetTabs = [
-    (viewModel) => HistoryView(garageViewModel: viewModel),
+    (viewModel) => HistoryView(),
     (viewModel) => CarTabView(),
     (viewModel) => Perfil(garageViewModel: viewModel),
   ];

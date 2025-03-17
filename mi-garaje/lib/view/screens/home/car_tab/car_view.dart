@@ -1,8 +1,8 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:mi_garaje/data/models/activity.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:mi_garaje/data/provider/global_types_view_model.dart';
+import 'package:mi_garaje/data/provider/image_cache_provider.dart';
 import 'package:mi_garaje/data/provider/tab_update_notifier.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/view/widgets/cards/activity_card.dart';
@@ -52,7 +52,7 @@ class _CarTabViewState extends State<CarTabView> with SingleTickerProviderStateM
                 if (vehicle.photo != null)
                   CircleAvatar(
                     radius: 20,
-                    backgroundImage: MemoryImage(base64Decode(vehicle.photo!)),
+                    backgroundImage: Provider.of<ImageCacheProvider>(context).getImage("vehicle", vehicle.id!, vehicle.photo!),
                   ),
                 const SizedBox(width: 10),
                 Text(vehicle.getNameTittle()),
@@ -70,8 +70,8 @@ class _CarTabViewState extends State<CarTabView> with SingleTickerProviderStateM
             bottom: TabBar(
               controller: _tabController,
               tabs: tabs,
-              indicatorSize: TabBarIndicatorSize.tab,
               isScrollable: _tabState.isScrollable,
+              indicatorPadding: EdgeInsets.zero,  // Esto elimina el padding del indicador
             ),
           ),
           body: TabBarView(
@@ -109,7 +109,6 @@ class _CarTabViewState extends State<CarTabView> with SingleTickerProviderStateM
 
         return RefreshIndicator(
           onRefresh: () async {
-            // Actualiza los tabs si es necesario
             await garageProvider.refreshGarage();
           },
           child: ListView.builder(

@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mi_garaje/data/models/activity.dart';
 import 'package:mi_garaje/data/models/refuel.dart';
+import 'package:mi_garaje/data/provider/image_cache_provider.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_delete_activity.dart';
 import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_add_activity.dart';
 import 'package:mi_garaje/view/widgets/utils/elevated_button_utils.dart';
 import 'package:provider/provider.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
-import 'dart:convert';
 
 class ActivityView extends StatefulWidget {
   final Activity activity;
@@ -103,10 +103,7 @@ class _ActivityViewState extends State<ActivityView> {
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Image.memory(
-                                    base64Decode(activity.getPhoto!),
-                                    fit: BoxFit.contain,
-                                  ),
+                                  Image(image: Provider.of<ImageCacheProvider>(context).getImage("activity", activity.getDate.toIso8601String(), activity.getPhoto!)),
                                 ],
                               ),
                             );
@@ -116,12 +113,7 @@ class _ActivityViewState extends State<ActivityView> {
                       child: Center(
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(10),
-                          child: Image.memory(
-                            base64Decode(activity.getPhoto!),
-                            width: double.infinity,
-                            height: 150,
-                            fit: BoxFit.cover,
-                          ),
+                          child: Image(image: Provider.of<ImageCacheProvider>(context).getImage("activity", activity.getDate.toIso8601String(), activity.getPhoto!)),
                         ),
                       ),
                     ),

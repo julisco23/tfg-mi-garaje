@@ -76,6 +76,12 @@ class User {
     );
   }
 
+  // toString
+  @override
+  String toString() {
+    return 'User{id: $id, name: $name, email: $email, isPhoto: $isPhoto, isAnonymous: $isAnonymous, isGoogle: $isGoogle, creationDate: $creationDate, idFamily: $idFamily}';
+  }
+
   /// Método para unirse a una familia
   void joinFamily(String idFamily) {
     this.idFamily = idFamily;

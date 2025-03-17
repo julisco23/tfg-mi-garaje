@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mi_garaje/view/screens/auth/login/login_view.dart';
 import 'package:mi_garaje/view/screens/auth/signup/signup_view.dart';
-import 'package:mi_garaje/view/screens/home/car_tab/activity_view/activity_view.dart';
+import 'package:mi_garaje/view/screens/home/car_tab/activity_view.dart';
 import 'package:mi_garaje/view/screens/home/car_tab/garage/garage_view.dart';
 import 'package:mi_garaje/view/screens/home/first_car_view.dart';
 import 'package:mi_garaje/view/screens/home/home_view.dart';

@@ -1,10 +1,10 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:mi_garaje/data/models/vehicle.dart';
+import 'package:mi_garaje/data/provider/image_cache_provider.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/view/widgets/dialogs/garage_tab/dialog_add_vehicle.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
+import 'package:provider/provider.dart';
 
 class VehicleCard extends StatefulWidget {
   const VehicleCard({
@@ -54,7 +54,7 @@ class _VehicleCardState extends State<VehicleCard> {
               widget.vehicle.photo != null
                   ? CircleAvatar(
                       radius: 25,
-                      backgroundImage: MemoryImage(base64Decode(widget.vehicle.photo!)),
+                      backgroundImage: Provider.of<ImageCacheProvider>(context).getImage("vehicle", widget.vehicle.id!, widget.vehicle.photo!)
                     )
                   : CircleAvatar(
                       backgroundColor: Theme.of(context).primaryColor,

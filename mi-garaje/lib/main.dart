@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:mi_garaje/data/provider/global_types_view_model.dart';
+import 'package:mi_garaje/data/provider/image_cache_provider.dart';
 import 'package:mi_garaje/data/provider/tab_update_notifier.dart';
 import 'package:provider/provider.dart';
 import 'package:mi_garaje/view/screens/auth/login/login_view.dart';
@@ -43,6 +44,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => garageProvider),
         ChangeNotifierProvider(create: (_) => globalTypesViewModel),
         ChangeNotifierProvider(create: (_) => TabState()),
+        Provider<ImageCacheProvider>(create: (_) => ImageCacheProvider()),
       ],
       child: MyApp(isAuthenticated: isAuthenticated),
     ),

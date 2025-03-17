@@ -90,15 +90,20 @@ class AppThemes {
       showUnselectedLabels: false,
     ),
     tabBarTheme: TabBarTheme(
-      labelColor: blanco,
-      unselectedLabelColor: blanco,
-      indicator: BoxDecoration(
-        color: const Color.fromARGB(50, 255, 255, 255),
-        borderRadius: BorderRadius.circular(30),
+      labelColor: Colors.white, 
+      unselectedLabelColor: Colors.white54, 
+      indicator: UnderlineTabIndicator(
+        borderSide: BorderSide(
+          color: Colors.blueAccent, // Color del indicador
+          width: 3, // Grosor fino para un look elegante
+        ),
+        insets: EdgeInsets.symmetric(horizontal: 16), // Margen elegante
       ),
-      dividerColor: blancoTransparente,
-      labelPadding: EdgeInsets.symmetric(horizontal: 10),
+      labelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+      unselectedLabelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+      dividerColor: Colors.transparent,
     ),
+
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: azul,
       foregroundColor: blancoTransparente
@@ -150,9 +155,6 @@ class AppThemes {
       }),
       todayBorder: BorderSide(color: azul, width: 2),
     ),
-    
-
-
   );
 
 
