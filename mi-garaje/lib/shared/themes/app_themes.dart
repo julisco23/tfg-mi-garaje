@@ -94,10 +94,10 @@ class AppThemes {
       unselectedLabelColor: Colors.white54, 
       indicator: UnderlineTabIndicator(
         borderSide: BorderSide(
-          color: Colors.blueAccent, // Color del indicador
+          color: Colors.white, // Color del indicador
           width: 3, // Grosor fino para un look elegante
         ),
-        insets: EdgeInsets.symmetric(horizontal: 16), // Margen elegante
+        insets: EdgeInsets.symmetric(vertical: 5), // Margen elegante
       ),
       labelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
       unselectedLabelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
