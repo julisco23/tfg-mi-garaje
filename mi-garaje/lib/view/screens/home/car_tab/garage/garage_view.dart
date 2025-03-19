@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mi_garaje/data/models/vehicle.dart';
+import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:mi_garaje/view/widgets/cards/vehicle_card.dart';
 import 'package:mi_garaje/view/widgets/dialogs/garage_tab/dialog_add_vehicle.dart';
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_confirm.dart';
@@ -34,7 +35,8 @@ class _GarageViewState extends State<GarageView> {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          await garageProvider.refreshGarage();
+          final authProvider = context.read<AuthProvider>();
+          await garageProvider.refreshGarage(authProvider.id, authProvider.type);
         },
         child: Consumer<GarageProvider>(
           builder: (context, garageProvider, child) {
@@ -63,8 +65,8 @@ class _GarageViewState extends State<GarageView> {
                     );
                   },
                   onDismissed: (direction) async {
-                    // Eliminar el coche
-                    await garageProvider.deleteVehicle(vehicle);
+                    final authProvider = context.read<AuthProvider>();
+                    await garageProvider.deleteVehicle(authProvider.id, authProvider.type, vehicle);
                     if (context.mounted) {
                       ToastHelper.show(context, 'Vehículo eliminado');
                     }

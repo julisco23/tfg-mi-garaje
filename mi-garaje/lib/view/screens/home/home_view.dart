@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mi_garaje/data/provider/activity_provider.dart';
+import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
+import 'package:mi_garaje/view/screens/splash_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:mi_garaje/view/screens/home/first_car_view.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
@@ -24,8 +27,14 @@ class _HomeViewState extends State<HomeView> {
 
   Future<void> _loadVehicles() async {
     final garageViewModel = context.read<GarageProvider>();
+    final authProvider = context.read<AuthProvider>();
+    final activityProvider = context.read<ActivityProvider>();
+
     try {
-      final result = await garageViewModel.hasVehicles();
+      final result = await garageViewModel.hasVehicles(authProvider.id, authProvider.type);
+      if (result) {
+        await activityProvider.loadActivities(garageViewModel.id, authProvider.id, authProvider.type);
+      }
       setState(() {
         _hasVehicles = result;
         _isLoading = false;
@@ -40,7 +49,7 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return _loadingScreen(context);
+      return SplashScreen();
     }
 
     if (!_hasVehicles) {
@@ -81,15 +90,6 @@ class _HomeViewState extends State<HomeView> {
             tooltip: "Perfil",
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _loadingScreen(BuildContext context) {
-    return Container(
-      color: Theme.of(context).colorScheme.onPrimary,
-      child: Center(
-        child: CircularProgressIndicator(color: Theme.of(context).primaryColor),
       ),
     );
   }

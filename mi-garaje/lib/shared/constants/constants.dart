@@ -21,31 +21,6 @@ class AppConstants {
   static final List<Widget Function(GarageProvider)> widgetTabs = [
     (viewModel) => HistoryView(),
     (viewModel) => CarTabView(),
-    (viewModel) => Perfil(garageViewModel: viewModel),
-  ];
-}
-
-class UserDefaults {
-  static const List<String> repairTypes = [
-    "Freno delantero",
-    "Freno trasero",
-    "Aceite",
-    "Filtro de aceite",
-    "Filtro de aire",
-    "Filtro de combustible",
-    "Batería",
-    "Neumáticos",
-    "Correa de distribución"
-  ];
-
-  static const List<String> recordTypes = [
-    "ITV",
-    "Seguro"
-  ];
-
-  static const List<String> refuelTypes = [
-    "Gasolina",
-    "Diésel",
-    "Eléctrico"
+    (viewModel) => Perfil(),
   ];
 }

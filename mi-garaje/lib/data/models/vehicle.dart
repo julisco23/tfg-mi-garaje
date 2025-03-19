@@ -1,6 +1,3 @@
-import 'package:mi_garaje/data/models/activity.dart';
-import 'package:mi_garaje/data/models/custom.dart';
-
 class Vehicle {
   String? id;
   String? name;
@@ -9,8 +6,6 @@ class Vehicle {
   String? photo;
   String vehicleType;
   DateTime? creationDate;
-
-  List<Activity> activities = [];
 
   Vehicle({
     this.id,
@@ -22,14 +17,6 @@ class Vehicle {
     required this.vehicleType,
   }) {
     creationDate = creationDate ?? DateTime.now();
-  }
-
-  void setActivities(List<Activity> activities) {
-    this.activities = activities;
-  }
-
-  void addActivity(Activity activity) {
-    activities.add(activity);
   }
 
   void setId(String id) {
@@ -72,29 +59,6 @@ class Vehicle {
     return name ?? brand;
   }
 
-  void removeActivity(Activity activity) {
-    activities.remove(activity);
-  }
-
-  void updateActivity(Activity activity) {
-    final index = activities
-        .indexWhere((element) => element.idActivity == activity.idActivity);
-    if (index != -1) {
-      activities[index] = activity;
-    }
-  }
-
-  List<Activity> getActivities(String type) {
-    List<Activity> filteredActivities;
-    if (!["Repair", "Refuel", "Record"].contains(type)){
-      filteredActivities = activities.where((activity) => (activity is CustomActivity) && activity.getCustomType == type).toList();
-    } else {
-      filteredActivities = activities.where((activity) => activity.getActivityType == type).toList();
-    }
-    filteredActivities.sort((a, b) => b.date.compareTo(a.date));
-    return filteredActivities;
-  }
-
   Map<String, dynamic> toMap() {
     return {
       'name': name,
@@ -120,19 +84,5 @@ class Vehicle {
   @override
   String toString() {
     return 'Vehicle{id: $id, brand: $brand, vehicleType: $vehicleType}';
-  }
-
-   @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    return other is Vehicle &&
-        other.id == id &&
-        other.brand == brand &&
-        other.model == model;
-  }
-
-  @override
-  int get hashCode {
-    return id.hashCode ^ brand.hashCode ^ (model?.hashCode ?? 0);
   }
 }

@@ -1,75 +1,52 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
+import 'package:mi_garaje/data/provider/activity_provider.dart';
+import 'package:mi_garaje/view/screens/auth_wrapper.dart';
+import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:mi_garaje/firebase_options.dart';
+import 'package:mi_garaje/data/provider/auth_provider.dart';
+import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:mi_garaje/data/provider/global_types_view_model.dart';
 import 'package:mi_garaje/data/provider/image_cache_provider.dart';
 import 'package:mi_garaje/data/provider/tab_update_notifier.dart';
-import 'package:provider/provider.dart';
-import 'package:mi_garaje/view/screens/auth/login/login_view.dart';
-import 'package:mi_garaje/data/provider/auth_provider.dart';
-import 'package:mi_garaje/firebase_options.dart';
 import 'package:mi_garaje/shared/routes/app_routes.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:mi_garaje/view/screens/home/home_view.dart';
 import 'package:mi_garaje/shared/themes/app_themes.dart';
 import 'package:mi_garaje/shared/themes/theme_notifier.dart';
-import 'package:mi_garaje/data/provider/garage_provider.dart';
 
-Future<void> main() async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // Inicializar los Providers antes de runApp()
-  final themeNotifier = ThemeNotifier(AppThemes.lightTheme);
-  final authViewModel = AuthViewModel();
-  final garageProvider = GarageProvider();
-  final globalTypesViewModel = GlobalTypesViewModel();
-
-  await globalTypesViewModel.loadGlobalTypes();
-  
-  // Cargar autenticación
-  final bool isAuthenticated = await authViewModel.checkUser();
-
-  // Si el usuario está autenticado, cargar sus datos antes de iniciar la app
-  if (isAuthenticated) {
-    garageProvider.initializeUser(authViewModel.user!.id!, idFamily: authViewModel.user!.idFamily);
-    await globalTypesViewModel.initializeUser(authViewModel.user!.id!);
-  }
-
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => themeNotifier),
-        ChangeNotifierProvider(create: (_) => authViewModel),
-        ChangeNotifierProvider(create: (_) => garageProvider),
-        ChangeNotifierProvider(create: (_) => globalTypesViewModel),
-        ChangeNotifierProvider(create: (_) => TabState()),
-        Provider<ImageCacheProvider>(create: (_) => ImageCacheProvider()),
-      ],
-      child: MyApp(isAuthenticated: isAuthenticated),
-    ),
-  );
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final bool isAuthenticated;
-
-  const MyApp({super.key, required this.isAuthenticated});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
-
-    return MaterialApp(
-      theme: themeNotifier.currentTheme,
-      routes: AppRoutes.routes,
-      onGenerateRoute: AppRoutes.onGenerateRoute,
-      debugShowCheckedModeBanner: false,
-      scrollBehavior: const MaterialScrollBehavior().copyWith(
-        dragDevices: PointerDeviceKind.values.toSet(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeNotifier(AppThemes.lightTheme)),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => GarageProvider()),
+        ChangeNotifierProvider(create: (_) => ActivityProvider()),
+        ChangeNotifierProvider(create: (_) => GlobalTypesViewModel()),
+        ChangeNotifierProvider(create: (_) => TabState()),
+        Provider<ImageCacheProvider>(create: (_) => ImageCacheProvider()),
+      ],
+      child: Consumer<ThemeNotifier>(
+        builder: (context, themeNotifier, child) {
+          return MaterialApp(
+            theme: themeNotifier.currentTheme,
+            routes: AppRoutes.routes,
+            onGenerateRoute: AppRoutes.onGenerateRoute,
+            debugShowCheckedModeBanner: false,
+            title: 'Mi Garaje',
+            home: const AuthWrapper(),
+          );
+        },
       ),
-      title: 'Mi Garage',
-      home: isAuthenticated ? const HomeView() : const LoginView(),
     );
   }
 }

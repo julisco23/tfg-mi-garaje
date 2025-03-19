@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:mi_garaje/data/provider/global_types_view_model.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/constants/validator.dart';
@@ -27,7 +26,7 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    final loginViewModel = Provider.of<AuthViewModel>(context);
+    final loginViewModel = Provider.of<AuthProvider>(context);
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -74,7 +73,6 @@ class _LoginViewState extends State<LoginView> {
                             if (response != null) {
                               ToastHelper.show(context, response);
                             } else {
-                              Provider.of<GarageProvider>(context, listen: false).initializeUser(loginViewModel.id, idFamily: loginViewModel.user!.idFamily);
                               await Provider.of<GlobalTypesViewModel>(context, listen: false).initializeUser(loginViewModel.id);
                               if (context.mounted){
                                 Navigator.pushNamedAndRemoveUntil(context, RouteNames.home, (route) => false);
@@ -138,7 +136,6 @@ class _LoginViewState extends State<LoginView> {
                             ToastHelper.show(context, response);
                           } else {
                             await Provider.of<GlobalTypesViewModel>(context, listen: false).initializeUser(loginViewModel.id);
-                            Provider.of<GarageProvider>(context, listen: false).initializeUser(loginViewModel.id);
                             Navigator.pushNamedAndRemoveUntil(context, RouteNames.home, (route) => false);
                           }
                         }

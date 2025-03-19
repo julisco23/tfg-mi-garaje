@@ -8,17 +8,15 @@ import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
 
-class Perfil extends StatefulWidget {
-  final GarageProvider garageViewModel;
-  const Perfil({super.key, required this.garageViewModel});
+class Perfil extends StatelessWidget {  // Puedes cambiar a StatelessWidget si no necesitas mantener estado
+  const Perfil({super.key});
 
-  @override
-  State<Perfil> createState() => _PerfilState();
-}
-
-class _PerfilState extends State<Perfil> {
   @override
   Widget build(BuildContext context) {
+    // Accedemos a los providers solo una vez
+    final authProvider = context.read<AuthProvider>();
+    final garageViewModel = context.read<GarageProvider>();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Mi Perfil"),
@@ -27,14 +25,14 @@ class _PerfilState extends State<Perfil> {
             icon: const Icon(Icons.settings),
             onPressed: () {
               Navigator.pushNamed(context, RouteNames.settings,
-                  arguments: {"garageViewModel": widget.garageViewModel});
+                  arguments: {"garageViewModel": garageViewModel});
             },
           ),
         ],
       ),
       body: SafeArea(
         child: RefreshIndicator(
-          onRefresh: _refreshData,
+          onRefresh: () => _refreshData(authProvider, garageViewModel),
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             child: Padding(
@@ -42,13 +40,13 @@ class _PerfilState extends State<Perfil> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  _buildProfileHeader(context),
-                  if (widget.garageViewModel.isFamily) ...[
+                  _buildProfileHeader(context, authProvider),
+                  if (authProvider.isFamily) ...[
                     SizedBox(height: AppDimensions.screenHeight(context) * 0.05),
-                    _buildFamilyList(context),
+                    _buildFamilyList(context, authProvider),
                   ],
                   SizedBox(height: AppDimensions.screenHeight(context) * 0.05),
-                  _buildVehicleList(context),
+                  _buildVehicleList(context, garageViewModel),
                 ],
               ),
             ),
@@ -58,13 +56,12 @@ class _PerfilState extends State<Perfil> {
     );
   }
 
-  Future<void> _refreshData() async {
-    await widget.garageViewModel.refreshGarage();
+  Future<void> _refreshData(AuthProvider authProvider, GarageProvider garageViewModel) async {
+    await garageViewModel.refreshGarage(authProvider.id, authProvider.type);
   }
 
-  Widget _buildProfileHeader(BuildContext context) {
-    final viewModel = Provider.of<AuthViewModel>(context);
-    final User user = viewModel.user!;
+  Widget _buildProfileHeader(BuildContext context, AuthProvider authProvider) {
+    final User user = authProvider.user!;
 
     return Column(
       children: [
@@ -109,7 +106,7 @@ class _PerfilState extends State<Perfil> {
     );
   }
 
-  Widget _buildVehicleList(BuildContext context) {
+  Widget _buildVehicleList(BuildContext context, GarageProvider garageViewModel) {
     return Consumer<GarageProvider>(
       builder: (context, garageViewModel, child) {
         final vehicles = garageViewModel.vehicles;
@@ -144,84 +141,80 @@ class _PerfilState extends State<Perfil> {
       },
     );
   }
-}
 
-Widget _buildFamilyList(BuildContext context) {
-  return Consumer<AuthViewModel>(
-    builder: (context, viewModel, child) {
-      if (viewModel.family == null) {
-        return CircularProgressIndicator();
-      }
-      final members = viewModel.family!.members;
+  Widget _buildFamilyList(BuildContext context, AuthProvider authProvider) {
+    if (authProvider.family == null) {
+      return CircularProgressIndicator();
+    }
+    final members = authProvider.family!.members;
 
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Mi familia",
-            style: TextStyle(
-              color: Theme.of(context).primaryColor,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Mi familia",
+          style: TextStyle(
+            color: Theme.of(context).primaryColor,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
           ),
-          SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
-          Text(
-            "Código de familia: ${viewModel.family!.code}",
-          ),
-          SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
-          SizedBox(
-            height: 140,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: members?.length ?? 0,
-              itemBuilder: (context, index) {
+        ),
+        SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
+        Text(
+          "Código de familia: ${authProvider.family!.code}",
+        ),
+        SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
+        SizedBox(
+          height: 140,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: members?.length ?? 0,
+            itemBuilder: (context, index) {
               final member = members![index];
 
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 4,
-                    child: SizedBox(
-                      width: 120,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CircleAvatar(
-                            radius: 35,
-                            backgroundImage: member.isPhoto
-                                ? member.hasPhotoChanged
-                                    ? Provider.of<ImageCacheProvider>(context).getImage("user", member.id!, member.photoURL!)
-                                    : NetworkImage(member.photoURL!)
-                                : null,
-                            backgroundColor: Theme.of(context).primaryColor,
-                            child: member.isPhoto
-                                ? null
-                                : Icon(
-                                    Icons.person,
-                                    size: 50,
-                                    color: Theme.of(context).colorScheme.onPrimary,
-                                  )),
-                          SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
-                          Text(
-                            member.displayName,
-                            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
-                            overflow: TextOverflow.ellipsis,
-                            textWidthBasis: TextWidthBasis.longestLine,
-                          ),
-                        ],
-                      ),
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 4,
+                  child: SizedBox(
+                    width: 120,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircleAvatar(
+                          radius: 35,
+                          backgroundImage: member.isPhoto
+                              ? member.hasPhotoChanged
+                                  ? Provider.of<ImageCacheProvider>(context).getImage("user", member.id!, member.photoURL!)
+                                  : NetworkImage(member.photoURL!)
+                              : null,
+                          backgroundColor: Theme.of(context).primaryColor,
+                          child: member.isPhoto
+                              ? null
+                              : Icon(
+                                  Icons.person,
+                                  size: 50,
+                                  color: Theme.of(context).colorScheme.onPrimary,
+                                )),
+                        SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
+                        Text(
+                          member.displayName,
+                          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                          overflow: TextOverflow.ellipsis,
+                          textWidthBasis: TextWidthBasis.longestLine,
+                        ),
+                      ],
                     ),
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
           ),
-        ],
-      );
-    },
-  );
+        ),
+      ],
+    );
+  }
 }

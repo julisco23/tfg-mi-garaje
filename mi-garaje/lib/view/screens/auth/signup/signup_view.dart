@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:mi_garaje/data/provider/global_types_view_model.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/constants/validator.dart';
@@ -28,7 +27,7 @@ class _SignupViewState extends State<SignupView> {
 
   @override
   Widget build(BuildContext context) {
-    final loginViewModel = Provider.of<AuthViewModel>(context);
+    final loginViewModel = Provider.of<AuthProvider>(context);
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -112,7 +111,6 @@ class _SignupViewState extends State<SignupView> {
                             ToastHelper.show(context, response);
                           } else {
                             await Provider.of<GlobalTypesViewModel>(context, listen: false).initializeUser(loginViewModel.id);
-                            Provider.of<GarageProvider>(context, listen: false).initializeUser(loginViewModel.id);
                             Navigator.pushNamedAndRemoveUntil(context, RouteNames.home, (route) => false);
                           }
                         }
@@ -132,7 +130,6 @@ class _SignupViewState extends State<SignupView> {
                           ToastHelper.show(context, message);
                         } else {
                           await Provider.of<GlobalTypesViewModel>(context, listen: false).initializeUser(loginViewModel.id);
-                          Provider.of<GarageProvider>(context, listen: false).initializeUser(loginViewModel.id);
                           Navigator.pushNamedAndRemoveUntil(context, RouteNames.home, (route) => false);
                         }
                       }
@@ -151,7 +148,6 @@ class _SignupViewState extends State<SignupView> {
                           ToastHelper.show(context, response);
                         } else if (mounted) {
                           await Provider.of<GlobalTypesViewModel>(context, listen: false).initializeUser(loginViewModel.id);
-                          Provider.of<GarageProvider>(context, listen: false).initializeUser(loginViewModel.id);
                           Navigator.pushNamedAndRemoveUntil(context, RouteNames.home, (route) => false);
                         }
                       }

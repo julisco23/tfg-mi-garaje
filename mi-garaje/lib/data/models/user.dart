@@ -1,5 +1,3 @@
-import 'package:mi_garaje/data/models/vehicle.dart';
-
 class User {
   String? id;
   String? name;
@@ -10,18 +8,6 @@ class User {
   DateTime creationDate;
   bool isPhotoChanged;
   String? idFamily;
-  List<Vehicle> vehiculos = [];
-
-  Map<int, List<String>> typesCreated = {
-    0: [],
-    1: [],
-    2: [],
-  };
-  Map<int, List<int>> typesDeleted = {
-    0: [],
-    1: [],
-    2: [],
-  };
 
   User({
     this.id,
@@ -100,40 +86,5 @@ class User {
   // Método para actualizar la foto de perfil del usuario
   void updatePhotoURL(String photoURL) {
     this.photoURL = photoURL;
-  }
-
-  // Método para añadir un vehículo a la lista de vehículos del usuario
-  void addVehicle(Vehicle vehicle) {
-    vehiculos.add(vehicle);
-  }
-
-  // Método para eliminar un vehículo de la lista de vehículos del usuario
-  void deleteVehicle(Vehicle vehicle) {
-    vehiculos.remove(vehicle);
-  }
-
-  // Método para actualizar un vehículo de la lista de vehículos del usuario
-  void updateVehicle(Vehicle vehicle) {
-    vehiculos[vehiculos.indexWhere((element) => element.id == vehicle.id)] = vehicle;
-  }
-
-  // Método para añadir un tipo de actividad creado por el usuario
-  void addTypeCreated(int type, String name) {
-    typesCreated[type]!.add(name);
-  }
-
-  // Método para eliminar un tipo de actividad creado por el usuario
-  void deleteTypeCreated(int type, String name) {
-    typesCreated[type]!.remove(name);
-  }
-
-  // Método para añadir un tipo de actividad eliminado por el usuario
-  void addTypeDeleted(int type, int id) {
-    typesDeleted[type]!.add(id);
-  }
-
-  // Método para eliminar un tipo de actividad eliminado por el usuario
-  void deleteTypeDeleted(int type, int id) {
-    typesDeleted[type]!.remove(id);
   }
 }

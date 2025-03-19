@@ -59,7 +59,7 @@ class DialogFamilyCode extends StatelessWidget {
                     style: TextStyle(color: Theme.of(context).primaryColor)),
                 onPressed: () {
                   if (!formKey.currentState!.validate()) return;
-                  Provider.of<AuthViewModel>(context, listen: false)
+                  Provider.of<AuthProvider>(context, listen: false)
                       .unirseAFamilia(controller.text);
                   Navigator.pop(context, controller.text);
                 },

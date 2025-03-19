@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mi_garaje/data/models/activity.dart';
 import 'package:mi_garaje/data/models/refuel.dart';
+import 'package:mi_garaje/data/provider/activity_provider.dart';
+import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:mi_garaje/data/provider/image_cache_provider.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_delete_activity.dart';
@@ -30,6 +32,8 @@ class _ActivityViewState extends State<ActivityView> {
 
   @override
   Widget build(BuildContext context) {
+    final ActivityProvider activityProvider = Provider.of<ActivityProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(activity.getType),
@@ -40,7 +44,12 @@ class _ActivityViewState extends State<ActivityView> {
               bool result = await DeleteActivityDialog.show(context, activity);
 
               if (result && context.mounted) {
-                Provider.of<GarageProvider>(context, listen: false).deleteActivity(activity);
+                activityProvider.deleteActivity(
+                  context.read<GarageProvider>().id,
+                  context.read<AuthProvider>().id,
+                  context.read<AuthProvider>().type,
+                  activity,
+                );
                 Navigator.pop(context);
               }
             },
@@ -126,7 +135,6 @@ class _ActivityViewState extends State<ActivityView> {
                     onPressed: () {
                       DialogAddActivity.show(
                         context,
-                        Provider.of<GarageProvider>(context, listen: false),
                         activity: activity,
                         onActivityUpdated: (updatedActivity) {
                           setState(() {

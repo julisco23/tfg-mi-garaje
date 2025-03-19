@@ -21,7 +21,7 @@ class Record extends Activity {
   num? get getCost => cost;
 
   @override
-  String get getActivityType => activityType.getName;
+  String get getCustomType => activityType.getName;
 
   @override
   String? get getDetails => details;

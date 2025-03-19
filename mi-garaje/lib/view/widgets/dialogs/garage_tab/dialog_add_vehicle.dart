@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mi_garaje/data/models/vehicle.dart';
+import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:mi_garaje/data/provider/global_types_view_model.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/view/widgets/utils/elevated_button_utils.dart';
@@ -86,6 +87,8 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = context.read<AuthProvider>();
+
     return Dialog(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
@@ -318,7 +321,7 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
 
                               if (widget.vehicle == null) {
                                 // Añadir vehículo
-                                await widget.viewModel.addVehicle(vehicle);
+                                await widget.viewModel.addVehicle(authProvider.id, authProvider.type, vehicle);
                                 if (context.mounted) {
                                   ToastHelper.show(context, 'Vehículo añadido');
                                 }
@@ -328,7 +331,7 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
                               } else {
                                 // Actualizar vehículo
                                 vehicle.id = widget.vehicle!.id;
-                                await widget.viewModel.updateVehicle(vehicle);
+                                await widget.viewModel.updateVehicle(authProvider.id, authProvider.type, vehicle);
                                 widget.onVehicleUpdated!(vehicle);
                               }
                               

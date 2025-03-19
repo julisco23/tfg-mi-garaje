@@ -1,89 +1,93 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:mi_garaje/data/models/family.dart';
 import 'package:mi_garaje/data/models/user.dart';
 import 'package:mi_garaje/data/services/auth_service.dart';
 
-class AuthViewModel extends ChangeNotifier {
+class AuthProvider extends ChangeNotifier {
   final AuthService _authService = AuthService();
-
   User? _user;
-
-  User? get user => _user;
-
   Family? _family;
 
+  User? get user => _user;
   Family? get family => _family;
 
-  String get id => user!.id!;
-  
-  bool get isGoogle => user == null ? false : user!.isGoogle;
-  bool get isPhotoURL => user == null ? false : user!.photoURL != null;
+  bool get isFamily => _family != null;
+  bool get isUser => _user != null;
 
-  void setUser(User? user) {
+  String get id => _family?.id ?? _user!.id!;
+  String get type => _family != null ? "families" : "users";
+
+  bool get isGoogle => _user?.isGoogle ?? false;
+  bool get isPhotoURL => _user?.photoURL != null;
+
+  bool get isLastMember => _family?.members?.length == 1;
+
+  // ✅ Establece usuario y notifica cambios si es necesario
+  void setUser(User? user, {bool notify = true}) {
     _user = user;
     if (_user != null && _user!.hasFamily) {
       getFamily();
     }
+    if (notify) notifyListeners();
+  }
+
+  // ✅ Verifica si el usuario está autenticado
+  Future<bool> checkUser() async {
+    setUser(await _authService.currentUser);
+    return isUser;
+  }
+
+  // ✅ Cargar la familia del usuario
+  Future<void> getFamily() async {
+    if (_user?.idFamily == null) return;
+    _family = await _authService.getFamily(_user!.idFamily!);
     notifyListeners();
   }
 
-  // Método de verificación de usuario
-  Future<bool> checkUser() async{
-    setUser(await _authService.currentUser);
-
-    return _user != null;
-  }
-
-  // Método para obtener la familia del usuario
-  Future<void> getFamily() async {
-    _family = await _authService.getFamily(_user!.idFamily!);
-  }
-  
-  // Método de inicio de sesión
+  // ✅ Iniciar sesión con email y contraseña
   Future<String?> signin(String email, String password) async {
     String? response = await _authService.signin(email: email, password: password);
     setUser(await _authService.currentUser);
     return response;
   }
 
-  // Método de inicio de sesión con Google
+  // ✅ Iniciar sesión con Google
   Future<String?> signInWithGoogle() async {
-    String? response =  await _authService.signInWithGoogle();
+    String? response = await _authService.signInWithGoogle();
     setUser(await _authService.currentUser);
     return response;
   }
 
-  // Metodo de registro con Google
+  // ✅ Registrarse con Google
   Future<String?> signupWithGoogle() async {
-    String? response =  await _authService.signupWithGoogle();
+    String? response = await _authService.signupWithGoogle();
     setUser(await _authService.currentUser);
     return response;
   }
 
-  // Método de vinculación de cuenta con Google
+  // ✅ Vincular cuenta con Google
   Future<String?> linkWithGoogle() async {
     String? response = await _authService.linkWithGoogle();
     setUser(await _authService.currentUser);
     return response;
   }
 
-  // Método de registro
+  // ✅ Registro con email y contraseña
   Future<String?> signup(String email, String password, String name) async {
     String? response = await _authService.signup(email: email, password: password, displayName: name);
     setUser(await _authService.currentUser);
     return response;
   }
 
-  // Método de inicio de sesión anónimo
+  // ✅ Iniciar sesión anónimo
   Future<String?> signInAnonymously() async {
     String? response = await _authService.signInAnonymously();
     setUser(await _authService.currentUser);
     return response;
   }
 
-  // Método de cierre de sesión
+  // ✅ Cerrar sesión correctamente
   Future<String?> signout() async {
     String? response;
     if (isGoogle) {
@@ -91,63 +95,70 @@ class AuthViewModel extends ChangeNotifier {
     } else {
       response = await _authService.signout();
     }
-    _user = user;
+    _user = null; // 💡 Limpiar usuario después de cerrar sesión
+    _family = null; // 💡 Limpiar familia también
+    notifyListeners();
     return response;
   }
 
-  // Método de eliminación de cuenta
+  // ✅ Eliminar cuenta correctamente
   Future<String?> eliminarCuenta() async {
     String? response = await _authService.deleteUserAccount();
-    _user = user;
+    _user = null;
+    _family = null;
+    notifyListeners();
     return response;
   }
 
-  // Método de vinculación de cuenta
+  // ✅ Vincular cuenta anónima con email
   Future<String?> crearCuenta(String email, String password, String name) async {
     String? response = await _authService.linkAnonymousAccount(email, password, name);
     setUser(await _authService.currentUser);
     return response;
   }
 
-  // Método de actualización de perfil
+  // ✅ Actualizar perfil de usuario
   Future<String?> actualizarProfile(String name, String? photo, bool isPhotoChanged) async {
     String? response = await _authService.updateProfile(name, photo, isPhotoChanged);
     setUser(await _authService.currentUser);
     return response;
   }
 
+  // ✅ Generar código de familia
   String generateFamilyCode() {
     const String chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    Random random = Random();
-    return String.fromCharCodes(Iterable.generate(6, (_) => chars.codeUnitAt(random.nextInt(chars.length))));
+    return String.fromCharCodes(
+      Iterable.generate(6, (_) => chars.codeUnitAt(Random().nextInt(chars.length))),
+    );
   }
 
+  // ✅ Convertirse en familia
   Future<void> convertirEnFamilia() async {
+    if (_user == null) return;
     Family family = Family(
-      name: "Familia de ${user!.displayName}",
+      name: "Familia de ${_user!.displayName}",
       code: generateFamilyCode(),
-      members: [user!],
+      members: [_user!],
     );
     await _authService.convertToFamily(family);
     setUser(await _authService.currentUser);
-    getFamily();
+    await getFamily();
   }
 
+  // ✅ Unirse a una familia
   Future<void> unirseAFamilia(String familyCode) async {
     await _authService.joinFamily(familyCode);
     setUser(await _authService.currentUser);
+    await getFamily();
   }
 
+  // ✅ Salir de la familia correctamente
   Future<void> salirDeFamilia() async {
-    // Chequear si el usuario es el único miembro de la familia
+    if (_family == null) return;
     await _authService.leaveFamily(isLastMember);
     if (isLastMember) {
       _family = null;
     }
     setUser(await _authService.currentUser);
   }
-
-  bool get isLastMember => family!.members!.length == 1;
-  
 }
-

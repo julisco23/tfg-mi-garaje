@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mi_garaje/data/models/activity.dart';
+import 'package:mi_garaje/data/provider/activity_provider.dart';
+import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
@@ -20,6 +22,10 @@ class ActivityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ActivityProvider activityProvider = Provider.of<ActivityProvider>(context);
+    final GarageProvider garageProvider = Provider.of<GarageProvider>(context);
+    final AuthProvider authProvider = Provider.of<AuthProvider>(context);
+
     return InkWell(
       onTap: () {
         String routeName = RouteNames.activity;
@@ -31,7 +37,7 @@ class ActivityCard extends StatelessWidget {
       },
       onLongPress: () async {
         if (await DeleteActivityDialog.show(context, activity) && context.mounted) {
-          Provider.of<GarageProvider>(context, listen: false).deleteActivity(activity);
+          activityProvider.deleteActivity(garageProvider.id, authProvider.id, authProvider.type, activity);
         }
       },
       child: Card(

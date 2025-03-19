@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mi_garaje/data/models/vehicle.dart';
+import 'package:mi_garaje/data/provider/activity_provider.dart';
+import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:mi_garaje/data/provider/image_cache_provider.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/view/widgets/dialogs/garage_tab/dialog_add_vehicle.dart';
@@ -25,9 +27,13 @@ class VehicleCard extends StatefulWidget {
 class _VehicleCardState extends State<VehicleCard> {
   @override
   Widget build(BuildContext context) {
+    final authProvider = context.read<AuthProvider>();
+    final activityProvider = context.read<ActivityProvider>();
+    
     return InkWell(
       onTap: !widget.profile ? () async {
         await widget.garageProvider.setSelectedVehicle(widget.vehicle);
+        await activityProvider.loadActivities(widget.vehicle.id!, authProvider.id, authProvider.type);
         if (context.mounted){
           Navigator.pop(context);
         }

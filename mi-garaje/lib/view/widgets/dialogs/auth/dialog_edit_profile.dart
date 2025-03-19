@@ -8,14 +8,14 @@ import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
 import 'package:mi_garaje/data/provider/auth_provider.dart';
 
 class DialogEditProfile extends StatefulWidget {
-  final AuthViewModel authViewModel;
+  final AuthProvider authViewModel;
 
   const DialogEditProfile({super.key, required this.authViewModel});
 
   @override
   State<DialogEditProfile> createState() => _DialogEditProfileState();
 
-  static Future<void> show(BuildContext context, AuthViewModel authViewModel) {
+  static Future<void> show(BuildContext context, AuthProvider authViewModel) {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {

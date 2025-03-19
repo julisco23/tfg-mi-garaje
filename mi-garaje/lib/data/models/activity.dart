@@ -40,8 +40,9 @@ abstract class Activity {
     idActivity = id;
   }
 
-  String get getActivityType;
+  String get getActivityType => activityType.getName;
   String get getType;
+  String get getCustomType;
   num? get getCost;
   DateTime get getDate => date;
 

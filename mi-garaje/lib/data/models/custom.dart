@@ -17,15 +17,13 @@ class CustomActivity extends Activity {
   }) : super(activityType: ActivityType.custom);
 
   @override
-  String get getActivityType => activityType.getName;
-
-  @override
   String get getType => type;
 
   void setCustomType(String customType) {
     customType = customType;
   }
 
+  @override
   String get getCustomType => customType;
 
   @override

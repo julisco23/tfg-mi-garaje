@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mi_garaje/data/provider/activity_provider.dart';
+import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:mi_garaje/data/provider/tab_update_notifier.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
@@ -36,10 +38,7 @@ class _TypesViewState extends State<TypesView> {
     isActivity = widget.type == 'Activity';
     isVehicle = widget.type == 'Vehicle';
 
-    print('isActivity: $isActivity');
-
-    typesFuture =
-        Provider.of<GlobalTypesViewModel>(context).getTypesStream(widget.type);
+    typesFuture = Provider.of<GlobalTypesViewModel>(context).getTypesStream(widget.type);
 
     if (!isActivity) {
       removedtypesFuture = Provider.of<GlobalTypesViewModel>(context).getRemovedTypesStream(widget.type);
@@ -51,6 +50,8 @@ class _TypesViewState extends State<TypesView> {
   Widget build(BuildContext context) {
     final typeViewModel = Provider.of<GlobalTypesViewModel>(context);
     TextEditingController controller = TextEditingController();
+
+    final authProvider = context.read<AuthProvider>();
 
     // Función para agregar nuevos tipos
     void addType() {
@@ -70,11 +71,13 @@ class _TypesViewState extends State<TypesView> {
       if (context.mounted) {
         if (isActivity) {
           Provider.of<TabState>(context, listen: false).removeTab(typeName);
-          Provider.of<GarageProvider>(context, listen: false).deleteAllActivities(typeName);
+          context.read<ActivityProvider>().deleteAllActivities(authProvider.id, authProvider.type, typeName);
+          Provider.of<GarageProvider>(context, listen: false).refreshGarage(authProvider.id, authProvider.type);
         } else if (isVehicle) {
-          Provider.of<GarageProvider>(context, listen: false).deleteVehicleType(typeName, widget.type);
+          Provider.of<GarageProvider>(context, listen: false).deleteVehicleType(authProvider.id, authProvider.type, typeName, widget.type);
         } else{
-          Provider.of<GarageProvider>(context, listen: false).deleteAllActivities(typeName, type: widget.type);
+          context.read<ActivityProvider>().deleteAllActivities(authProvider.id, authProvider.type, typeName, type: widget.type);
+          Provider.of<GarageProvider>(context, listen: false).refreshGarage(authProvider.id, authProvider.type);
         }
       }
     }
@@ -85,12 +88,13 @@ class _TypesViewState extends State<TypesView> {
       if (context.mounted) {
         if (isActivity) {
           Provider.of<TabState>(context, listen: false).editTab(oldName, newName);
-          print('oldName: $oldName, newName: $newName, type: ${widget.type}');
-          Provider.of<GarageProvider>(context, listen: false).editAllActivities(oldName, newName);
+          context.read<ActivityProvider>().editAllActivities(authProvider.id, authProvider.type, oldName, newName);
+          Provider.of<GarageProvider>(context, listen: false).refreshGarage(authProvider.id, authProvider.type);
         } else if (isVehicle) {
-          await Provider.of<GarageProvider>(context, listen: false).updateVehicleType(oldName, newName, widget.type);
+          await Provider.of<GarageProvider>(context, listen: false).updateVehicleType(authProvider.id, authProvider.type, oldName, newName, widget.type);
         } else {
-          Provider.of<GarageProvider>(context, listen: false).editAllActivities(oldName, newName, type: widget.type);
+          context.read<ActivityProvider>().editAllActivities(authProvider.id, authProvider.type, oldName, newName);
+          Provider.of<GarageProvider>(context, listen: false).refreshGarage(authProvider.id, authProvider.type);
         }
       }
     }

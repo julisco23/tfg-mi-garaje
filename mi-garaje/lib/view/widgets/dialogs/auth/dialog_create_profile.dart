@@ -8,7 +8,7 @@ import 'package:mi_garaje/view/widgets/utils/elevated_button_utils.dart';
 import 'package:mi_garaje/data/provider/auth_provider.dart';
 
 class DialogCambioCuenta extends StatefulWidget {
-  final AuthViewModel authViewModel;
+  final AuthProvider authViewModel;
 
   const DialogCambioCuenta({super.key, required this.authViewModel});
 
@@ -16,7 +16,7 @@ class DialogCambioCuenta extends StatefulWidget {
   State<DialogCambioCuenta> createState() => _DialogCambioCuentaState();
 
   static Future<void> show(
-      BuildContext context, AuthViewModel authViewModel) async {
+      BuildContext context, AuthProvider authViewModel) async {
     await showDialog(
       context: context,
       builder: (BuildContext context) {

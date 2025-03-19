@@ -23,7 +23,7 @@ class Refuel extends Activity {
   num get getPrecioLitros => costLiter;
 
   @override
-  String get getActivityType => activityType.getName;
+  String get getCustomType => activityType.getName;
 
   @override
   String? get getDetails => null;

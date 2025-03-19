@@ -8,6 +8,8 @@ import 'package:mi_garaje/data/models/custom.dart';
 import 'package:mi_garaje/data/models/refuel.dart';
 import 'package:mi_garaje/data/models/record.dart';
 import 'package:mi_garaje/data/models/repair.dart';
+import 'package:mi_garaje/data/provider/activity_provider.dart';
+import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:mi_garaje/data/provider/global_types_view_model.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/constants/validator.dart';
@@ -17,14 +19,12 @@ import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:provider/provider.dart';
 
 class DialogAddActivity extends StatefulWidget {
-  final GarageProvider viewModel;
   final Activity? activity;
   final String? customType;
   final Function(Activity)? onActivityUpdated;
 
   const DialogAddActivity({
     super.key,
-    required this.viewModel,
     this.customType,
     this.activity,
     this.onActivityUpdated,
@@ -33,7 +33,7 @@ class DialogAddActivity extends StatefulWidget {
   @override
   State<DialogAddActivity> createState() => _DialogAddActivityState();
 
-  static Future<void> show(BuildContext context, GarageProvider viewModel,
+  static Future<void> show(BuildContext context,
       {Activity? activity,
       Function(Activity)? onActivityUpdated,
       String? customType}) {
@@ -41,7 +41,6 @@ class DialogAddActivity extends StatefulWidget {
       context: context,
       builder: (BuildContext context) {
         return DialogAddActivity(
-          viewModel: viewModel,
           activity: activity,
           onActivityUpdated: onActivityUpdated,
           customType: customType,
@@ -77,9 +76,7 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
         isCustom = true;
       } else {
         customType = widget.activity!.getActivityType;
-        print(customType);
-        _typesFuture = Provider.of<GlobalTypesViewModel>(context, listen: false)
-            .getTypes(customType);
+        _typesFuture = Provider.of<GlobalTypesViewModel>(context, listen: false).getTypes(customType);
       }
       costController.text = widget.activity!.getCost.toString();
       selectedDate = widget.activity!.getDate;
@@ -124,6 +121,10 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
 
   @override
   Widget build(BuildContext context) {
+    final ActivityProvider activityProvider = context.read<ActivityProvider>();
+    final AuthProvider authProvider = context.read<AuthProvider>();
+    final GarageProvider garageProvider = context.read<GarageProvider>();
+    
     return Dialog(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
@@ -407,11 +408,10 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
                               }
 
                               if (widget.activity == null) {
-                                widget.viewModel.addActivity(newActivity);
+                                activityProvider.addActivity(garageProvider.id, authProvider.id, authProvider.type, newActivity);
                               } else {
-                                newActivity.idActivity =
-                                    widget.activity!.idActivity;
-                                widget.viewModel.updateActivity(newActivity);
+                                newActivity.idActivity = widget.activity!.idActivity;
+                                activityProvider.updateActivity(garageProvider.id, authProvider.id, authProvider.type, newActivity);
                                 widget.onActivityUpdated?.call(newActivity);
                               }
 

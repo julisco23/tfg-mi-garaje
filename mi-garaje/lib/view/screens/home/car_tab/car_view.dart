@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mi_garaje/data/models/activity.dart';
+import 'package:mi_garaje/data/provider/activity_provider.dart';
+import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:mi_garaje/data/provider/global_types_view_model.dart';
 import 'package:mi_garaje/data/provider/image_cache_provider.dart';
@@ -71,7 +73,6 @@ class _CarTabViewState extends State<CarTabView> with SingleTickerProviderStateM
               controller: _tabController,
               tabs: tabs,
               isScrollable: _tabState.isScrollable,
-              indicatorPadding: EdgeInsets.zero,  // Esto elimina el padding del indicador
             ),
           ),
           body: TabBarView(
@@ -98,18 +99,26 @@ class _CarTabViewState extends State<CarTabView> with SingleTickerProviderStateM
     final index = _tabController.index;
     final currentType = _tabState.activityTypes[index];
 
-    DialogAddActivity.show(context, garageProvider, customType: currentType);
+    DialogAddActivity.show(context, customType: currentType);
   }
 
   Widget _buildTabContent(String activityType) {
-    return Consumer<GarageProvider>(
-      builder: (context, garageProvider, _) {
-        final vehicle = garageProvider.selectedVehicle;
-        late List<Activity> activities = vehicle?.getActivities(activityType) ?? [];
+    return Consumer<ActivityProvider>(
+      builder: (context, activityProvider, _) {
+        final authProvider = context.read<AuthProvider>();
+
+        // Obtén el vehicleId (y ownerId, ownerType) para cargar las actividades
+        final vehicle = context.read<GarageProvider>().selectedVehicle;
+        final vehicleId = vehicle?.id;
+        final ownerId = authProvider.id;
+        final ownerType = authProvider.type;
+
+        // Obtén las actividades del ActivityProvider
+        List<Activity> activities = activityProvider.getActivities(activityType);
 
         return RefreshIndicator(
           onRefresh: () async {
-            await garageProvider.refreshGarage();
+            await activityProvider.loadActivities(vehicleId!, ownerId, ownerType);
           },
           child: ListView.builder(
             itemCount: activities.length,
@@ -122,4 +131,5 @@ class _CarTabViewState extends State<CarTabView> with SingleTickerProviderStateM
       },
     );
   }
+
 }

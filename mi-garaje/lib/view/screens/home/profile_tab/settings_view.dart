@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mi_garaje/data/models/user.dart';
 import 'package:mi_garaje/data/provider/global_types_view_model.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
@@ -20,8 +19,7 @@ class SettingsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authViewModel = Provider.of<AuthViewModel>(context);
-    final User user = authViewModel.user!;
+    final authViewModel = Provider.of<AuthProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -36,7 +34,7 @@ class SettingsView extends StatelessWidget {
             // SECCIÓN: CUENTA
             _buildSectionTitle(context, "Cuenta"),
             SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
-            user.isAnonymous
+            authViewModel.user!.isAnonymous
                 ? SettingCard(
                     icon: Icons.person_add_alt_1_rounded,
                     title: "Crear cuenta",
@@ -51,7 +49,7 @@ class SettingsView extends StatelessWidget {
                       DialogEditProfile.show(context, authViewModel);
                     },
                   ),
-            if (!user.isGoogle)
+            if (!authViewModel.user!.isGoogle)
               SettingCard(
                 imageUrl: 'assets/images/google.png',
                 title: "Continuar con Google",
@@ -70,7 +68,7 @@ class SettingsView extends StatelessWidget {
                   }
                 },
               ),
-            if (!user.isAnonymous)
+            if (!authViewModel.user!.isAnonymous)
               SettingCard(
                 icon: Icons.logout_rounded,
                 title: "Cerrar Sesión",
@@ -208,7 +206,7 @@ class SettingsView extends StatelessWidget {
             // SECCIÓN: FAMILIA
             _buildSectionTitle(context, "Familia"),
             SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
-            if (!user.hasFamily) ...[
+            if (!authViewModel.user!.hasFamily) ...[
               SettingCard(
                 icon: Icons.group_add_rounded,
                 title: "Crear una familia",
@@ -223,7 +221,7 @@ class SettingsView extends StatelessWidget {
                   if (context.mounted) {
                     await authViewModel.convertirEnFamilia();
             
-                    await garageViewModel.convertToFamily(authViewModel.user!.idFamily!);
+                    await garageViewModel.convertToFamily(authViewModel.user!.id!, authViewModel.user!.idFamily!);
                     if (context.mounted) {
                       await Provider.of<GlobalTypesViewModel>(context, listen: false).convertToFamily(authViewModel.user!.idFamily!);
                     }
@@ -244,7 +242,7 @@ class SettingsView extends StatelessWidget {
                   if (context.mounted) {
                     await authViewModel.unirseAFamilia(familyCode);
 
-                    await garageViewModel.joinFamily(authViewModel.user!.idFamily!);
+                    await garageViewModel.joinFamily(authViewModel.user!.id!, authViewModel.user!.idFamily!);
 
                     if (context.mounted) {
                       await Provider.of<GlobalTypesViewModel>(context, listen: false).joinFamily(authViewModel.user!.idFamily!);
@@ -276,10 +274,9 @@ class SettingsView extends StatelessWidget {
                   if (!confirm) return;
 
                   if (context.mounted) {
-                    bool isLastMember = authViewModel.isLastMember;
                     await authViewModel.salirDeFamilia();
 
-                    await garageViewModel.leaveFamily(isLastMember);
+                    await garageViewModel.leaveFamily(authViewModel.id, authViewModel.type, authViewModel.isLastMember);
 
                     if (context.mounted) {
                       Navigator.pushNamedAndRemoveUntil(context, RouteNames.home, (route) => false);
