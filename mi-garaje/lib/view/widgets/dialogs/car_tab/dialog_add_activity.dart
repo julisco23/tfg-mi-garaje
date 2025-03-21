@@ -156,7 +156,7 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
                     MiTextFormField(
                       controller: activityTypeController,
                       labelText: 'Tipo de ${customType.toLowerCase()}',
-                      hintText: 'tipo del ${customType.toLowerCase()}',
+                      hintText: 'Tipo de ${customType.toLowerCase()}',
                       validator: Validator.validateCustomType,
                     ),
                   ] else ...[

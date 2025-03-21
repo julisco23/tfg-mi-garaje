@@ -109,16 +109,13 @@ class _CarTabViewState extends State<CarTabView> with SingleTickerProviderStateM
 
         // Obtén el vehicleId (y ownerId, ownerType) para cargar las actividades
         final vehicle = context.read<GarageProvider>().selectedVehicle;
-        final vehicleId = vehicle?.id;
-        final ownerId = authProvider.id;
-        final ownerType = authProvider.type;
 
         // Obtén las actividades del ActivityProvider
         List<Activity> activities = activityProvider.getActivities(activityType);
 
         return RefreshIndicator(
           onRefresh: () async {
-            await activityProvider.loadActivities(vehicleId!, ownerId, ownerType);
+            await activityProvider.loadActivities(vehicle!.id!, authProvider.id, authProvider.type);
           },
           child: ListView.builder(
             itemCount: activities.length,

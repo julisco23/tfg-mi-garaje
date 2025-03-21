@@ -11,7 +11,7 @@ class ActivityProvider extends ChangeNotifier {
     List<Activity> filteredActivities = [];
 
     filteredActivities = _activities
-        .where((activity) => activity.getActivityType == activityType)
+        .where((activity) => activity.getCustomType == activityType)
         .toList();
 
     filteredActivities.sort((a, b) => b.date.compareTo(a.date));
