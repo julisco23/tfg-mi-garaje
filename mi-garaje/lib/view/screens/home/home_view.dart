@@ -35,6 +35,7 @@ class _HomeViewState extends State<HomeView> {
       if (result) {
         await activityProvider.loadActivities(garageViewModel.id, authProvider.id, authProvider.type);
       }
+      
       setState(() {
         _hasVehicles = result;
         _isLoading = false;

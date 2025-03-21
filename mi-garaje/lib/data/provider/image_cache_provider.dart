@@ -37,6 +37,7 @@ class ImageCacheProvider {
       final cachedImage = cache[id]!;
 
       if (cachedImage.url == url) {
+        print('Imagen ya está en caché: ${url.characters.take(50).toString()}');
         return cachedImage.image;
       }
     }
@@ -44,6 +45,7 @@ class ImageCacheProvider {
     ImageProvider image = isNetwork ? NetworkImage(url) : MemoryImage(base64Decode(url));
 
     cache[id] = _CachedImage(image: image, url: url);
+    print('Imagen añadida a caché: ${url.characters.take(50).toString()}');
 
     if (type == "activity" &&  cache.length > 20) {
       cache.remove(cache.keys.first);

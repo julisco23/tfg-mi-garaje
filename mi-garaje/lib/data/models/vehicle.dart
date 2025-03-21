@@ -19,6 +19,8 @@ class Vehicle {
     creationDate = creationDate ?? DateTime.now();
   }
 
+  bool get isPhoto => photo != null;
+
   void setId(String id) {
     this.id = id;
   }
