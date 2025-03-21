@@ -223,7 +223,7 @@ class SettingsView extends StatelessWidget {
             
                     await garageViewModel.convertToFamily(authViewModel.user!.id!, authViewModel.user!.idFamily!);
                     if (context.mounted) {
-                      await Provider.of<GlobalTypesViewModel>(context, listen: false).convertToFamily(authViewModel.user!.idFamily!);
+                      await Provider.of<GlobalTypesViewModel>(context, listen: false).convertToFamily(authViewModel.user!.id!, authViewModel.user!.idFamily!);
                     }
 
                     if (context.mounted) {
@@ -245,7 +245,7 @@ class SettingsView extends StatelessWidget {
                     await garageViewModel.joinFamily(authViewModel.user!.id!, authViewModel.user!.idFamily!);
 
                     if (context.mounted) {
-                      await Provider.of<GlobalTypesViewModel>(context, listen: false).joinFamily(authViewModel.user!.idFamily!);
+                      await Provider.of<GlobalTypesViewModel>(context, listen: false).joinFamily(authViewModel.user!.id!);
                     }
 
                     if (context.mounted) {

@@ -29,10 +29,6 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
     bool isAuthenticated = await authViewModel.checkUser();
     await globalTypesViewModel.loadGlobalTypes();
-    
-    if (isAuthenticated) {
-      await globalTypesViewModel.initializeUser(authViewModel.id);
-    }
 
     setState(() {
       _isAuthenticated = isAuthenticated;

@@ -68,8 +68,9 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
       }
     }
 
+    final AuthProvider authProvider = context.read<AuthProvider>();
     _vehiclesTypes = Provider.of<GlobalTypesViewModel>(context, listen: false)
-        .getTypes('Vehicle');
+        .getTypes(authProvider.id, authProvider.type, 'Vehicle');
   }
 
   Future<void> _pickImage() async {

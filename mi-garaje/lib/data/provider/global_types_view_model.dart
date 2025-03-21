@@ -5,7 +5,6 @@ import 'package:mi_garaje/data/services/user_types_service.dart';
 import 'package:mi_garaje/data/services/global_types_service.dart';
 
 class GlobalTypesViewModel extends ChangeNotifier {
-  GlobalTypesViewModel();
   final UserTypesService _userTypeService = UserTypesService();
 
   final _refuelTypesController = StreamController<List<String>>.broadcast();
@@ -16,10 +15,6 @@ class GlobalTypesViewModel extends ChangeNotifier {
 
   final List<String> _tabs = [];
 
-  late String _userId;
-  late String? _idFamily;
-  bool get isFamily => _idFamily != null;
-
   @override
   void dispose() {
     _refuelTypesController.close();
@@ -28,22 +23,14 @@ class GlobalTypesViewModel extends ChangeNotifier {
   }
 
   // Método para inicializar
-  Future<void> initializeUser(String userId) async {
-    _userId = userId;
-    await getTabs();
-  }
-
-  // Método para obtener los tipos
-  Future<List<String>> getActivitiesType(String typeName) async {
-    Map<String, List<String>> userRefuelData = await _userTypeService.getUserData(_userId, typeName);
-
-    return userRefuelData['added'] ?? [];
+  Future<void> initializeUser(String ownerId, String ownerType) async {
+    await getTabs(ownerId, ownerType);
   }
 
   // Método que retorna los tipos
-  Future<List<String>> getTypes(String typeName) async {
+  Future<List<String>> getTypes(String ownerId, String ownerType, String typeName) async {
     try {
-    Map<String, List<String>> userRefuelData = await _userTypeService.getUserData(_userId, typeName);
+    Map<String, List<String>> userRefuelData = await _userTypeService.getUserData(ownerId, ownerType, typeName);
     List<String> addedRefuelTypes = userRefuelData['added'] ?? [];
     List<String> removedRefuelTypes = userRefuelData['removed'] ?? [];
 
@@ -60,15 +47,15 @@ class GlobalTypesViewModel extends ChangeNotifier {
   }
 
   // Método que retorna el Stream de tipos
-  Stream<List<String>> getTypesStream(String typeName) {
-    _emitTypes(typeName);
+  Stream<List<String>> getTypesStream(String ownerId, String ownerType, String typeName) {
+    _emitTypes(ownerId, ownerType, typeName);
     return _refuelTypesController.stream;
   }
 
   // Método para emitir los tipos de repostaje
-  Future<void> _emitTypes(String typeName) async {
+  Future<void> _emitTypes(String ownerId, String ownerType, String typeName) async {
     try {
-      Map<String, List<String>> userRefuelData = await _userTypeService.getUserData(_userId, typeName);
+      Map<String, List<String>> userRefuelData = await _userTypeService.getUserData(ownerId, ownerType, typeName);
       List<String> addedRefuelTypes = userRefuelData['added'] ?? [];
       List<String> removedRefuelTypes = userRefuelData['removed'] ?? [];
 
@@ -85,15 +72,15 @@ class GlobalTypesViewModel extends ChangeNotifier {
   }
 
   // Método que retorna el Stream de tipos eliminados
-  Stream<List<String>> getRemovedTypesStream(String typeName) {
-    _emitRemovedTypes(typeName);
+  Stream<List<String>> getRemovedTypesStream(String ownerId, String ownerType, String typeName) {
+    _emitRemovedTypes(ownerId, ownerType, typeName);
     return _removedrefuelTypesController.stream;
   }
 
   // Método para emitir los tipos de repostaje eliminados
-  Future<void> _emitRemovedTypes(String typeName) async {
+  Future<void> _emitRemovedTypes(String ownerId, String ownerType, String typeName) async {
     try {
-      Map<String, List<String>> userRefuelData = await _userTypeService.getUserData(_userId, typeName);
+      Map<String, List<String>> userRefuelData = await _userTypeService.getUserData(ownerId, ownerType, typeName);
       List<String> removedRefuelTypes = userRefuelData['removed'] ?? [];
 
       _removedrefuelTypesController.add(removedRefuelTypes);
@@ -104,50 +91,50 @@ class GlobalTypesViewModel extends ChangeNotifier {
   }
 
   // Método para eliminar un tipo
-  Future<void> removeType(String type, String typeName) async {
+  Future<void> removeType(String ownerId, String ownerType, String type, String typeName) async {
     try {
       if (_globalTypes[typeName]!.contains(type)) {
-        await _userTypeService.removeType(_userId, type, typeName, false);
+        await _userTypeService.removeType(ownerId, ownerType, type, typeName, false);
       }
       else {
-         await _userTypeService.removeType(_userId, type, typeName, true);
+         await _userTypeService.removeType(ownerId, ownerType, type, typeName, true);
       }
 
-      _emitTypes(typeName);
-      _emitRemovedTypes(typeName);
+      _emitTypes(ownerId, ownerType, typeName);
+      _emitRemovedTypes(ownerId, ownerType, typeName);
     } catch (e) {
       print("Error al eliminar el tipo: $e");
     }
   }
 
   // Método para reactivar un tipo
-  Future<void> reactivateType(String type, String typeName) async {
+  Future<void> reactivateType(String ownerId, String ownerType, String type, String typeName) async {
     try {
-      await _userTypeService.reactivateType(_userId, type, typeName);
-      _emitTypes(typeName);
-      _emitRemovedTypes(typeName);
+      await _userTypeService.reactivateType(ownerId, ownerType, type, typeName);
+      _emitTypes(ownerId, ownerType, typeName);
+      _emitRemovedTypes(ownerId, ownerType, typeName);
     } catch (e) {
       print("Error al reactivar el tipo: $e");
     }
   }
 
   // Método para añadir un tipo
-  Future<void> addType(String type, String typeName) async {
+  Future<void> addType(String ownerId, String ownerType, String type, String typeName) async {
     try {
-      await _userTypeService.addType(_userId, type, typeName);
-      _emitTypes(typeName);
-      _emitRemovedTypes(typeName);
+      await _userTypeService.addType(ownerId, ownerType, type, typeName);
+      _emitTypes(ownerId, ownerType, typeName);
+      _emitRemovedTypes(ownerId, ownerType, typeName);
     } catch (e) {
       print("Error al añadir el tipo: $e");
     }
   }
 
   // Método para editar un tipo
-  Future<void> editType(String oldType, String newType, String typeName) async {
+  Future<void> editType(String ownerId, String ownerType, String oldType, String newType, String typeName) async {
     try {
-      await _userTypeService.removeType(_userId, oldType, typeName, true);
-      await _userTypeService.addType(_userId, newType, typeName);
-      _emitTypes(typeName);
+      await _userTypeService.removeType(ownerId, ownerType, oldType, typeName, true);
+      await _userTypeService.addType(ownerId, ownerType, newType, typeName);
+      _emitTypes(ownerId, ownerType, typeName);
     } catch (e) {
       print("Error al editar el tipo: $e");
     }
@@ -165,23 +152,21 @@ class GlobalTypesViewModel extends ChangeNotifier {
     };
   }
 
-  Future<void> getTabs() async {
+  Future<void> getTabs(String ownerId, String ownerType) async {
     _tabs.clear();
     _tabs.addAll(_globalTypes['Activity']!);
-    _tabs.addAll(await _userTypeService.getTabs(_userId));
+    _tabs.addAll(await _userTypeService.getTabs(ownerId, ownerType));
   }
 
   List<String> getTabsList() {
     return _tabs;
   }
 
-  Future<void> convertToFamily(String idFamily) async {
-    _idFamily = idFamily;
-    await _userTypeService.convertToFamily(_userId, idFamily);
+  Future<void> convertToFamily(String userId, String familyId) async {
+    await _userTypeService.transformTypesToFamily(userId, familyId);
   }
 
-  Future<void> joinFamily(String idFamily) async {
-    _idFamily = idFamily;
-    await _userTypeService.joinFamily(_userId, idFamily);
+  Future<void> joinFamily(String userId) async {
+    await _userTypeService.deleteTypeFromUser(userId);
   }
 }

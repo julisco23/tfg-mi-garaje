@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mi_garaje/data/provider/activity_provider.dart';
 import 'package:mi_garaje/data/provider/auth_provider.dart';
+import 'package:mi_garaje/data/provider/global_types_view_model.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/view/screens/splash_screen.dart';
 import 'package:provider/provider.dart';
@@ -29,12 +30,15 @@ class _HomeViewState extends State<HomeView> {
     final garageViewModel = context.read<GarageProvider>();
     final authProvider = context.read<AuthProvider>();
     final activityProvider = context.read<ActivityProvider>();
+    final globalTypesViewModel = context.read<GlobalTypesViewModel>();
 
     try {
       final result = await garageViewModel.hasVehicles(authProvider.id, authProvider.type);
       if (result) {
         await activityProvider.loadActivities(garageViewModel.id, authProvider.id, authProvider.type);
       }
+
+      await globalTypesViewModel.initializeUser(authProvider.id, authProvider.type);
       
       setState(() {
         _hasVehicles = result;

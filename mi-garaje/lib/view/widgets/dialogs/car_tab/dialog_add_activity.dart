@@ -70,13 +70,15 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
   void initState() {
     super.initState();
 
+    final AuthProvider authProvider = context.read<AuthProvider>();
+
     if (widget.activity != null) {
       if (widget.activity is CustomActivity) {
         customType = widget.activity!.getType;
         isCustom = true;
       } else {
         customType = widget.activity!.getActivityType;
-        _typesFuture = Provider.of<GlobalTypesViewModel>(context, listen: false).getTypes(customType);
+        _typesFuture = Provider.of<GlobalTypesViewModel>(context, listen: false).getTypes(authProvider.id, authProvider.type, customType);
       }
       costController.text = widget.activity!.getCost.toString();
       selectedDate = widget.activity!.getDate;
@@ -98,8 +100,7 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
     } else {
       customType = widget.customType!;
       if (["Refuel", "Repair", "Record"].contains(widget.customType)) {
-        _typesFuture = Provider.of<GlobalTypesViewModel>(context, listen: false)
-            .getTypes(customType);
+        _typesFuture = Provider.of<GlobalTypesViewModel>(context, listen: false).getTypes(authProvider.id, authProvider.type, customType);
       } else {
         isCustom = true;
       }

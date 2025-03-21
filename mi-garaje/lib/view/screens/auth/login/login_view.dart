@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mi_garaje/data/provider/global_types_view_model.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/constants/validator.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
@@ -73,7 +72,6 @@ class _LoginViewState extends State<LoginView> {
                             if (response != null) {
                               ToastHelper.show(context, response);
                             } else {
-                              await Provider.of<GlobalTypesViewModel>(context, listen: false).initializeUser(loginViewModel.id);
                               if (context.mounted){
                                 Navigator.pushNamedAndRemoveUntil(context, RouteNames.home, (route) => false);
                               }
@@ -135,7 +133,6 @@ class _LoginViewState extends State<LoginView> {
                           if (response != null) {
                             ToastHelper.show(context, response);
                           } else {
-                            await Provider.of<GlobalTypesViewModel>(context, listen: false).initializeUser(loginViewModel.id);
                             Navigator.pushNamedAndRemoveUntil(context, RouteNames.home, (route) => false);
                           }
                         }
