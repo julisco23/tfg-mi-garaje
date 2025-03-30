@@ -54,7 +54,7 @@ class _CarTabViewState extends State<CarTabView> with SingleTickerProviderStateM
                 if (vehicle.photo != null)
                   CircleAvatar(
                     radius: 20,
-                    backgroundImage: Provider.of<ImageCacheProvider>(context).getImage("vehicle", vehicle.id!, vehicle.photo!),
+                    backgroundImage: context.read<ImageCacheProvider>().getImage("vehicle", vehicle.id!, vehicle.photo!),
                   ),
                 const SizedBox(width: 10),
                 Text(vehicle.getNameTittle()),
@@ -84,7 +84,7 @@ class _CarTabViewState extends State<CarTabView> with SingleTickerProviderStateM
             children: [
               FloatingActionButton(
                 heroTag: "add",
-                onPressed: () => _addActivityDialog(garageProvider),
+                onPressed: () async => await _addActivityDialog(garageProvider),
                 tooltip: "Añadir actividad",
                 child: const Icon(Icons.add_rounded, size: 40),
               ),
@@ -95,38 +95,35 @@ class _CarTabViewState extends State<CarTabView> with SingleTickerProviderStateM
     );
   }
 
-  void _addActivityDialog(GarageProvider garageProvider) {
+  Future<void> _addActivityDialog(GarageProvider garageProvider) async {
     final index = _tabController.index;
     final currentType = _tabState.activityTypes[index];
 
-    DialogAddActivity.show(context, customType: currentType);
+    await DialogAddActivity.show(context, customType: currentType);
   }
 
   Widget _buildTabContent(String activityType) {
+    final AuthProvider authProvider = context.read<AuthProvider>();
+    final vehicle = context.read<GarageProvider>().selectedVehicle!;
+
     return Consumer<ActivityProvider>(
       builder: (context, activityProvider, _) {
-        final authProvider = context.read<AuthProvider>();
 
-        // Obtén el vehicleId (y ownerId, ownerType) para cargar las actividades
-        final vehicle = context.read<GarageProvider>().selectedVehicle;
-
-        // Obtén las actividades del ActivityProvider
         List<Activity> activities = activityProvider.getActivities(activityType);
 
         return RefreshIndicator(
           onRefresh: () async {
-            await activityProvider.loadActivities(vehicle!.id!, authProvider.id, authProvider.type);
+            await activityProvider.loadActivities(vehicle.getId, authProvider.id, authProvider.type);
           },
           child: ListView.builder(
             itemCount: activities.length,
             itemBuilder: (context, index) => ActivityCard(
               activity: activities[index],
-              carName: vehicle!.getNameTittle(),
+              carName: vehicle.getNameTittle(),
             ),
           ),
         );
       },
     );
   }
-
 }

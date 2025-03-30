@@ -27,10 +27,10 @@ class _HomeViewState extends State<HomeView> {
   }
 
   Future<void> _loadVehicles() async {
-    final garageViewModel = context.read<GarageProvider>();
-    final authProvider = context.read<AuthProvider>();
-    final activityProvider = context.read<ActivityProvider>();
-    final globalTypesViewModel = context.read<GlobalTypesViewModel>();
+    final GarageProvider garageViewModel = context.read<GarageProvider>();
+    final AuthProvider authProvider = context.read<AuthProvider>();
+    final ActivityProvider activityProvider = context.read<ActivityProvider>();
+    final GlobalTypesViewModel globalTypesViewModel = context.read<GlobalTypesViewModel>();
 
     try {
       final result = await garageViewModel.hasVehicles(authProvider.id, authProvider.type);
@@ -58,11 +58,13 @@ class _HomeViewState extends State<HomeView> {
     }
 
     if (!_hasVehicles) {
-      return FirstCar(onVehicleAdded: () {
-        setState(() {
-          _hasVehicles = true;
-        });
-      });
+      return FirstCar(
+        onVehicleChanged: (vehicle) {
+          setState(() {
+            _hasVehicles = true;
+          });
+        }
+      );
     }
 
     return Scaffold(

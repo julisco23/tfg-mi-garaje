@@ -37,21 +37,17 @@ class ConfirmDialog extends StatelessWidget {
                 children: [
                   SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
                   Text(mensaje, textAlign: TextAlign.center,),
-                  SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 
+                  SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       TextButton(
-                        child: Text("Cancelar",
-                            style: TextStyle(
-                                color: Theme.of(context).primaryColor)),
+                        child: Text("Cancelar", style: TextStyle(color: Theme.of(context).primaryColor)),
                         onPressed: () => Navigator.of(context).pop(false),
                       ),
                       TextButton(
-                        child: Text("Aceptar",
-                            style: TextStyle(
-                                color: Theme.of(context).primaryColor)),
+                        child: Text("Aceptar", style: TextStyle(color: Theme.of(context).primaryColor)),
                         onPressed: () => Navigator.of(context).pop(true),
                       ),
                     ],

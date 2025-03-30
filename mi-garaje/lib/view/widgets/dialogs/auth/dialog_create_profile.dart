@@ -6,11 +6,10 @@ import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
 import 'package:mi_garaje/view/widgets/utils/elevated_button_utils.dart';
 import 'package:mi_garaje/data/provider/auth_provider.dart';
+import 'package:provider/provider.dart';
 
 class DialogCambioCuenta extends StatefulWidget {
-  final AuthProvider authViewModel;
-
-  const DialogCambioCuenta({super.key, required this.authViewModel});
+  const DialogCambioCuenta({super.key});
 
   @override
   State<DialogCambioCuenta> createState() => _DialogCambioCuentaState();
@@ -20,7 +19,7 @@ class DialogCambioCuenta extends StatefulWidget {
     await showDialog(
       context: context,
       builder: (BuildContext context) {
-        return DialogCambioCuenta(authViewModel: authViewModel);
+        return DialogCambioCuenta();
       },
     );
   }
@@ -37,6 +36,9 @@ class _DialogCambioCuentaState extends State<DialogCambioCuenta> {
 
   @override
   Widget build(BuildContext context) {
+    final AuthProvider authProvider = context.read<AuthProvider>();
+    final NavigatorState navigator = Navigator.of(context);
+
     return AlertDialog(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       title: Row(
@@ -110,20 +112,23 @@ class _DialogCambioCuentaState extends State<DialogCambioCuenta> {
           text: "Crear cuenta",
           onPressed: () async {
             if (profileFormKey.currentState!.validate()) {
-              String? response = await widget.authViewModel.crearCuenta(
-                emailController.text,
-                passwordController.text,
-                nameController.text,
-              );
-
-              if (context.mounted) {
-                if (response != null) {
-                  ToastHelper.show(context, response);
-                } else {
-                  Navigator.pushNamedAndRemoveUntil(
-                    context, RouteNames.home, (route) => false);
+              navigator.pushNamed(
+                RouteNames.loading, 
+                arguments: {
+                  'onInit': () async {
+                    String? response = await authProvider.crearCuenta(
+                      emailController.text,
+                      passwordController.text,
+                      nameController.text.trim(),
+                    );
+                    if (response != null) {
+                      ToastHelper.show(response);
+                    } else {
+                      navigator.pushNamedAndRemoveUntil(RouteNames.home, (route) => false);
+                    }
+                  }
                 }
-              }
+              );
             }
           },
         ),

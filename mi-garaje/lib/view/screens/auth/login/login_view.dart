@@ -25,7 +25,8 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    final loginViewModel = Provider.of<AuthProvider>(context);
+    final AuthProvider loginViewModel = context.read<AuthProvider>();
+    final NavigatorState navigator = Navigator.of(context);
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -64,19 +65,20 @@ class _LoginViewState extends State<LoginView> {
                       IconButton(
                         icon: Icon(Icons.login),
                         onPressed: () async{
-                          String? response = await loginViewModel.signin(
-                            "juli@gmail.com",
-                            "jjjjjj",
-                          );
-                          if (context.mounted) {
-                            if (response != null) {
-                              ToastHelper.show(context, response);
-                            } else {
-                              if (context.mounted){
-                                Navigator.pushNamedAndRemoveUntil(context, RouteNames.home, (route) => false);
+                          navigator.pushNamed(
+                            RouteNames.loading, 
+                            arguments: {
+                              'onInit': () async {
+                                String? response = await loginViewModel.signin("juli@gmail.com", "jjjjjj");
+                                if (response != null) {
+                                  ToastHelper.show(response);
+                                  navigator.pop();
+                                } else {
+                                  navigator.pushNamedAndRemoveUntil(RouteNames.home, (route) => false);
+                                }
                               }
                             }
-                          }
+                          );
                         },
                       ),
                     ],
@@ -125,17 +127,20 @@ class _LoginViewState extends State<LoginView> {
                     text: "Iniciar sesión",
                     onPressed: () async {
                       if (loginFormKey.currentState!.validate()) {
-                        String? response = await loginViewModel.signin(
-                          emailController.text,
-                          passwordController.text,
-                        );
-                        if (context.mounted) {
-                          if (response != null) {
-                            ToastHelper.show(context, response);
-                          } else {
-                            Navigator.pushNamedAndRemoveUntil(context, RouteNames.home, (route) => false);
+                        navigator.pushNamed(
+                          RouteNames.loading, 
+                          arguments: {
+                            'onInit': () async {
+                              String? response = await loginViewModel.signin(emailController.text, passwordController.text);
+                              if (response != null) {
+                                ToastHelper.show(response);
+                                navigator.pop();
+                              } else {
+                                navigator.pushNamedAndRemoveUntil(RouteNames.home, (route) => false);
+                              }
+                            }
                           }
-                        }
+                        );
                       }
                     },
                   ),
@@ -143,7 +148,7 @@ class _LoginViewState extends State<LoginView> {
 
                   // Olvidar contraseña
                   GestureDetector(
-                    onTap: () => ToastHelper.show(context, "Funcionalidad no disponible."),
+                    onTap: () => ToastHelper.show("Funcionalidad no disponible."),
                     child: Text(
                       "¿Has olvidado la contraseña?",
                       style: TextStyle(color: Theme.of(context).primaryColor),
@@ -155,15 +160,20 @@ class _LoginViewState extends State<LoginView> {
                   MiButton(
                     text: "Inicia sesión con Google",
                     onPressed: () async {
-                      String? response = await loginViewModel.signInWithGoogle();
+                      navigator.pushNamed(
+                        RouteNames.loading, 
+                        arguments: {
+                          'onInit': () async {
+                            String? response = await loginViewModel.signInWithGoogle();
 
-                      if (context.mounted) {
-                        if (response != null) {
-                          ToastHelper.show(context, response);
-                        } else {
-                          Navigator.pushNamedAndRemoveUntil(context, RouteNames.home, (route) => false);
+                            if (response != null) {
+                              ToastHelper.show(response);
+                            } else {
+                              navigator.pushNamedAndRemoveUntil(RouteNames.home, (route) => false);
+                            }
+                          }
                         }
-                      }
+                      );
                     },
                     imagen: 'assets/images/google.png',
                   ),
@@ -173,7 +183,7 @@ class _LoginViewState extends State<LoginView> {
                   MiButton(
                     text: "Crear cuenta",
                     onPressed: () {
-                      Navigator.pushReplacementNamed(context, RouteNames.signup);
+                      navigator.pushReplacementNamed(RouteNames.signup);
                     },
                     backgroundColor: Colors.transparent,
                     side: BorderSide(color: Theme.of(context).primaryColor),

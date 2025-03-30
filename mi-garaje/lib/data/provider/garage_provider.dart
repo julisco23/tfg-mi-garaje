@@ -33,6 +33,15 @@ class GarageProvider extends ChangeNotifier {
     return isVehicleSelected;
   }
 
+  // obtener vehículo seleccionado
+  Future<void> getVehicles(String ownerId, String ownerType) async {
+    _vehicles = await carService.getVehiclesFuture(ownerId, ownerType);
+
+    if (_vehicles.isNotEmpty) {
+      _selectedVehicle = _vehicles.first;
+    }
+  }
+
   // Cambiar vehículo seleccionado
   Future<void> setSelectedVehicle(Vehicle? vehicle) async {
     _selectedVehicle = vehicle;
@@ -51,10 +60,14 @@ class GarageProvider extends ChangeNotifier {
 
   // Cerrar sesión
   void cerrarSesion() {
-    _vehicles = [];
     _initialized = false;
+    _vehicles.clear();
     _selectedVehicle = null;
-    notifyListeners();
+  }
+
+  Future<void> eliminarCuenta(String ownerId, String ownerType, bool deleteFamily) async {
+    _initialized = false;
+    leaveFamily(ownerId, ownerType, deleteFamily);
   }
 
   // Métodos para manejar vehículos
@@ -113,8 +126,9 @@ class GarageProvider extends ChangeNotifier {
     if (delete) {
       await carService.deleteVehicles(ownerId, ownerType);
     }
+
     _vehicles.clear();
     _selectedVehicle = null;
-    notifyListeners();
+    _initialized = false;
   }
 }

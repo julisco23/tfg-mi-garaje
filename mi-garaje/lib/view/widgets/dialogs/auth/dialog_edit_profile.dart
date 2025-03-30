@@ -4,22 +4,25 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/constants/validator.dart';
+import 'package:mi_garaje/shared/routes/route_names.dart';
+import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
 import 'package:mi_garaje/data/provider/auth_provider.dart';
+import 'package:provider/provider.dart';
 
 class DialogEditProfile extends StatefulWidget {
-  final AuthProvider authViewModel;
+  final bool isFamily;
 
-  const DialogEditProfile({super.key, required this.authViewModel});
+  const DialogEditProfile({super.key, required this.isFamily});
 
   @override
   State<DialogEditProfile> createState() => _DialogEditProfileState();
 
-  static Future<void> show(BuildContext context, AuthProvider authViewModel) {
+  static Future<void> show(BuildContext context,{bool isFamily = false}) {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
-        return DialogEditProfile(authViewModel: authViewModel);
+        return DialogEditProfile(isFamily: isFamily);
       },
     );
   }
@@ -32,15 +35,23 @@ class _DialogEditProfileState extends State<DialogEditProfile> {
   String? imageBase64;
 
   late bool isPhotoChanged;
+  late String accountType;
 
   @override
   void initState() {
+    final AuthProvider authProvider = context.read<AuthProvider>();
     super.initState();
-    nombreController = TextEditingController(text: widget.authViewModel.user!.name);
-    if (widget.authViewModel.isPhotoURL){
-      imageBase64 = widget.authViewModel.user!.photoURL!;
+    if (widget.isFamily) {
+      nombreController = TextEditingController(text: authProvider.family!.name);
+      accountType = "familia";
+    } else {
+      nombreController = TextEditingController(text: authProvider.user!.name);
+      if (authProvider.isPhotoURL){
+        imageBase64 = authProvider.user!.photoURL!;
+      }
+      isPhotoChanged = authProvider.user!.isPhotoChanged;
+      accountType = "perfil";
     }
-    isPhotoChanged = widget.authViewModel.user!.isPhotoChanged;
   }
 
   @override
@@ -51,11 +62,10 @@ class _DialogEditProfileState extends State<DialogEditProfile> {
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
-    final XFile? pickedFile =
-        await picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-       String base64String = await pickedFile.readAsBytes().then((value) => base64Encode(value));
+      String base64String = await pickedFile.readAsBytes().then((value) => base64Encode(value));
       setState(() {
         imageBase64 = base64String;
         isPhotoChanged = true;
@@ -65,15 +75,18 @@ class _DialogEditProfileState extends State<DialogEditProfile> {
 
   @override
   Widget build(BuildContext context) {
+    final AuthProvider authProvider = context.watch<AuthProvider>();
+    final NavigatorState navigator = Navigator.of(context);
+    
     return AlertDialog(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text('Actualizar perfil', style: Theme.of(context).textTheme.titleLarge),
+          Text('Actualizar', style: Theme.of(context).textTheme.titleLarge),
           IconButton(
             icon: Icon(Icons.close, color: Theme.of(context).primaryColor),
             onPressed: () {
-              Navigator.of(context).pop();
+              navigator.pop();
             },
           ),
         ],
@@ -87,87 +100,88 @@ class _DialogEditProfileState extends State<DialogEditProfile> {
             children: [
               MiTextFormField(
                 controller: nombreController,
-                labelText: 'Nombre en perfil',
+                labelText: 'Nombre en $accountType',
                 hintText: 'Mi Garaje',
-                validator: (value) {
-                  return Validator.validateName(value);
-                },
+                validator: Validator.validateName,
               ),
-              SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
-
-              // Selector de imagen
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  imageBase64 == null
-                  ? ElevatedButton.icon(
-                      onPressed: _pickImage,
-                      icon: const Icon(Icons.image),
-                      label: const Text('Seleccionar Imagen',
-                          style: TextStyle(color: Colors.white)),
-                      style: ElevatedButton.styleFrom(
-                          iconColor: Colors.white),
-                    )
-                  : Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return Dialog(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Image.memory(
-                                      base64Decode(imageBase64!),
-                                      fit: BoxFit.contain,
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          );
-                        },
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: isPhotoChanged
-                          ? Image.memory(
-                            base64Decode(imageBase64!),
-                            height: 50,
-                            width: 50,
-                            fit: BoxFit.cover,
-                          )
-                          : Image.network(
-                            imageBase64!,
-                            width: 50,
-                            height: 50,
-                            fit: BoxFit.cover,
-                          )
+              if (!widget.isFamily) ...[
+                SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
+              
+                // Selector de imagen
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    imageBase64 == null
+                    ? ElevatedButton.icon(
+                        onPressed: _pickImage,
+                        icon: const Icon(Icons.image),
+                        label: const Text('Seleccionar Imagen',
+                            style: TextStyle(color: Colors.white)),
+                        style: ElevatedButton.styleFrom(
+                            iconColor: Colors.white),
+                      )
+                    : Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return Dialog(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Image.memory(
+                                        base64Decode(imageBase64!),
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: isPhotoChanged
+                            ? Image.memory(
+                              base64Decode(imageBase64!),
+                              height: 50,
+                              width: 50,
+                              fit: BoxFit.cover,
+                            )
+                            : Image.network(
+                              imageBase64!,
+                              width: 50,
+                              height: 50,
+                              fit: BoxFit.cover,
+                            )
+                          ),
                         ),
-                      ),
-                      SizedBox(
-                        width: AppDimensions.screenHeight(context) * 0.05),
-                      Expanded(
-                        child: Text(
-                          'Imagen cargada',
-                          style: TextStyle(
-                            color: Colors.green,
-                            fontWeight: FontWeight.bold),
+                        SizedBox(
+                          width: AppDimensions.screenHeight(context) * 0.05),
+                        Expanded(
+                          child: Text(
+                            'Imagen cargada',
+                            style: TextStyle(
+                              color: Colors.green,
+                              fontWeight: FontWeight.bold
+                            ),
+                          ),
                         ),
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          setState(() {
-                            imageBase64 = null;
-                          });
-                        },
-                        icon: const Icon(Icons.close, color: Colors.red),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                        IconButton(
+                          onPressed: () {
+                            setState(() {
+                              imageBase64 = null;
+                            });
+                          },
+                          icon: const Icon(Icons.close, color: Colors.red),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
             ]
           )
         ),
@@ -178,20 +192,31 @@ class _DialogEditProfileState extends State<DialogEditProfile> {
           children: [
             TextButton(
               child: Text("Cancelar", style: TextStyle(color: Theme.of(context).primaryColor)),
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => navigator.pop(),
             ),
             TextButton(
-              child: Text("Guardar",
-                  style: TextStyle(color: Theme.of(context).primaryColor)),
+              child: Text("Guardar", style: TextStyle(color: Theme.of(context).primaryColor)),
               onPressed: () async {
                 if (profileFormKey.currentState!.validate()) {
-                  String nuevoNombre = nombreController.text.trim();
 
-                  await widget.authViewModel.actualizarProfile(nuevoNombre, imageBase64, isPhotoChanged);
-
-                  if (context.mounted) {
-                    Navigator.pop(context);
-                  }
+                  navigator.pushNamed(
+                    RouteNames.loading, 
+                    arguments: {
+                      'onInit': () async {
+                        String? response;
+                        if (widget.isFamily) {
+                          response = await authProvider.actualizarFamilia(nombreController.text.trim());
+                        } else {
+                          response = await authProvider.actualizarProfile(nombreController.text.trim(), imageBase64, isPhotoChanged);
+                        }
+                        if (response != null) {
+                          ToastHelper.show(response);
+                        } else {
+                          navigator.pushNamedAndRemoveUntil(RouteNames.home, (route) => false);
+                        }
+                      }
+                    }
+                  );
                 }
               },
             ),

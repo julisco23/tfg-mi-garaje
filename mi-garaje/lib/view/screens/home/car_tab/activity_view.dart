@@ -32,7 +32,11 @@ class _ActivityViewState extends State<ActivityView> {
 
   @override
   Widget build(BuildContext context) {
-    final ActivityProvider activityProvider = Provider.of<ActivityProvider>(context);
+    final ActivityProvider activityProvider = context.read<ActivityProvider>();
+    final AuthProvider authProvider = context.read<AuthProvider>();
+    final GarageProvider garageProvider = context.read<GarageProvider>();
+    final ImageCacheProvider imageCacheProvider = context.read<ImageCacheProvider>();
+    final NavigatorState navigator = Navigator.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -43,15 +47,11 @@ class _ActivityViewState extends State<ActivityView> {
             onPressed: () async{
               bool result = await DeleteActivityDialog.show(context, activity);
 
-              if (result && context.mounted) {
-                activityProvider.deleteActivity(
-                  context.read<GarageProvider>().id,
-                  context.read<AuthProvider>().id,
-                  context.read<AuthProvider>().type,
-                  activity,
-                );
-                Navigator.pop(context);
-              }
+              if (!result) return;
+
+              await activityProvider.deleteActivity(garageProvider.id, authProvider.id, authProvider.type, activity);
+              
+              navigator.pop();
             },
           ),
         ],
@@ -112,7 +112,7 @@ class _ActivityViewState extends State<ActivityView> {
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Image(image: Provider.of<ImageCacheProvider>(context).getImage("activity", activity.getDate.toIso8601String(), activity.getPhoto!)),
+                                  Image(image: imageCacheProvider.getImage("activity", activity.getDate.toIso8601String(), activity.getPhoto!)),
                                 ],
                               ),
                             );
@@ -122,7 +122,7 @@ class _ActivityViewState extends State<ActivityView> {
                       child: Center(
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(10),
-                          child: Image(image: Provider.of<ImageCacheProvider>(context).getImage("activity", activity.getDate.toIso8601String(), activity.getPhoto!)),
+                          child: Image(image: imageCacheProvider.getImage("activity", activity.getDate.toIso8601String(), activity.getPhoto!)),
                         ),
                       ),
                     ),
@@ -132,8 +132,8 @@ class _ActivityViewState extends State<ActivityView> {
                   // Botón de edición
                   MiButton(
                     text: "Editar",
-                    onPressed: () {
-                      DialogAddActivity.show(
+                    onPressed: () async{
+                      await DialogAddActivity.show(
                         context,
                         activity: activity,
                         onActivityUpdated: (updatedActivity) {

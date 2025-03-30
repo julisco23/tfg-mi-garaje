@@ -100,16 +100,15 @@ class AuthProvider extends ChangeNotifier {
     }
     _user = null; // 💡 Limpiar usuario después de cerrar sesión
     _family = null; // 💡 Limpiar familia también
-    notifyListeners();
     return response;
   }
 
   // ✅ Eliminar cuenta correctamente
   Future<String?> eliminarCuenta() async {
+    await salirDeFamilia();
     String? response = await _authService.deleteUserAccount();
     _user = null;
     _family = null;
-    notifyListeners();
     return response;
   }
 
@@ -122,8 +121,15 @@ class AuthProvider extends ChangeNotifier {
 
   // ✅ Actualizar perfil de usuario
   Future<String?> actualizarProfile(String name, String? photo, bool isPhotoChanged) async {
-    String? response = await _authService.updateProfile(name, photo, isPhotoChanged);
+    String? response = await _authService.updateProfile(name, photo, isPhotoChanged, user!.id!);
     await setUser(await _authService.currentUser);
+    return response;
+  }
+
+  // ✅ Actualizar perfil de familia
+  Future<String?> actualizarFamilia(String name) async {
+    String? response = await _authService.updateFamilyProfile(name, family!.id!);
+    await getFamily();
     return response;
   }
 
@@ -143,14 +149,14 @@ class AuthProvider extends ChangeNotifier {
       code: generateFamilyCode(),
       members: [_user!],
     );
-    await _authService.convertToFamily(family);
+    await _authService.convertToFamily(family, _user!.id!);
     await setUser(await _authService.currentUser);
     await getFamily();
   }
 
   // ✅ Unirse a una familia
   Future<void> unirseAFamilia(String familyCode) async {
-    await _authService.joinFamily(familyCode);
+    await _authService.joinFamily(familyCode, user!.id!);
     await setUser(await _authService.currentUser);
     await getFamily();
   }
@@ -158,10 +164,10 @@ class AuthProvider extends ChangeNotifier {
   // ✅ Salir de la familia correctamente
   Future<void> salirDeFamilia() async {
     if (_family == null) return;
-    await _authService.leaveFamily(isLastMember);
-    if (isLastMember) {
-      _family = null;
-    }
+    await _authService.leaveFamily(isLastMember, _user!.id!, _family!.id!);
+
+    _family = null;
+    
     await setUser(await _authService.currentUser);
   }
 }

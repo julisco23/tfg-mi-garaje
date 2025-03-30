@@ -37,14 +37,14 @@ class _TypesCardState extends State<TypesCard> {
       child: ListTile(
         title: Text(title, style: Theme.of(context).textTheme.bodyMedium),
         trailing: widget.contains
-            ? null
-            : IconButton(
-                onPressed: widget.onPressed,
-                icon: Icon(
-                  widget.icon,
-                  color: Theme.of(context).primaryColor,
-                ),
-              ),
+          ? null
+          : IconButton(
+            onPressed: widget.onPressed,
+            icon: Icon(
+              widget.icon,
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
       ),
     );
   }

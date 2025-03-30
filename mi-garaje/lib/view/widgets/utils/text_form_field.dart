@@ -30,9 +30,12 @@ class MiTextFormField extends StatelessWidget {
       controller: _controller,
       keyboardType: keyboardType,
       maxLines: maxLines,
+      cursorColor: Theme.of(context).primaryColor,
+      cursorErrorColor: Theme.of(context).primaryColor,
       decoration: InputDecoration(
         alignLabelWithHint: true,
         labelText: _labelText,
+
         hintText: _hintText,
         floatingLabelBehavior: FloatingLabelBehavior.auto,
         floatingLabelStyle: TextStyle(

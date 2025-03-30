@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mi_garaje/data/provider/activity_provider.dart';
 import 'package:mi_garaje/data/provider/global_types_view_model.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
@@ -19,7 +20,10 @@ class SettingsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authViewModel = Provider.of<AuthProvider>(context);
+    final AuthProvider authViewModel = context.read<AuthProvider>();
+    final GlobalTypesViewModel globalTypesProvider  = context.read<GlobalTypesViewModel>();
+    final ActivityProvider activityProvider = context.read<ActivityProvider>();
+    final NavigatorState navigator = Navigator.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -38,15 +42,19 @@ class SettingsView extends StatelessWidget {
                 ? SettingCard(
                     icon: Icons.person_add_alt_1_rounded,
                     title: "Crear cuenta",
-                    onTap: () {
-                      DialogCambioCuenta.show(context, authViewModel);
+                    onTap: () async {
+                      await DialogCambioCuenta.show(context, authViewModel);
+
+                      ToastHelper.show("Cuenta creada.");
                     },
                   )
                 : SettingCard(
                     icon: Icons.person_rounded,
                     title: "Actualizar perfil",
-                    onTap: () {
-                      DialogEditProfile.show(context, authViewModel);
+                    onTap: () async {
+                      await DialogEditProfile.show(context);
+
+                      ToastHelper.show("Cuenta actualizada.");
                     },
                   ),
             if (!authViewModel.user!.isGoogle)
@@ -61,11 +69,18 @@ class SettingsView extends StatelessWidget {
                   );
                   if (!confirm) return;
 
-                  await authViewModel.linkWithGoogle();
+                  navigator.pushNamed(
+                    RouteNames.loading, 
+                    arguments: {
+                      'onInit': () async {
+                      await authViewModel.linkWithGoogle();
+                      navigator.pop();
 
-                  if (context.mounted) {
-                    Navigator.pop(context);
-                  }
+                      ToastHelper.show("Cuenta vinculada con Google.");
+                      //TODO: posible segundo pop
+                      }
+                    }
+                  );
                 },
               ),
             if (!authViewModel.user!.isAnonymous)
@@ -80,13 +95,18 @@ class SettingsView extends StatelessWidget {
                   );
                   if (!confirm) return;
 
-                  await authViewModel.signout();
+                  navigator.pushNamed(
+                    RouteNames.loading,
+                    arguments: {
+                      'onInit': () async {
+                        await authViewModel.signout();
+                        garageViewModel.cerrarSesion();
 
-                  if (context.mounted) {
-                    garageViewModel.cerrarSesion();
-                    Navigator.pushNamedAndRemoveUntil(
-                      context, RouteNames.login, (route) => false);
-                  }
+                        navigator.pushNamedAndRemoveUntil(RouteNames.login, (route) => false);
+                        ToastHelper.show("Sesión cerrada.");
+                      }
+                    },
+                  );
                 },
               ),
             SettingCard(
@@ -100,17 +120,19 @@ class SettingsView extends StatelessWidget {
                 );
                 if (!confirm) return;
 
-                String? response = await authViewModel.eliminarCuenta();
+                navigator.pushNamed(
+                  RouteNames.loading,
+                  arguments: {
+                    'onInit': () async {
+                      await garageViewModel.eliminarCuenta(authViewModel.id, authViewModel.type, authViewModel.user!.hasFamily);
+                      await authViewModel.eliminarCuenta();
+                      
+                      navigator.pushNamedAndRemoveUntil(RouteNames.login, (route) => false);
 
-                if (context.mounted) {
-                  if (response != null) {
-                    ToastHelper.show(context, response);
-                  } else {
-                    garageViewModel.cerrarSesion();
-                    Navigator.pushNamedAndRemoveUntil(
-                      context, RouteNames.login, (route) => false);
-                  }
-                }
+                      ToastHelper.show("Cuenta eliminada.");
+                    }
+                  },
+                );
               },
             ),
             SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
@@ -128,18 +150,23 @@ class SettingsView extends StatelessWidget {
                   "¿Deseas cambiar a modo ${Provider.of<ThemeNotifier>(context, listen: false).isLightTheme() ? "oscuro?" : "claro?"}?",
                 );
                 if (!confirm) return;
+                
+                //TODO: Implementar cambio de tema
 
-                if (context.mounted) {
-                  //ToastHelper.show(context, "Funcionalidad no disponible.")
-                  Provider.of<ThemeNotifier>(context, listen: false).toggleTheme();
-                }
+                ToastHelper.show("Funcionalidad no disponible.");
+                
+                //Provider.of<ThemeNotifier>(context, listen: false).toggleTheme();
+                //ToastHelper.show("Tema cambiado.");
               },
             ),
             SettingCard(
               icon: Icons.language_rounded,
               title: "Cambiar idioma",
               onTap: () {
-                ToastHelper.show(context, "Funcionalidad no disponible.");
+                //TODO: Implementar cambio de idioma
+
+                ToastHelper.show("Funcionalidad no disponible.");
+                //ToastHelper.show("Idioma cambiado.");
               },
             ),
             SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
@@ -151,14 +178,16 @@ class SettingsView extends StatelessWidget {
               icon: Icons.notifications_active_rounded,
               title: "Activar/Desactivar",
               onTap: () {
-                ToastHelper.show(context, "Funcionalidad no disponible.");
+                //TODO: Implementar notificaciones
+                ToastHelper.show("Funcionalidad no disponible.");
               },
             ),
             SettingCard(
               icon: Icons.alarm_rounded,
               title: "Alertas personalizadas",
               onTap: () {
-                ToastHelper.show(context, "Funcionalidad no disponible.");
+                //TODO: Implementar alertas personalizadas
+                ToastHelper.show("Funcionalidad no disponible.");
               },
             ),
             SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
@@ -170,35 +199,35 @@ class SettingsView extends StatelessWidget {
               icon: Icons.local_gas_station_rounded, 
               title: "Tipos de repostaje", 
               onTap: () {
-                Navigator.pushNamed(context, RouteNames.types, arguments: {"type": "Refuel"});
+                navigator.pushNamed(RouteNames.types, arguments: {"type": "Refuel"});
               }
             ),
             SettingCard(
               icon: Icons.build_rounded, 
               title: "Tipos de mantenimiento", 
               onTap: () {
-              Navigator.pushNamed(context, RouteNames.types, arguments: {"type": "Repair"});
+                navigator.pushNamed(RouteNames.types, arguments: {"type": "Repair"});
               }
             ),
             SettingCard(
               icon: Icons.description_rounded, 
               title: "Tipos de documentos",
               onTap: () {
-                Navigator.pushNamed(context, RouteNames.types, arguments: {"type": "Record"});
+                navigator.pushNamed(RouteNames.types, arguments: {"type": "Record"});
               }
             ),
             SettingCard(
               icon: Icons.commute_rounded, 
               title: "Tipos de vehículos", 
               onTap: () {
-                Navigator.pushNamed(context, RouteNames.types, arguments: {"type": "Vehicle"});
+                navigator.pushNamed(RouteNames.types, arguments: {"type": "Vehicle"});
               }
             ),
             SettingCard(
               icon: Icons.star_rounded, 
               title: "Nueva actividad", 
               onTap: () {
-                Navigator.pushNamed(context, RouteNames.types, arguments: {"type": "Activity"});
+                navigator.pushNamed(RouteNames.types, arguments: {"type": "Activity"});
               }
             ),
             SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
@@ -209,57 +238,58 @@ class SettingsView extends StatelessWidget {
             if (!authViewModel.user!.hasFamily) ...[
               SettingCard(
                 icon: Icons.group_add_rounded,
-                title: "Crear una familia",
+                title: "Crear familia",
                 onTap: () async {
                   bool confirm = await ConfirmDialog.show(
                     context,
-                    "Convertir en familia",
+                    "Crear familia",
                     "¿Deseas crear una familia y transferir tus datos? Si aceptas se eliminarán tus datos actuales.",
                   );
                   if (!confirm) return;
-            
-                  if (context.mounted) {
-                    await authViewModel.convertirEnFamilia();
-            
-                    await garageViewModel.convertToFamily(authViewModel.user!.id!, authViewModel.user!.idFamily!);
-                    if (context.mounted) {
-                      await Provider.of<GlobalTypesViewModel>(context, listen: false).convertToFamily(authViewModel.user!.id!, authViewModel.user!.idFamily!);
-                    }
 
-                    if (context.mounted) {
-                      Navigator.pushNamedAndRemoveUntil(context, RouteNames.home, (route) => false);
+                  navigator.pushNamed(
+                    RouteNames.loading, 
+                    arguments: {
+                      'onInit': () async {
+                        await authViewModel.convertirEnFamilia();
+                        await garageViewModel.convertToFamily(authViewModel.user!.id!, authViewModel.user!.idFamily!);
+                        await globalTypesProvider.convertToFamily(authViewModel.user!.id!, authViewModel.user!.idFamily!);
+
+                        navigator.pushNamedAndRemoveUntil(RouteNames.home, (route) => false);
+                        ToastHelper.show("Familia creada.");
+                      }
                     }
-                  }
+                  );
                 },
               ),
               SettingCard(
                 icon: Icons.group_rounded,
                 title: "Unirse a una familia",
                 onTap: () async {
-                  String? familyCode = await DialogFamilyCode.show(context);
-                  if (familyCode == null) return;
+                  bool isFamily = await DialogFamilyCode.show(context);
+                  if (!isFamily) return;
 
-                  if (context.mounted) {
-                    await authViewModel.unirseAFamilia(familyCode);
+                  navigator.pushNamed(
+                    RouteNames.loading, 
+                    arguments: {
+                      'onInit': () async {
+                        await garageViewModel.joinFamily(authViewModel.user!.id!, authViewModel.user!.idFamily!);
+                        await globalTypesProvider.joinFamily(authViewModel.user!.id!);
 
-                    await garageViewModel.joinFamily(authViewModel.user!.id!, authViewModel.user!.idFamily!);
+                        navigator.pushNamedAndRemoveUntil(RouteNames.home, (route) => false);
 
-                    if (context.mounted) {
-                      await Provider.of<GlobalTypesViewModel>(context, listen: false).joinFamily(authViewModel.user!.id!);
+                        ToastHelper.show("Unido a la familia.");
+                      }
                     }
-
-                    if (context.mounted) {
-                      Navigator.pushNamedAndRemoveUntil(context, RouteNames.home, (route) => false);
-                    }
-                  }
+                  );
                 },
               )
             ] else ...[
               SettingCard(
-                icon: Icons.history_rounded,
-                title: "Últimos movimientos",
+                icon: Icons.group_rounded,
+                title: "Actualizar familia",
                 onTap: () {
-                  ToastHelper.show(context, "Funcionalidad no disponible.");
+                  DialogEditProfile.show(context, isFamily: true);
                 },
               ),
               SettingCard(
@@ -268,20 +298,27 @@ class SettingsView extends StatelessWidget {
                 onTap: () async {
                   bool confirm = await ConfirmDialog.show(
                     context,
-                    "Abandonar de la familia",
+                    "Abandonar",
                     "¿Deseas salir de la familia? Si eres el único miembro, la familia se eliminará.",
                   );
+
                   if (!confirm) return;
 
-                  if (context.mounted) {
-                    await authViewModel.salirDeFamilia();
+                  navigator.pushNamed(
+                    RouteNames.loading,
+                    arguments: {
+                      'onInit': () async {
+                        await authViewModel.salirDeFamilia();
+                        await garageViewModel.leaveFamily(authViewModel.id, authViewModel.type, authViewModel.isLastMember);
+                        await globalTypesProvider.initializeUser(authViewModel.id, authViewModel.type);
+                        activityProvider.clearActivities();
 
-                    await garageViewModel.leaveFamily(authViewModel.id, authViewModel.type, authViewModel.isLastMember);
+                        navigator.pushNamedAndRemoveUntil(RouteNames.home, (route) => false);
 
-                    if (context.mounted) {
-                      Navigator.pushNamedAndRemoveUntil(context, RouteNames.home, (route) => false);
-                    }
-                  }
+                        ToastHelper.show("Familia abandonada.");
+                      }
+                    },
+                  );
                 },
               ),
             ],
@@ -294,14 +331,16 @@ class SettingsView extends StatelessWidget {
               icon: Icons.help_rounded,
               title: "Prreguntas frecuentes",
               onTap: () {
-                ToastHelper.show(context, "Funcionalidad no disponible.");
+                //TODO: Implementar preguntas frecuentes
+                ToastHelper.show("Funcionalidad no disponible.");
               },
             ),
             SettingCard(
               icon: Icons.feedback_rounded,
               title: "Enviar comentarios",
               onTap: () {
-                ToastHelper.show(context, "Funcionalidad no disponible.");
+                //TODO: Implementar comentarios
+                ToastHelper.show("Funcionalidad no disponible.");
               },
             ),
           ],

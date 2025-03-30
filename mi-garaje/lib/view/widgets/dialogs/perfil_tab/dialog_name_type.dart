@@ -44,15 +44,11 @@ class EditTypeDialog extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             TextButton(
-              child: Text("Cancelar",
-                  style: TextStyle(
-                      color: Theme.of(context).primaryColor)),
+              child: Text("Cancelar", style: TextStyle(color: Theme.of(context).primaryColor)),
               onPressed: () => Navigator.pop(context),
             ),
             TextButton(
-              child: Text("Aceptar",
-                  style: TextStyle(
-                      color: Theme.of(context).primaryColor)),
+              child: Text("Aceptar", style: TextStyle(color: Theme.of(context).primaryColor)),
               onPressed: ()  {
                 if (!formKey.currentState!.validate()) return;
                   onNameChanged(controller.text);

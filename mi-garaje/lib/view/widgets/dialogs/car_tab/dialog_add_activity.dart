@@ -14,6 +14,7 @@ import 'package:mi_garaje/data/provider/global_types_view_model.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/constants/validator.dart';
 import 'package:mi_garaje/view/widgets/utils/date_form_field.dart';
+import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:provider/provider.dart';
@@ -33,7 +34,7 @@ class DialogAddActivity extends StatefulWidget {
   @override
   State<DialogAddActivity> createState() => _DialogAddActivityState();
 
-  static Future<void> show(BuildContext context,
+  static Future<void> show (BuildContext context,
       {Activity? activity,
       Function(Activity)? onActivityUpdated,
       String? customType}) {
@@ -125,6 +126,7 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
     final ActivityProvider activityProvider = context.read<ActivityProvider>();
     final AuthProvider authProvider = context.read<AuthProvider>();
     final GarageProvider garageProvider = context.read<GarageProvider>();
+    final NavigatorState navigator = Navigator.of(context);
     
     return Dialog(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -189,32 +191,27 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
                             items: [
                               DropdownMenuItem<String>(
                                 value: null,
-                                child: Text("Tipo de Repostaje",
-                                    style:
-                                        Theme.of(context).textTheme.bodyMedium),
+                                child: Text(
+                                  "Tipo de Repostaje",
+                                  style: Theme.of(context).textTheme.bodyMedium
+                                ),
                               ),
-                              if (snapshot.connectionState !=
-                                  ConnectionState.waiting)
+                              if (snapshot.connectionState != ConnectionState.waiting)
                                 ...snapshot.data!.map<DropdownMenuItem<String>>(
                                   (String tipo) {
                                     return DropdownMenuItem<String>(
                                       value: tipo,
-                                      child: Text(tipo,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium),
+                                      child: Text(tipo, style: Theme.of(context).textTheme.bodyMedium),
                                     );
                                   },
                                 ),
-                              if (snapshot.connectionState ==
-                                      ConnectionState.waiting &&
-                                  selectedType != null)
+                              if (snapshot.connectionState == ConnectionState.waiting && selectedType != null)
                                 DropdownMenuItem<String>(
                                   value: selectedType,
-                                  child: Text(selectedType!,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium),
+                                  child: Text(
+                                    selectedType!,
+                                    style: Theme.of(context).textTheme.bodyMedium
+                                  ),
                                 ),
                             ],
                             validator: Validator.validateDropdown,
@@ -247,8 +244,7 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
                   SizedBox(height: AppDimensions.screenHeight(context) * 0.03),
 
                   // Campo "Precio por Litro"
-                  if (widget.customType == "Refuel" ||
-                      widget.activity is Refuel) ...[
+                  if (widget.customType == "Refuel" || widget.activity is Refuel) ...[
                     MiTextFormField(
                       controller: costLiterController,
                       labelText: 'Precio por Litro (€)',
@@ -264,77 +260,73 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
                       hintText: 'Descripción del documento',
                       maxLines: 5,
                     ),
-                    SizedBox(
-                        height: AppDimensions.screenHeight(context) * 0.03),
+                    SizedBox(height: AppDimensions.screenHeight(context) * 0.03),
 
                     // Selector de imagen
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         imageBytes == null
-                            ? ElevatedButton.icon(
-                                onPressed: _pickImage,
-                                icon: const Icon(Icons.image),
-                                label: const Text('Seleccionar Imagen',
-                                    style: TextStyle(color: Colors.white)),
-                                style: ElevatedButton.styleFrom(
-                                  iconColor: Colors.white,
-                                ),
-                              )
-                            : Row(
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return Dialog(
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Image.memory(
-                                                  imageBytes!,
-                                                  fit: BoxFit.contain,
-                                                ),
-                                              ],
-                                            ),
-                                          );
-                                        },
-                                      );
-                                    },
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(8),
-                                      child: Image.memory(
-                                        imageBytes!,
-                                        height: 50,
-                                        width: 50,
-                                        fit: BoxFit.cover,
+                        ? ElevatedButton.icon(
+                          onPressed: _pickImage,
+                          icon: const Icon(Icons.image),
+                          label: const Text('Seleccionar Imagen',
+                              style: TextStyle(color: Colors.white)),
+                          style: ElevatedButton.styleFrom(
+                            iconColor: Colors.white,
+                          ),
+                        )
+                        : Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return Dialog(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Image.memory(
+                                            imageBytes!,
+                                            fit: BoxFit.contain,
+                                          ),
+                                        ],
                                       ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                      width:
-                                          AppDimensions.screenWidth(context) *
-                                              0.02),
-                                  Expanded(
-                                    child: Text(
-                                      'Imagen cargada',
-                                      style: TextStyle(
-                                          color: Colors.green,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                  IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        imageBytes = null;
-                                      });
-                                    },
-                                    icon: const Icon(Icons.close,
-                                        color: Colors.red),
-                                  ),
-                                ],
+                                    );
+                                  },
+                                );
+                              },
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.memory(
+                                  imageBytes!,
+                                  height: 50,
+                                  width: 50,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
+                            ),
+                            SizedBox(width:AppDimensions.screenWidth(context) *0.02),
+                            Expanded(
+                              child: Text(
+                                'Imagen cargada',
+                                style: TextStyle(
+                                  color: Colors.green,
+                                  fontWeight: FontWeight.bold
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  imageBytes = null;
+                                });
+                              },
+                              icon: const Icon(Icons.close, color: Colors.red),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ],
@@ -346,19 +338,15 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
                     children: [
                       Expanded(
                         child: TextButton(
-                          child: Text('Cancelar',
-                              style: TextStyle(
-                                  color: Theme.of(context).primaryColor)),
-                          onPressed: () => Navigator.of(context).pop(),
+                          child: Text('Cancelar', style: TextStyle(color: Theme.of(context).primaryColor)),
+                          onPressed: () => navigator.pop(),
                         ),
                       ),
                       SizedBox(width: 20),
                       Expanded(
                         child: TextButton(
-                          child: Text('Guardar',
-                              style: TextStyle(
-                                  color: Theme.of(context).primaryColor)),
-                          onPressed: () {
+                          child: Text('Guardar', style: TextStyle(color: Theme.of(context).primaryColor)),
+                          onPressed: () async {
                             if (_formKey.currentState!.validate()) {
                               Activity newActivity;
 
@@ -409,14 +397,16 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
                               }
 
                               if (widget.activity == null) {
-                                activityProvider.addActivity(garageProvider.id, authProvider.id, authProvider.type, newActivity);
+                                await activityProvider.addActivity(garageProvider.id, authProvider.id, authProvider.type, newActivity);
+                                ToastHelper.show('$customType añadida');
                               } else {
                                 newActivity.idActivity = widget.activity!.idActivity;
-                                activityProvider.updateActivity(garageProvider.id, authProvider.id, authProvider.type, newActivity);
-                                widget.onActivityUpdated?.call(newActivity);
+                                await activityProvider.updateActivity(garageProvider.id, authProvider.id, authProvider.type, newActivity);
+                                await widget.onActivityUpdated?.call(newActivity);
+                                ToastHelper.show('$customType actualizada');
                               }
 
-                              Navigator.pop(context);
+                              navigator.pop();
                             }
                           },
                         ),

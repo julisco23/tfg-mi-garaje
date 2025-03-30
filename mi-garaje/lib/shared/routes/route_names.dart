@@ -7,4 +7,5 @@ class RouteNames {
   static const String settings = '/home/profile/settings';
   static const String types = '/home/profile/settings/types';
   static const String garage = '/garage';
+  static const String loading = '/loading';
 }

@@ -8,6 +8,7 @@ import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/shared/themes/theme_notifier.dart';
 import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_delete_activity.dart';
+import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 class ActivityCard extends StatelessWidget {
@@ -22,23 +23,27 @@ class ActivityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ActivityProvider activityProvider = Provider.of<ActivityProvider>(context);
-    final GarageProvider garageProvider = Provider.of<GarageProvider>(context);
-    final AuthProvider authProvider = Provider.of<AuthProvider>(context);
+    final ActivityProvider activityProvider = context.read<ActivityProvider>();
+    final GarageProvider garageProvider = context.read<GarageProvider>();
+    final AuthProvider authProvider = context.read<AuthProvider>();
 
     return InkWell(
       onTap: () {
-        String routeName = RouteNames.activity;
-        Map<String, dynamic> arguments = {
-          "activity": activity
-        };
-
-        Navigator.pushNamed(context, routeName, arguments: arguments);
+        Navigator.pushNamed(
+          context, 
+          RouteNames.activity, 
+          arguments: {
+            "activity": activity
+          }
+        );
       },
       onLongPress: () async {
-        if (await DeleteActivityDialog.show(context, activity) && context.mounted) {
-          activityProvider.deleteActivity(garageProvider.id, authProvider.id, authProvider.type, activity);
-        }
+
+        final result = await DeleteActivityDialog.show(context, activity);
+        if (!result) return;
+        
+        await activityProvider.deleteActivity(garageProvider.id, authProvider.id, authProvider.type, activity);
+        ToastHelper.show('${activity.getCustomType} eliminado');
       },
       child: Card(
         child: Padding(

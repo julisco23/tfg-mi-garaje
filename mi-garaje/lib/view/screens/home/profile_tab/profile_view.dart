@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mi_garaje/data/models/user.dart';
 import 'package:mi_garaje/data/provider/image_cache_provider.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/view/widgets/cards/vehicle_card.dart';
+import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
 
-class Perfil extends StatelessWidget {  // Puedes cambiar a StatelessWidget si no necesitas mantener estado
+class Perfil extends StatelessWidget {
   const Perfil({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Accedemos a los providers solo una vez
-    final authProvider = context.read<AuthProvider>();
-    final garageViewModel = context.read<GarageProvider>();
+    final AuthProvider authProvider = context.watch<AuthProvider>();
+    final GarageProvider garageViewModel = context.read<GarageProvider>();
 
     return Scaffold(
       appBar: AppBar(
@@ -24,29 +25,28 @@ class Perfil extends StatelessWidget {  // Puedes cambiar a StatelessWidget si n
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
-              Navigator.pushNamed(context, RouteNames.settings,
-                  arguments: {"garageViewModel": garageViewModel});
+              Navigator.pushNamed(context, RouteNames.settings, arguments: {"garageViewModel": garageViewModel});
             },
           ),
         ],
       ),
       body: SafeArea(
         child: RefreshIndicator(
-          onRefresh: () => _refreshData(authProvider, garageViewModel),
+          onRefresh: () async => await garageViewModel.refreshGarage(authProvider.id, authProvider.type),
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(10.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   _buildProfileHeader(context, authProvider),
-                  if (authProvider.isFamily) ...[
-                    SizedBox(height: AppDimensions.screenHeight(context) * 0.05),
-                    _buildFamilyList(context, authProvider),
-                  ],
                   SizedBox(height: AppDimensions.screenHeight(context) * 0.05),
-                  _buildVehicleList(context, garageViewModel),
+                  if (authProvider.isFamily) ...[
+                    _buildFamilyList(context, authProvider),
+                    SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
+                  ],
+                  _buildVehicleList(context),
                 ],
               ),
             ),
@@ -54,10 +54,6 @@ class Perfil extends StatelessWidget {  // Puedes cambiar a StatelessWidget si n
         ),
       ),
     );
-  }
-
-  Future<void> _refreshData(AuthProvider authProvider, GarageProvider garageViewModel) async {
-    await garageViewModel.refreshGarage(authProvider.id, authProvider.type);
   }
 
   Widget _buildProfileHeader(BuildContext context, AuthProvider authProvider) {
@@ -99,14 +95,14 @@ class Perfil extends StatelessWidget {  // Puedes cambiar a StatelessWidget si n
         ),
         SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
         Text(
-          user.displayName,
+          authProvider.user!.displayName,
           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
       ],
     );
   }
 
-  Widget _buildVehicleList(BuildContext context, GarageProvider garageViewModel) {
+  Widget _buildVehicleList(BuildContext context) {
     return Consumer<GarageProvider>(
       builder: (context, garageViewModel, child) {
         final vehicles = garageViewModel.vehicles;
@@ -132,7 +128,6 @@ class Perfil extends StatelessWidget {  // Puedes cambiar a StatelessWidget si n
                 return VehicleCard(
                   vehicle: vehicle,
                   profile: true,
-                  garageProvider: garageViewModel,
                 );
               },
             ),
@@ -160,9 +155,39 @@ class Perfil extends StatelessWidget {  // Puedes cambiar a StatelessWidget si n
           ),
         ),
         SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
-        Text(
-          "Código de familia: ${authProvider.family!.code}",
+        Row(
+          children: [
+            Text(
+              authProvider.family!.name,
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            SizedBox(width: AppDimensions.screenWidth(context) * 0.015),
+            InkWell(
+              onTap: () {
+                Clipboard.setData(ClipboardData(text: authProvider.family!.code));
+                ToastHelper.show("Código de familia copiado al portapapeles");
+              },
+              borderRadius: BorderRadius.circular(10),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.grey),
+                ),
+                child: Row(
+                  children: [
+                    Text(
+                      authProvider.family!.code,
+                      style: TextStyle(color: Theme.of(context).primaryColor),
+                    ),
+                  ],
+                ),
+              ),
+            )
+
+          ],
         ),
+
         SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
         SizedBox(
           height: 140,
@@ -173,12 +198,12 @@ class Perfil extends StatelessWidget {  // Puedes cambiar a StatelessWidget si n
               final member = members![index];
 
               return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                padding: const EdgeInsets.symmetric(horizontal: 1.0),
                 child: Card(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  elevation: 4,
+                  elevation: 2,
                   child: SizedBox(
                     width: 120,
                     child: Column(

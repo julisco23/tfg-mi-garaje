@@ -52,9 +52,12 @@ class AppThemes {
       filled: true,
       border: OutlineInputBorder(
           borderSide: BorderSide.none, borderRadius: BorderRadius.circular(14)),
-      errorStyle: TextStyle(color: Colors.red),
+      labelStyle: TextStyle(color: Colors.grey),
       hintStyle: TextStyle(color: Colors.grey),
       counterStyle: TextStyle(color: Colors.grey),
+      errorStyle: TextStyle(color: Colors.red),
+      suffixIconColor: Colors.grey,
+      
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(

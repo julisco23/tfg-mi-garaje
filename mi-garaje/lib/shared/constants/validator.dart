@@ -1,4 +1,11 @@
 class Validator {
+  static String? validateBrand(String? value) {
+    if (value == null || value.isEmpty) {
+      return '* Marca es obligatoria.';
+    }
+    return null;
+  }
+
   static String? validateCustomType(String? value) {
     if (value == null || value.isEmpty) {
       return '* Tipo es obligatorio.';
@@ -36,6 +43,9 @@ class Validator {
   static String? validateName(String? value) {
     if (value == null || value.isEmpty) {
       return '* Nombre es obligatorio.';
+    }
+    if (!value.startsWith(RegExp(r'[A-Z]'))) {
+      return '* Debe empezar por mayúscula.';
     }
     return null;
   }

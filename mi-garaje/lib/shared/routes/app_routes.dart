@@ -7,6 +7,7 @@ import 'package:mi_garaje/view/screens/home/first_car_view.dart';
 import 'package:mi_garaje/view/screens/home/home_view.dart';
 import 'package:mi_garaje/view/screens/home/profile_tab/settings_views/types_view.dart';
 import 'package:mi_garaje/view/screens/home/profile_tab/settings_view.dart';
+import 'package:mi_garaje/view/screens/splash_screen.dart';
 
 import 'route_names.dart';
 
@@ -20,8 +21,13 @@ class AppRoutes {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     final args = settings.arguments != null ? settings.arguments as Map<String, dynamic> : {};
     switch (settings.name) {
+      case RouteNames.loading:
+        return MaterialPageRoute(
+          builder: (context) => SplashScreen(onInit: args['onInit']),
+        );
+
       case RouteNames.firstCar:
-        return _slideTransition(FirstCar(onVehicleAdded: args['onVehicleAdded']));
+        return _slideTransition(FirstCar(onVehicleChanged: args['onVehicleChanged']));
         
       case RouteNames.garage:
         return _slideTransition(const GarageView());

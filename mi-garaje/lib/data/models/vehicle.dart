@@ -25,9 +25,7 @@ class Vehicle {
     this.id = id;
   }
 
-  String getId() {
-    return id!;
-  }
+  String get getId => id!;
 
   String? getName() {
     return name;

@@ -5,6 +5,11 @@ import 'package:mi_garaje/data/services/car_service.dart';
 class ActivityProvider extends ChangeNotifier {
   final CarService carService = CarService();
   List<Activity> _activities = [];
+
+  // Limpiar actividades
+  void clearActivities() {
+    _activities = [];
+  }
   
   // Getter para las actividades filtradas por tipo
   List<Activity> getActivities(String activityType) {
@@ -40,12 +45,9 @@ class ActivityProvider extends ChangeNotifier {
 
   Future<void> updateActivity(String vehicleId, String ownerId, String ownerType, Activity activity) async{
     await carService.updateActivity(vehicleId, activity, ownerId, ownerType);
-    for (var activity in _activities) {
-      if (activity.idActivity == activity.idActivity) {
-        activity = activity;
-        break;
-      }
-    }
+
+    int index = _activities.indexWhere((act) => act.idActivity == activity.idActivity);
+    _activities[index] = activity;
     notifyListeners();
   }
 

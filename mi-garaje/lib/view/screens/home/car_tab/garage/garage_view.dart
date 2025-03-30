@@ -18,15 +18,16 @@ class GarageView extends StatefulWidget {
 class _GarageViewState extends State<GarageView> {
   @override
   Widget build(BuildContext context) {
-    final GarageProvider garageProvider =
-        Provider.of<GarageProvider>(context, listen: false);
+    final GarageProvider garageProvider = context.watch<GarageProvider>();
+    final AuthProvider authProvider = context.read<AuthProvider>();
+
     return Scaffold(
       appBar: AppBar(
         actions: [
           IconButton(
             icon: const Icon(Icons.add_rounded),
             onPressed: () async {
-              DialogAddVehicle.show(context, garageProvider);
+             await DialogAddVehicle.show(context);
             },
           ),
         ],
@@ -35,7 +36,6 @@ class _GarageViewState extends State<GarageView> {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          final authProvider = context.read<AuthProvider>();
           await garageProvider.refreshGarage(authProvider.id, authProvider.type);
         },
         child: Consumer<GarageProvider>(
@@ -54,8 +54,7 @@ class _GarageViewState extends State<GarageView> {
                   direction: DismissDirection.endToStart,
                   confirmDismiss: (direction) async {
                     if (vehicles.length == 1) {
-                      ToastHelper.show(
-                          context, 'No puedes eliminar el último vehículo');
+                      ToastHelper.show('No puedes eliminar el último vehículo');
                       return false;
                     }
                     return await ConfirmDialog.show(
@@ -65,11 +64,8 @@ class _GarageViewState extends State<GarageView> {
                     );
                   },
                   onDismissed: (direction) async {
-                    final authProvider = context.read<AuthProvider>();
                     await garageProvider.deleteVehicle(authProvider.id, authProvider.type, vehicle);
-                    if (context.mounted) {
-                      ToastHelper.show(context, 'Vehículo eliminado');
-                    }
+                    ToastHelper.show('${vehicle.getVehicleType()} eliminado');
                   },
                   background: Container(
                     color: Colors.red,
@@ -83,8 +79,7 @@ class _GarageViewState extends State<GarageView> {
                   child: Column(
                     children: [
                       VehicleCard(
-                        vehicle: vehicle,
-                        garageProvider: garageProvider,
+                        vehicle: vehicle
                       ),
                     ],
                   ),

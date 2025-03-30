@@ -26,7 +26,8 @@ class _SignupViewState extends State<SignupView> {
 
   @override
   Widget build(BuildContext context) {
-    final loginViewModel = Provider.of<AuthProvider>(context);
+    final AuthProvider loginViewModel = Provider.of<AuthProvider>(context);
+    final NavigatorState navigator = Navigator.of(context);
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -98,20 +99,24 @@ class _SignupViewState extends State<SignupView> {
                   MiButton(
                     text: "Registarse",
                     onPressed: () async {
-                      if (signupFormKey.currentState!
-                          .validate()) {
-                        String? response = await loginViewModel.signup(
-                          emailController.text,
-                          passwordController.text,
-                          nameController.text,
-                        );
-                        if (context.mounted) {
-                          if (response != null) {
-                            ToastHelper.show(context, response);
-                          } else {
-                            Navigator.pushNamedAndRemoveUntil(context, RouteNames.home, (route) => false);
-                          }
-                        }
+                      if (signupFormKey.currentState!.validate()) {
+                        navigator.pushNamed(
+                            RouteNames.loading, 
+                            arguments: {
+                              'onInit': () async {
+                                String? response = await loginViewModel.signup(
+                                  emailController.text,
+                                  passwordController.text,
+                                  nameController.text,
+                                );
+                                if (response != null) {
+                                  ToastHelper.show(response);
+                                } else {
+                                  navigator.pushNamedAndRemoveUntil(RouteNames.home, (route) => false);
+                                }
+                              }
+                            }
+                          );
                       }
                     },
                   ),
@@ -121,15 +126,20 @@ class _SignupViewState extends State<SignupView> {
                   MiButton(
                     text: "Continuar como invitado",
                     onPressed: () async {
-                      String? message = await loginViewModel.signInAnonymously();
+                      navigator.pushNamed(
+                        RouteNames.loading, 
+                        arguments: {
+                          'onInit': () async {
+                            String? message = await loginViewModel.signInAnonymously();
 
-                      if (context.mounted) {
-                        if (message != null) {
-                          ToastHelper.show(context, message);
-                        } else {
-                          Navigator.pushNamedAndRemoveUntil(context, RouteNames.home, (route) => false);
+                            if (message != null) {
+                              ToastHelper.show(message);
+                            } else {
+                              navigator.pushNamedAndRemoveUntil(RouteNames.home, (route) => false);
+                            }
+                          }
                         }
-                      }
+                      );
                     },
                   ),
                   SizedBox(height: AppDimensions.screenHeight(context) * 0.025),
@@ -138,15 +148,20 @@ class _SignupViewState extends State<SignupView> {
                   MiButton(
                     text: "Crear cuenta con Google",
                     onPressed: () async {
-                      String? response = await loginViewModel.signupWithGoogle();
+                      navigator.pushNamed(
+                        RouteNames.loading, 
+                        arguments: {
+                          'onInit': () async {
+                            String? response = await loginViewModel.signupWithGoogle();
 
-                      if (context.mounted) {
-                        if (response != null) {
-                          ToastHelper.show(context, response);
-                        } else if (mounted) {
-                          Navigator.pushNamedAndRemoveUntil(context, RouteNames.home, (route) => false);
+                            if (response != null) {
+                              ToastHelper.show(response);
+                            } else {
+                              navigator.pushNamedAndRemoveUntil(RouteNames.home, (route) => false);
+                            }
+                          }
                         }
-                      }
+                      );
                     },
                     imagen: 'assets/images/google.png',
                   ),
@@ -156,8 +171,7 @@ class _SignupViewState extends State<SignupView> {
                   MiButton(
                     text: "Ya tengo cuenta",
                     onPressed: () {
-                      Navigator.pushReplacementNamed(
-                          context, RouteNames.login);
+                      navigator.pushReplacementNamed(RouteNames.login);
                     },
                     backgroundColor: Colors.transparent,
                     side: BorderSide(color: Theme.of(context).primaryColor),

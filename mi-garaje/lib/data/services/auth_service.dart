@@ -249,9 +249,9 @@ class AuthService {
   }
 
   // Método para actualizar el perfil de usuario
-  Future<String?> updateProfile(String name, String? photo, bool isPhotoChanged) async {
+  Future<String?> updateProfile(String name, String? photo, bool isPhotoChanged, String userId) async {
     try {
-        await _firestore.collection('users').doc(getUser!.uid).update({
+        await _firestore.collection('users').doc(userId).update({
           'name': name,
           'photoURL': photo,
           'isPhotoChanged': isPhotoChanged,
@@ -264,9 +264,23 @@ class AuthService {
     }
   }
 
+  // Método para actualizar el perfil de la familia
+  Future<String?> updateFamilyProfile(String name, String familyId) async {
+    try {
+      await _firestore.collection('families').doc(familyId).update({
+        'name': name,
+      });
+
+      print("Documento de familia actualizado con éxito");
+
+      return null;
+    } catch (e) {
+      return "Error al actualizar el perfil de la familia";
+    }
+  }
+
   // Método para crear a una familia
-  Future<void> convertToFamily(Family family) async {
-    app.User user = (await currentUser)!;
+  Future<void> convertToFamily(Family family, String userId) async {
     String familyId = _firestore.collection('families').doc().id; 
 
     await _firestore.collection('families').doc(familyId).set({
@@ -276,7 +290,7 @@ class AuthService {
       'creationDate': family.creationDate!.toIso8601String(),
     });
 
-    await _firestore.collection('users').doc(user.id).update({
+    await _firestore.collection('users').doc(userId).update({
       'idFamily': familyId,
     });
 
@@ -284,29 +298,25 @@ class AuthService {
   }
 
   // Método para abandonar la familia
-  Future<void> leaveFamily(bool eliminar) async {
-    app.User user = (await currentUser)!;
-
-    await _firestore.collection('families').doc(user.idFamily).update({
-      'members': FieldValue.arrayRemove([user.id]),
+  Future<void> leaveFamily(bool eliminar, String userId, String familyId) async {
+    await _firestore.collection('families').doc(familyId).update({
+      'members': FieldValue.arrayRemove([userId]),
     });
 
-    await _firestore.collection('users').doc(user.id).update({
+    await _firestore.collection('users').doc(userId).update({
       'idFamily': null,
     });
 
     print("Salida de la familia con éxito");
 
     if (eliminar) {
-      await _firestore.collection('families').doc(user.idFamily).delete();
+      await _firestore.collection('families').doc(familyId).delete();
       print("Familia eliminada con éxito");
     }
   }
 
   // Método para unirse a una familia
-  Future<void> joinFamily(String familyCode) async {
-    app.User user = (await currentUser)!;
-
+  Future<void> joinFamily(String familyCode, String userId) async {
     QuerySnapshot snapshot = await _firestore.collection('families').where('code', isEqualTo: familyCode).get();
 
     if (snapshot.docs.isEmpty) {
@@ -316,10 +326,10 @@ class AuthService {
     DocumentSnapshot doc = snapshot.docs.first;
 
     await _firestore.collection('families').doc(doc.id).update({
-      'members': FieldValue.arrayUnion([user.id]),
+      'members': FieldValue.arrayUnion([userId]),
     });
 
-    await _firestore.collection('users').doc(user.id).update({
+    await _firestore.collection('users').doc(userId).update({
       'idFamily': doc.id,
     });
   }
