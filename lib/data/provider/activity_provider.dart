@@ -10,6 +10,9 @@ class ActivityProvider extends ChangeNotifier {
   void clearActivities() {
     _activities = [];
   }
+
+  // Getter para obtener todas las actividades
+  List<Activity> get activities => _activities;
   
   // Getter para las actividades filtradas por tipo
   List<Activity> getActivities(String activityType) {
