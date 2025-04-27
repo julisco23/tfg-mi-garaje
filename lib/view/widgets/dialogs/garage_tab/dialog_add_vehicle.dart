@@ -131,57 +131,58 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
                       future: _vehiclesTypes,
                       builder: (context, snapshot) {
                         return DropdownButtonFormField<String>(
-                            value: selectedVehicleType,
-                            decoration: InputDecoration(
-                              floatingLabelStyle: TextStyle(
-                                  color: Theme.of(context).primaryColor),
-                              labelText: 'Tipo de Vehículo',
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              filled: true,
+                          value: selectedVehicleType,
+                          decoration: InputDecoration(
+                            floatingLabelStyle: TextStyle(
+                                color: Theme.of(context).primaryColor),
+                            labelText: 'Tipo de Vehículo',
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius: BorderRadius.circular(14),
                             ),
-                            onChanged: (newValue) {
-                              setState(() {
-                                selectedVehicleType = newValue;
-                              });
-                            },
-                            items: [
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            filled: true,
+                          ),
+                          onChanged: (newValue) {
+                            setState(() {
+                              selectedVehicleType = newValue;
+                            });
+                          },
+                          items: [
+                            DropdownMenuItem<String>(
+                              value: null,
+                              child: Text("Tipo de Vehiculo",
+                                  style:
+                                      Theme.of(context).textTheme.bodyMedium),
+                            ),
+                            if (snapshot.connectionState !=
+                                ConnectionState.waiting)
+                              ...snapshot.data!.map<DropdownMenuItem<String>>(
+                                (String tipo) {
+                                  return DropdownMenuItem<String>(
+                                    value: tipo,
+                                    child: Text(tipo,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium),
+                                  );
+                                },
+                              ),
+                            if (snapshot.connectionState ==
+                                    ConnectionState.waiting &&
+                                selectedVehicleType != null)
                               DropdownMenuItem<String>(
-                                value: null,
-                                child: Text("Tipo de Vehiculo",
+                                value: selectedVehicleType,
+                                child: Text(selectedVehicleType!,
                                     style:
                                         Theme.of(context).textTheme.bodyMedium),
                               ),
-                              if (snapshot.connectionState !=
-                                  ConnectionState.waiting)
-                                ...snapshot.data!.map<DropdownMenuItem<String>>(
-                                  (String tipo) {
-                                    return DropdownMenuItem<String>(
-                                      value: tipo,
-                                      child: Text(tipo,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium),
-                                    );
-                                  },
-                                ),
-                              if (snapshot.connectionState ==
-                                      ConnectionState.waiting &&
-                                  selectedVehicleType != null)
-                                DropdownMenuItem<String>(
-                                  value: selectedVehicleType,
-                                  child: Text(selectedVehicleType!,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium),
-                                ),
-                            ]);
+                          ],
+                          validator: Validator.validateDropdown,
+                        );
                       },
                     ),
                   ),
