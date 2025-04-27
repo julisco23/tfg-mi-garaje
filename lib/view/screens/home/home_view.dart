@@ -32,15 +32,19 @@ class _HomeViewState extends State<HomeView> {
     final GarageProvider garageViewModel = context.read<GarageProvider>();
     final AuthProvider authProvider = context.read<AuthProvider>();
     final ActivityProvider activityProvider = context.read<ActivityProvider>();
-    final GlobalTypesViewModel globalTypesViewModel = context.read<GlobalTypesViewModel>();
+    final GlobalTypesViewModel globalTypesViewModel =
+        context.read<GlobalTypesViewModel>();
 
     try {
-      final result = await garageViewModel.hasVehicles(authProvider.id, authProvider.type);
+      final result =
+          await garageViewModel.hasVehicles(authProvider.id, authProvider.type);
       if (result) {
-        await activityProvider.loadActivities(garageViewModel.id, authProvider.id, authProvider.type);
+        await activityProvider.loadActivities(
+            garageViewModel.id, authProvider.id, authProvider.type);
       }
 
-      await globalTypesViewModel.initializeUser(authProvider.id, authProvider.type);
+      await globalTypesViewModel.initializeUser(
+          authProvider.id, authProvider.type);
 
       setState(() {
         _hasVehicles = result;
@@ -62,7 +66,6 @@ class _HomeViewState extends State<HomeView> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -70,17 +73,16 @@ class _HomeViewState extends State<HomeView> {
     }
 
     if (!_hasVehicles) {
-      return FirstCar(
-        onVehicleChanged: (vehicle) {
-          setState(() {
-            _hasVehicles = true;
-          });
-        }
-      );
+      return FirstCar(onVehicleChanged: (vehicle) {
+        setState(() {
+          _hasVehicles = true;
+        });
+      });
     }
 
     return Scaffold(
-      body: AppConstants.widgetTabs[_selectedIndex](context.read<GarageProvider>()),
+      body: AppConstants
+          .widgetTabs[_selectedIndex](context.read<GarageProvider>()),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _selectedIndex,

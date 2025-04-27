@@ -40,12 +40,15 @@ class _TypesViewState extends State<TypesView> {
     isVehicle = widget.type == 'Vehicle';
 
     final AuthProvider authProvider = context.read<AuthProvider>();
-    final GlobalTypesViewModel typeViewModel = context.read<GlobalTypesViewModel>();
+    final GlobalTypesViewModel typeViewModel =
+        context.read<GlobalTypesViewModel>();
 
-    typesFuture = typeViewModel.getTypesStream(authProvider.id, authProvider.type, widget.type);
+    typesFuture = typeViewModel.getTypesStream(
+        authProvider.id, authProvider.type, widget.type);
 
     if (!isActivity) {
-      removedtypesFuture = typeViewModel.getRemovedTypesStream(authProvider.id, authProvider.type, widget.type);
+      removedtypesFuture = typeViewModel.getRemovedTypesStream(
+          authProvider.id, authProvider.type, widget.type);
     }
     getTypesGlobal = typeViewModel.globalTypes[widget.type]!;
   }
@@ -55,7 +58,8 @@ class _TypesViewState extends State<TypesView> {
     TextEditingController controller = TextEditingController();
     final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-    final GlobalTypesViewModel typeViewModel = context.read<GlobalTypesViewModel>();
+    final GlobalTypesViewModel typeViewModel =
+        context.read<GlobalTypesViewModel>();
     final AuthProvider authProvider = context.read<AuthProvider>();
     final TabState tabState = context.read<TabState>();
     final ActivityProvider activityProvider = context.read<ActivityProvider>();
@@ -64,12 +68,13 @@ class _TypesViewState extends State<TypesView> {
     // Función para agregar nuevos tipos
     Future<void> addType() async {
       FocusScope.of(context).unfocus();
-      
-      await typeViewModel.addType(authProvider.id, authProvider.type, controller.text, widget.type);
+
+      await typeViewModel.addType(
+          authProvider.id, authProvider.type, controller.text, widget.type);
       if (isActivity) {
         tabState.newTab(controller.text);
       }
-      
+
       ToastHelper.show('${controller.text} añadido');
 
       controller.clear();
@@ -77,16 +82,21 @@ class _TypesViewState extends State<TypesView> {
 
     // Función para eliminar tipos
     Future<void> removeType(String typeName) async {
-      await typeViewModel.removeType(authProvider.id, authProvider.type, typeName, widget.type);
+      await typeViewModel.removeType(
+          authProvider.id, authProvider.type, typeName, widget.type);
 
       if (isActivity) {
         tabState.removeTab(typeName);
-        await activityProvider.deleteAllActivities(authProvider.id, authProvider.type, typeName);
+        await activityProvider.deleteAllActivities(
+            authProvider.id, authProvider.type, typeName);
         await garageProvider.refreshGarage(authProvider.id, authProvider.type);
       } else if (isVehicle) {
-        await garageProvider.deleteVehicleType(authProvider.id, authProvider.type, typeName, widget.type);
-      } else{
-        await activityProvider.deleteAllActivities(authProvider.id, authProvider.type, typeName, type: widget.type);
+        await garageProvider.deleteVehicleType(
+            authProvider.id, authProvider.type, typeName, widget.type);
+      } else {
+        await activityProvider.deleteAllActivities(
+            authProvider.id, authProvider.type, typeName,
+            type: widget.type);
         await garageProvider.refreshGarage(authProvider.id, authProvider.type);
       }
 
@@ -95,16 +105,20 @@ class _TypesViewState extends State<TypesView> {
 
     // Función para editar tipos
     Future<void> editType(String oldName, String newName) async {
-      await typeViewModel.editType(authProvider.id, authProvider.type, oldName, newName, widget.type);
-      
+      await typeViewModel.editType(
+          authProvider.id, authProvider.type, oldName, newName, widget.type);
+
       if (isActivity) {
         tabState.editTab(oldName, newName);
-        await activityProvider.editAllActivities(authProvider.id, authProvider.type, oldName, newName);
+        await activityProvider.editAllActivities(
+            authProvider.id, authProvider.type, oldName, newName);
         await garageProvider.refreshGarage(authProvider.id, authProvider.type);
       } else if (isVehicle) {
-        await garageProvider.updateVehicleType(authProvider.id, authProvider.type, oldName, newName, widget.type);
+        await garageProvider.updateVehicleType(
+            authProvider.id, authProvider.type, oldName, newName, widget.type);
       } else {
-        await activityProvider.editAllActivities(authProvider.id, authProvider.type, oldName, newName);
+        await activityProvider.editAllActivities(
+            authProvider.id, authProvider.type, oldName, newName);
         await garageProvider.refreshGarage(authProvider.id, authProvider.type);
       }
 
@@ -121,7 +135,7 @@ class _TypesViewState extends State<TypesView> {
             // Campo de texto para añadir nuevos tipos
             Form(
               key: formKey,
-                child: MiTextFormField(
+              child: MiTextFormField(
                 controller: controller,
                 labelText: 'Añadir ${widget.type.toLowerCase()}',
                 hintText: widget.type,
@@ -146,7 +160,8 @@ class _TypesViewState extends State<TypesView> {
                     StreamBuilder<List<String>>(
                       stream: typesFuture,
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
                           return Center(child: CircularProgressIndicator());
                         }
 
@@ -158,7 +173,9 @@ class _TypesViewState extends State<TypesView> {
                             children: [
                               // Título 'Tipos' dentro del StreamBuilder
                               _buildSectionTitle(context, 'Tipos'),
-                              SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
+                              SizedBox(
+                                  height: AppDimensions.screenHeight(context) *
+                                      0.01),
 
                               // Lista de tipos
                               Column(
@@ -171,26 +188,30 @@ class _TypesViewState extends State<TypesView> {
                                       String typeItem = userTypes[index];
                                       return Dismissible(
                                         key: Key(typeItem),
-                                        direction: (isActivity && getTypesGlobal.contains(typeItem))
-                                          ? DismissDirection.none
-                                          : DismissDirection.endToStart,
+                                        direction: (isActivity &&
+                                                getTypesGlobal
+                                                    .contains(typeItem))
+                                            ? DismissDirection.none
+                                            : DismissDirection.endToStart,
                                         background: Container(
                                           color: Colors.red,
                                           alignment: Alignment.centerRight,
                                           padding: EdgeInsets.only(right: 20.0),
-                                          child: Icon(Icons.delete, color: Colors.white),
+                                          child: Icon(Icons.delete,
+                                              color: Colors.white),
                                         ),
                                         confirmDismiss: (direction) async {
                                           if (userTypes.length == 1) {
-                                            ToastHelper.show('No puedes eliminar el último ${widget.type}');
+                                            ToastHelper.show(
+                                                'No puedes eliminar el último ${widget.type}');
                                             return false;
                                           }
                                           return await ConfirmDialog.show(
                                             context,
                                             'Eliminar $typeItem',
                                             isVehicle
-                                            ? '¿Estás seguro de que quieres eliminar $typeItem y todos los vehículos asociados?'
-                                            : '¿Estás seguro de que quieres eliminar $typeItem y todas las actividades asociadas?',
+                                                ? '¿Estás seguro de que quieres eliminar $typeItem y todos los vehículos asociados?'
+                                                : '¿Estás seguro de que quieres eliminar $typeItem y todas las actividades asociadas?',
                                           );
                                         },
                                         onDismissed: (direction) {
@@ -199,18 +220,29 @@ class _TypesViewState extends State<TypesView> {
                                         child: TypesCard(
                                           initialTitle: typeItem,
                                           icon: Icons.edit,
-                                          contains: getTypesGlobal.contains(typeItem),
-                                          onNameChanged: (newName) => typeViewModel.editType(authProvider.id, authProvider.type, typeItem, newName, widget.type),
+                                          contains:
+                                              getTypesGlobal.contains(typeItem),
+                                          onNameChanged: (newName) =>
+                                              typeViewModel.editType(
+                                                  authProvider.id,
+                                                  authProvider.type,
+                                                  typeItem,
+                                                  newName,
+                                                  widget.type),
                                           onPressed: () => EditTypeDialog.show(
                                             context,
                                             typeItem,
-                                            (newName) => editType(typeItem, newName),
+                                            (newName) =>
+                                                editType(typeItem, newName),
                                           ),
                                         ),
                                       );
                                     },
                                   ),
-                                  SizedBox(height: AppDimensions.screenHeight(context) *0.02),
+                                  SizedBox(
+                                      height:
+                                          AppDimensions.screenHeight(context) *
+                                              0.02),
                                 ],
                               ),
                             ],
@@ -219,7 +251,9 @@ class _TypesViewState extends State<TypesView> {
                       },
                     ),
 
-                    isActivity ? SizedBox() : _buildDeletedList(typeViewModel, authProvider),
+                    isActivity
+                        ? SizedBox()
+                        : _buildDeletedList(typeViewModel, authProvider),
                   ],
                 ),
               ),
@@ -230,7 +264,8 @@ class _TypesViewState extends State<TypesView> {
     );
   }
 
-  StreamBuilder<List<String>> _buildDeletedList(GlobalTypesViewModel typeViewModel, AuthProvider authProvider) {
+  StreamBuilder<List<String>> _buildDeletedList(
+      GlobalTypesViewModel typeViewModel, AuthProvider authProvider) {
     return StreamBuilder<List<String>>(
       stream: removedtypesFuture,
       builder: (context, snapshot) {
@@ -259,8 +294,9 @@ class _TypesViewState extends State<TypesView> {
                   initialTitle: removedItem,
                   icon: Icons.restore,
                   onPressed: () async {
-                    await typeViewModel.reactivateType(authProvider.id, authProvider.type, removedItem, widget.type);
-                    ToastHelper.show('$removedItem restaurado');  
+                    await typeViewModel.reactivateType(authProvider.id,
+                        authProvider.type, removedItem, widget.type);
+                    ToastHelper.show('$removedItem restaurado');
                   },
                 );
               }).toList(),

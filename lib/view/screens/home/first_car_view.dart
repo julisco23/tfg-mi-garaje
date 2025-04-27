@@ -31,7 +31,8 @@ class _FirstCarState extends State<FirstCar> {
               MiButton(
                 text: 'Añadir coche',
                 onPressed: () async {
-                  await DialogAddVehicle.show(context, onVehicleChanged: widget.onVehicleChanged);
+                  await DialogAddVehicle.show(context,
+                      onVehicleChanged: widget.onVehicleChanged);
                 },
               ),
               SizedBox(height: AppDimensions.screenHeight(context) * 0.1),

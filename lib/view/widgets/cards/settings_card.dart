@@ -27,9 +27,9 @@ class SettingCard extends StatelessWidget {
                 height: 24,
               )
             : Icon(icon, color: Theme.of(context).primaryColor),
-        title: Text(title,
-            style: Theme.of(context).textTheme.bodyMedium),
-        trailing: const Icon(Icons.arrow_forward_ios, size: 18, color: Colors.grey),
+        title: Text(title, style: Theme.of(context).textTheme.bodyMedium),
+        trailing:
+            const Icon(Icons.arrow_forward_ios, size: 18, color: Colors.grey),
         onTap: onTap,
       ),
     );

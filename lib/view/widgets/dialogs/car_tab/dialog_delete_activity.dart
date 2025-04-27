@@ -11,10 +11,10 @@ class DeleteActivityDialog extends StatelessWidget {
 
   static Future<bool> show(BuildContext context, Activity activity) async {
     return await showDialog<bool>(
-      context: context,
-      builder: (context) => DeleteActivityDialog(activity: activity),
-    ) ??
-    false;
+          context: context,
+          builder: (context) => DeleteActivityDialog(activity: activity),
+        ) ??
+        false;
   }
 
   @override
@@ -37,7 +37,8 @@ class DeleteActivityDialog extends StatelessWidget {
           children: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: Text('Cancelar', style: TextStyle(color: Theme.of(context).primaryColor)),
+              child: Text('Cancelar',
+                  style: TextStyle(color: Theme.of(context).primaryColor)),
             ),
             TextButton(
               onPressed: () => Navigator.pop(context, true),

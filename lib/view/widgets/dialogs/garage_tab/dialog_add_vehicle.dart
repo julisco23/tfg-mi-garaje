@@ -27,7 +27,7 @@ class DialogAddVehicle extends StatefulWidget {
   @override
   State<DialogAddVehicle> createState() => _DialogAddVehicleState();
 
-  static Future<void> show (BuildContext context,
+  static Future<void> show(BuildContext context,
       {Vehicle? vehicle, Function(Vehicle?)? onVehicleChanged}) {
     return showDialog(
       context: context,
@@ -55,7 +55,8 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
   void initState() {
     super.initState();
     final AuthProvider authProvider = context.read<AuthProvider>();
-    final GlobalTypesViewModel globalTypesViewModel = context.read<GlobalTypesViewModel>();
+    final GlobalTypesViewModel globalTypesViewModel =
+        context.read<GlobalTypesViewModel>();
     if (widget.vehicle != null) {
       nameController.text = widget.vehicle!.name ?? '';
       brandController.text = widget.vehicle!.brand;
@@ -66,7 +67,8 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
       }
     }
 
-    _vehiclesTypes = globalTypesViewModel.getTypes(authProvider.id, authProvider.type, 'Vehicle');
+    _vehiclesTypes = globalTypesViewModel.getTypes(
+        authProvider.id, authProvider.type, 'Vehicle');
   }
 
   Future<void> _pickImage() async {
@@ -96,7 +98,8 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
           FocusScope.of(context).unfocus();
         },
         child: SingleChildScrollView(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          padding:
+              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
           child: Container(
             width: MediaQuery.of(context).size.width * 0.90,
             padding: const EdgeInsets.all(16.0),
@@ -151,21 +154,32 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
                             items: [
                               DropdownMenuItem<String>(
                                 value: null,
-                                child: Text("Tipo de Vehiculo", style: Theme.of(context).textTheme.bodyMedium),
+                                child: Text("Tipo de Vehiculo",
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium),
                               ),
-                              if (snapshot.connectionState != ConnectionState.waiting)
+                              if (snapshot.connectionState !=
+                                  ConnectionState.waiting)
                                 ...snapshot.data!.map<DropdownMenuItem<String>>(
                                   (String tipo) {
                                     return DropdownMenuItem<String>(
                                       value: tipo,
-                                      child: Text(tipo, style: Theme.of(context).textTheme.bodyMedium),
+                                      child: Text(tipo,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium),
                                     );
                                   },
                                 ),
-                              if (snapshot.connectionState == ConnectionState.waiting && selectedVehicleType != null)
+                              if (snapshot.connectionState ==
+                                      ConnectionState.waiting &&
+                                  selectedVehicleType != null)
                                 DropdownMenuItem<String>(
                                   value: selectedVehicleType,
-                                  child: Text(selectedVehicleType!, style: Theme.of(context).textTheme.bodyMedium),
+                                  child: Text(selectedVehicleType!,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium),
                                 ),
                             ]);
                       },
@@ -195,61 +209,66 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       imageBytes == null
-                      ? MiButton(
-                        text: 'Seleccionar Imagen',
-                        onPressed: _pickImage,
-                        icon: Icons.image,
-                        backgroundColor: Colors.transparent,
-                        side: BorderSide(color: Theme.of(context).primaryColor)
-                      )
-                      : Row(
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return Dialog(
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Image.memory(
-                                          imageBytes!,
-                                          fit: BoxFit.contain,
-                                        ),
-                                      ],
+                          ? MiButton(
+                              text: 'Seleccionar Imagen',
+                              onPressed: _pickImage,
+                              icon: Icons.image,
+                              backgroundColor: Colors.transparent,
+                              side: BorderSide(
+                                  color: Theme.of(context).primaryColor))
+                          : Row(
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return Dialog(
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Image.memory(
+                                                imageBytes!,
+                                                fit: BoxFit.contain,
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Image.memory(
+                                      imageBytes!,
+                                      height: 50,
+                                      width: 50,
+                                      fit: BoxFit.cover,
                                     ),
-                                  );
-                                },
-                              );
-                            },
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.memory(
-                                imageBytes!,
-                                height: 50,
-                                width: 50,
-                                fit: BoxFit.cover,
-                              ),
+                                  ),
+                                ),
+                                SizedBox(
+                                    width: AppDimensions.screenWidth(context) *
+                                        0.015),
+                                Expanded(
+                                  child: Text(
+                                    'Imagen cargada',
+                                    style: TextStyle(
+                                        color: Colors.green,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      imageBytes = null;
+                                    });
+                                  },
+                                  icon: const Icon(Icons.close,
+                                      color: Colors.red),
+                                ),
+                              ],
                             ),
-                          ),
-                          SizedBox(width: AppDimensions.screenWidth(context) * 0.015),
-                          Expanded(
-                            child: Text(
-                              'Imagen cargada', 
-                              style: TextStyle(color: Colors.green,fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              setState(() {
-                                imageBytes = null;
-                              });
-                            },
-                            icon: const Icon(Icons.close, color: Colors.red),
-                          ),
-                        ],
-                      ),
                     ],
                   ),
                   SizedBox(height: AppDimensions.screenHeight(context) * 0.05),
@@ -260,22 +279,24 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
                     children: [
                       Expanded(
                         child: TextButton(
-                          style: TextButton.styleFrom(padding: EdgeInsets.symmetric(vertical: 12)),
-                          child: Text(
-                            'Cancelar',
-                            style: TextStyle(color: Theme.of(context).primaryColor)
-                          ),
+                          style: TextButton.styleFrom(
+                              padding: EdgeInsets.symmetric(vertical: 12)),
+                          child: Text('Cancelar',
+                              style: TextStyle(
+                                  color: Theme.of(context).primaryColor)),
                           onPressed: () => navigator.pop(),
                         ),
                       ),
-                      SizedBox(width: AppDimensions.screenWidth(context) * 0.05),
+                      SizedBox(
+                          width: AppDimensions.screenWidth(context) * 0.05),
                       Expanded(
                         child: TextButton(
-                          style: TextButton.styleFrom(padding: EdgeInsets.symmetric(vertical: 12)),
+                          style: TextButton.styleFrom(
+                              padding: EdgeInsets.symmetric(vertical: 12)),
                           child: Text(
-                            widget.vehicle == null ? 'Añadir' : 'Actualizar',
-                            style: TextStyle(color: Theme.of(context).primaryColor)
-                          ),
+                              widget.vehicle == null ? 'Añadir' : 'Actualizar',
+                              style: TextStyle(
+                                  color: Theme.of(context).primaryColor)),
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
                               final Vehicle vehicle = Vehicle(
@@ -295,22 +316,29 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
                               try {
                                 if (widget.vehicle == null) {
                                   // Añadir vehículo
-                                  await garageProvider.addVehicle(authProvider.id, authProvider.type, vehicle);
-                                
+                                  await garageProvider.addVehicle(
+                                      authProvider.id,
+                                      authProvider.type,
+                                      vehicle);
+
                                   if (widget.onVehicleChanged != null) {
                                     widget.onVehicleChanged!(null);
                                   }
 
-                                  ToastHelper.show('$selectedVehicleType añadido');
+                                  ToastHelper.show(
+                                      '$selectedVehicleType añadido');
                                 } else {
-                                  // Actualizar vehículo  
+                                  // Actualizar vehículo
                                   vehicle.id = widget.vehicle!.id;
-                                  await garageProvider.updateVehicle(authProvider.id, authProvider.type, vehicle);
+                                  await garageProvider.updateVehicle(
+                                      authProvider.id,
+                                      authProvider.type,
+                                      vehicle);
 
                                   widget.onVehicleChanged!(vehicle);
-                                  
-                                  ToastHelper.show('$selectedVehicleType actualizado');
-                                  
+
+                                  ToastHelper.show(
+                                      '$selectedVehicleType actualizado');
                                 }
                                 navigator.pop();
                               } on GarageException catch (e) {

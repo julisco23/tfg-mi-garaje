@@ -13,8 +13,9 @@ class DialogFamilyCode extends StatelessWidget {
   });
 
   static Future<bool> show(BuildContext context) async {
-    return await showDialog(context: context, builder: (context) => DialogFamilyCode()) 
-    ?? false;
+    return await showDialog(
+            context: context, builder: (context) => DialogFamilyCode()) ??
+        false;
   }
 
   @override
@@ -25,7 +26,8 @@ class DialogFamilyCode extends StatelessWidget {
     final AuthProvider authProvider = context.read<AuthProvider>();
     final ActivityProvider activityProvider = context.read<ActivityProvider>();
     final GarageProvider garageViewModel = context.read<GarageProvider>();
-    final GlobalTypesViewModel globalTypesViewModel = context.read<GlobalTypesViewModel>();
+    final GlobalTypesViewModel globalTypesViewModel =
+        context.read<GlobalTypesViewModel>();
     final NavigatorState navigator = Navigator.of(context);
 
     return AlertDialog(
@@ -55,18 +57,23 @@ class DialogFamilyCode extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             TextButton(
-              child: Text("Cancelar", style: TextStyle(color: Theme.of(context).primaryColor)),
+              child: Text("Cancelar",
+                  style: TextStyle(color: Theme.of(context).primaryColor)),
               onPressed: () => navigator.pop(false),
             ),
             TextButton(
-              child: Text("Aceptar", style: TextStyle(color: Theme.of(context).primaryColor)),
+              child: Text("Aceptar",
+                  style: TextStyle(color: Theme.of(context).primaryColor)),
               onPressed: () async {
                 if (!formKey.currentState!.validate()) return;
 
                 await authProvider.unirseAFamilia(controller.text);
-                await garageViewModel.getVehicles(authProvider.id, authProvider.type);
-                await activityProvider.loadActivities(garageViewModel.id, authProvider.id, authProvider.type);
-                await globalTypesViewModel.initializeUser(authProvider.id, authProvider.type);
+                await garageViewModel.getVehicles(
+                    authProvider.id, authProvider.type);
+                await activityProvider.loadActivities(
+                    garageViewModel.id, authProvider.id, authProvider.type);
+                await globalTypesViewModel.initializeUser(
+                    authProvider.id, authProvider.type);
 
                 navigator.pop(true);
               },

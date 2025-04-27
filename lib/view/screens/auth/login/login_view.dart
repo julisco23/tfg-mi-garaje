@@ -20,7 +20,7 @@ class _LoginViewState extends State<LoginView> {
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-    
+
   final GlobalKey<FormState> loginFormKey = GlobalKey<FormState>();
 
   @override
@@ -50,7 +50,8 @@ class _LoginViewState extends State<LoginView> {
                   Row(
                     children: [
                       IconButton(
-                        icon: Icon(Icons.circle, color: Colors.transparent), // Icono invisible
+                        icon: Icon(Icons.circle,
+                            color: Colors.transparent), // Icono invisible
                         onPressed: null,
                         enableFeedback: false,
                       ),
@@ -64,21 +65,20 @@ class _LoginViewState extends State<LoginView> {
                       ),
                       IconButton(
                         icon: Icon(Icons.login),
-                        onPressed: () async{
-                          navigator.pushNamed(
-                            RouteNames.loading, 
-                            arguments: {
-                              'onInit': () async {
-                                String? response = await loginViewModel.signin("juli@gmail.com", "jjjjjj");
-                                if (response != null) {
-                                  ToastHelper.show(response);
-                                  navigator.pop();
-                                } else {
-                                  navigator.pushNamedAndRemoveUntil(RouteNames.home, (route) => false);
-                                }
+                        onPressed: () async {
+                          navigator.pushNamed(RouteNames.loading, arguments: {
+                            'onInit': () async {
+                              String? response = await loginViewModel.signin(
+                                  "juli@gmail.com", "jjjjjj");
+                              if (response != null) {
+                                ToastHelper.show(response);
+                                navigator.pop();
+                              } else {
+                                navigator.pushNamedAndRemoveUntil(
+                                    RouteNames.home, (route) => false);
                               }
                             }
-                          );
+                          });
                         },
                       ),
                     ],
@@ -109,9 +109,7 @@ class _LoginViewState extends State<LoginView> {
                     },
                     suffixIcon: IconButton(
                       icon: Icon(
-                        obscureText
-                            ? Icons.visibility_off
-                            : Icons.visibility,
+                        obscureText ? Icons.visibility_off : Icons.visibility,
                       ),
                       onPressed: () {
                         setState(() {
@@ -127,20 +125,19 @@ class _LoginViewState extends State<LoginView> {
                     text: "Iniciar sesión",
                     onPressed: () async {
                       if (loginFormKey.currentState!.validate()) {
-                        navigator.pushNamed(
-                          RouteNames.loading, 
-                          arguments: {
-                            'onInit': () async {
-                              String? response = await loginViewModel.signin(emailController.text, passwordController.text);
-                              if (response != null) {
-                                ToastHelper.show(response);
-                                navigator.pop();
-                              } else {
-                                navigator.pushNamedAndRemoveUntil(RouteNames.home, (route) => false);
-                              }
+                        navigator.pushNamed(RouteNames.loading, arguments: {
+                          'onInit': () async {
+                            String? response = await loginViewModel.signin(
+                                emailController.text, passwordController.text);
+                            if (response != null) {
+                              ToastHelper.show(response);
+                              navigator.pop();
+                            } else {
+                              navigator.pushNamedAndRemoveUntil(
+                                  RouteNames.home, (route) => false);
                             }
                           }
-                        );
+                        });
                       }
                     },
                   ),
@@ -148,7 +145,8 @@ class _LoginViewState extends State<LoginView> {
 
                   // Olvidar contraseña
                   GestureDetector(
-                    onTap: () => ToastHelper.show("Funcionalidad no disponible."),
+                    onTap: () =>
+                        ToastHelper.show("Funcionalidad no disponible."),
                     child: Text(
                       "¿Has olvidado la contraseña?",
                       style: TextStyle(color: Theme.of(context).primaryColor),
@@ -160,20 +158,19 @@ class _LoginViewState extends State<LoginView> {
                   MiButton(
                     text: "Inicia sesión con Google",
                     onPressed: () async {
-                      navigator.pushNamed(
-                        RouteNames.loading, 
-                        arguments: {
-                          'onInit': () async {
-                            String? response = await loginViewModel.signInWithGoogle();
+                      navigator.pushNamed(RouteNames.loading, arguments: {
+                        'onInit': () async {
+                          String? response =
+                              await loginViewModel.signInWithGoogle();
 
-                            if (response != null) {
-                              ToastHelper.show(response);
-                            } else {
-                              navigator.pushNamedAndRemoveUntil(RouteNames.home, (route) => false);
-                            }
+                          if (response != null) {
+                            ToastHelper.show(response);
+                          } else {
+                            navigator.pushNamedAndRemoveUntil(
+                                RouteNames.home, (route) => false);
                           }
                         }
-                      );
+                      });
                     },
                     imagen: 'assets/images/google.png',
                   ),

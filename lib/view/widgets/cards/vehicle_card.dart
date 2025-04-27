@@ -9,11 +9,7 @@ import 'package:mi_garaje/view/widgets/dialogs/garage_tab/dialog_add_vehicle.dar
 import 'package:provider/provider.dart';
 
 class VehicleCard extends StatefulWidget {
-  const VehicleCard({
-    super.key,
-    required this.vehicle,
-    this.profile = false
-  });
+  const VehicleCard({super.key, required this.vehicle, this.profile = false});
 
   final Vehicle vehicle;
   final bool profile;
@@ -37,24 +33,27 @@ class _VehicleCardState extends State<VehicleCard> {
     final ActivityProvider activityProvider = context.read<ActivityProvider>();
     final GarageProvider garageProvider = context.read<GarageProvider>();
     final NavigatorState navigator = Navigator.of(context);
-    
+
     return InkWell(
-      onTap: !widget.profile 
-      ? () async {
-        await garageProvider.setSelectedVehicle(vehicle);
-        await activityProvider.loadActivities(vehicle.id!, authProvider.id, authProvider.type);
-        
-        navigator.pop();
-      } : null,
-      onLongPress: !widget.profile 
-        ? () async {
-          await DialogAddVehicle.show(context, vehicle: vehicle, onVehicleChanged: (updatedVehicle) {
-            setState(() {
-              vehicle = updatedVehicle!;
-            });
-          });
-        } 
-        : null,
+      onTap: !widget.profile
+          ? () async {
+              await garageProvider.setSelectedVehicle(vehicle);
+              await activityProvider.loadActivities(
+                  vehicle.id!, authProvider.id, authProvider.type);
+
+              navigator.pop();
+            }
+          : null,
+      onLongPress: !widget.profile
+          ? () async {
+              await DialogAddVehicle.show(context, vehicle: vehicle,
+                  onVehicleChanged: (updatedVehicle) {
+                setState(() {
+                  vehicle = updatedVehicle!;
+                });
+              });
+            }
+          : null,
       child: Card(
         elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -65,14 +64,15 @@ class _VehicleCardState extends State<VehicleCard> {
               vehicle.photo != null
                   ? CircleAvatar(
                       radius: 25,
-                      backgroundImage: Provider.of<ImageCacheProvider>(context).getImage("vehicle", vehicle.id!, vehicle.photo!)
-                    )
+                      backgroundImage: Provider.of<ImageCacheProvider>(context)
+                          .getImage("vehicle", vehicle.id!, vehicle.photo!))
                   : CircleAvatar(
                       backgroundColor: Theme.of(context).primaryColor,
                       radius: 25,
                       child: Text(
                         vehicle.getInitial(),
-                        style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.onPrimary),
                       ),
                     ),
               SizedBox(width: AppDimensions.screenHeight(context) * 0.015),

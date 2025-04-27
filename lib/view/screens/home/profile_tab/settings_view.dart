@@ -21,7 +21,8 @@ class SettingsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AuthProvider authViewModel = context.read<AuthProvider>();
-    final GlobalTypesViewModel globalTypesProvider  = context.read<GlobalTypesViewModel>();
+    final GlobalTypesViewModel globalTypesProvider =
+        context.read<GlobalTypesViewModel>();
     final ActivityProvider activityProvider = context.read<ActivityProvider>();
     final NavigatorState navigator = Navigator.of(context);
 
@@ -69,18 +70,15 @@ class SettingsView extends StatelessWidget {
                   );
                   if (!confirm) return;
 
-                  navigator.pushNamed(
-                    RouteNames.loading, 
-                    arguments: {
-                      'onInit': () async {
+                  navigator.pushNamed(RouteNames.loading, arguments: {
+                    'onInit': () async {
                       await authViewModel.linkWithGoogle();
                       navigator.pop();
 
                       ToastHelper.show("Cuenta vinculada con Google.");
                       //TODO: posible segundo pop
-                      }
                     }
-                  );
+                  });
                 },
               ),
             if (!authViewModel.user!.isAnonymous)
@@ -102,7 +100,8 @@ class SettingsView extends StatelessWidget {
                         await authViewModel.signout();
                         garageViewModel.cerrarSesion();
 
-                        navigator.pushNamedAndRemoveUntil(RouteNames.login, (route) => false);
+                        navigator.pushNamedAndRemoveUntil(
+                            RouteNames.login, (route) => false);
                         ToastHelper.show("Sesión cerrada.");
                       }
                     },
@@ -124,10 +123,12 @@ class SettingsView extends StatelessWidget {
                   RouteNames.loading,
                   arguments: {
                     'onInit': () async {
-                      await garageViewModel.eliminarCuenta(authViewModel.id, authViewModel.type, authViewModel.user!.hasFamily);
+                      await garageViewModel.eliminarCuenta(authViewModel.id,
+                          authViewModel.type, authViewModel.user!.hasFamily);
                       await authViewModel.eliminarCuenta();
-                      
-                      navigator.pushNamedAndRemoveUntil(RouteNames.login, (route) => false);
+
+                      navigator.pushNamedAndRemoveUntil(
+                          RouteNames.login, (route) => false);
 
                       ToastHelper.show("Cuenta eliminada.");
                     }
@@ -150,11 +151,11 @@ class SettingsView extends StatelessWidget {
                   "¿Deseas cambiar a modo ${Provider.of<ThemeNotifier>(context, listen: false).isLightTheme() ? "oscuro?" : "claro?"}?",
                 );
                 if (!confirm) return;
-                
+
                 //TODO: Implementar cambio de tema
 
                 ToastHelper.show("Funcionalidad no disponible.");
-                
+
                 //Provider.of<ThemeNotifier>(context, listen: false).toggleTheme();
                 //ToastHelper.show("Tema cambiado.");
               },
@@ -196,40 +197,40 @@ class SettingsView extends StatelessWidget {
             _buildSectionTitle(context, "Personalización"),
             SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
             SettingCard(
-              icon: Icons.local_gas_station_rounded, 
-              title: "Tipos de repostaje", 
-              onTap: () {
-                navigator.pushNamed(RouteNames.types, arguments: {"type": "Refuel"});
-              }
-            ),
+                icon: Icons.local_gas_station_rounded,
+                title: "Tipos de repostaje",
+                onTap: () {
+                  navigator.pushNamed(RouteNames.types,
+                      arguments: {"type": "Refuel"});
+                }),
             SettingCard(
-              icon: Icons.build_rounded, 
-              title: "Tipos de mantenimiento", 
-              onTap: () {
-                navigator.pushNamed(RouteNames.types, arguments: {"type": "Repair"});
-              }
-            ),
+                icon: Icons.build_rounded,
+                title: "Tipos de mantenimiento",
+                onTap: () {
+                  navigator.pushNamed(RouteNames.types,
+                      arguments: {"type": "Repair"});
+                }),
             SettingCard(
-              icon: Icons.description_rounded, 
-              title: "Tipos de documentos",
-              onTap: () {
-                navigator.pushNamed(RouteNames.types, arguments: {"type": "Record"});
-              }
-            ),
+                icon: Icons.description_rounded,
+                title: "Tipos de documentos",
+                onTap: () {
+                  navigator.pushNamed(RouteNames.types,
+                      arguments: {"type": "Record"});
+                }),
             SettingCard(
-              icon: Icons.commute_rounded, 
-              title: "Tipos de vehículos", 
-              onTap: () {
-                navigator.pushNamed(RouteNames.types, arguments: {"type": "Vehicle"});
-              }
-            ),
+                icon: Icons.commute_rounded,
+                title: "Tipos de vehículos",
+                onTap: () {
+                  navigator.pushNamed(RouteNames.types,
+                      arguments: {"type": "Vehicle"});
+                }),
             SettingCard(
-              icon: Icons.star_rounded, 
-              title: "Nueva actividad", 
-              onTap: () {
-                navigator.pushNamed(RouteNames.types, arguments: {"type": "Activity"});
-              }
-            ),
+                icon: Icons.star_rounded,
+                title: "Nueva actividad",
+                onTap: () {
+                  navigator.pushNamed(RouteNames.types,
+                      arguments: {"type": "Activity"});
+                }),
             SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 
             // SECCIÓN: FAMILIA
@@ -247,19 +248,21 @@ class SettingsView extends StatelessWidget {
                   );
                   if (!confirm) return;
 
-                  navigator.pushNamed(
-                    RouteNames.loading, 
-                    arguments: {
-                      'onInit': () async {
-                        await authViewModel.convertirEnFamilia();
-                        await garageViewModel.convertToFamily(authViewModel.user!.id!, authViewModel.user!.idFamily!);
-                        await globalTypesProvider.convertToFamily(authViewModel.user!.id!, authViewModel.user!.idFamily!);
+                  navigator.pushNamed(RouteNames.loading, arguments: {
+                    'onInit': () async {
+                      await authViewModel.convertirEnFamilia();
+                      await garageViewModel.convertToFamily(
+                          authViewModel.user!.id!,
+                          authViewModel.user!.idFamily!);
+                      await globalTypesProvider.convertToFamily(
+                          authViewModel.user!.id!,
+                          authViewModel.user!.idFamily!);
 
-                        navigator.pushNamedAndRemoveUntil(RouteNames.home, (route) => false);
-                        ToastHelper.show("Familia creada.");
-                      }
+                      navigator.pushNamedAndRemoveUntil(
+                          RouteNames.home, (route) => false);
+                      ToastHelper.show("Familia creada.");
                     }
-                  );
+                  });
                 },
               ),
               SettingCard(
@@ -269,19 +272,19 @@ class SettingsView extends StatelessWidget {
                   bool isFamily = await DialogFamilyCode.show(context);
                   if (!isFamily) return;
 
-                  navigator.pushNamed(
-                    RouteNames.loading, 
-                    arguments: {
-                      'onInit': () async {
-                        await garageViewModel.joinFamily(authViewModel.user!.id!, authViewModel.user!.idFamily!);
-                        await globalTypesProvider.joinFamily(authViewModel.user!.id!);
+                  navigator.pushNamed(RouteNames.loading, arguments: {
+                    'onInit': () async {
+                      await garageViewModel.joinFamily(authViewModel.user!.id!,
+                          authViewModel.user!.idFamily!);
+                      await globalTypesProvider
+                          .joinFamily(authViewModel.user!.id!);
 
-                        navigator.pushNamedAndRemoveUntil(RouteNames.home, (route) => false);
+                      navigator.pushNamedAndRemoveUntil(
+                          RouteNames.home, (route) => false);
 
-                        ToastHelper.show("Unido a la familia.");
-                      }
+                      ToastHelper.show("Unido a la familia.");
                     }
-                  );
+                  });
                 },
               )
             ] else ...[
@@ -309,11 +312,14 @@ class SettingsView extends StatelessWidget {
                     arguments: {
                       'onInit': () async {
                         await authViewModel.salirDeFamilia();
-                        await garageViewModel.leaveFamily(authViewModel.id, authViewModel.type, authViewModel.isLastMember);
-                        await globalTypesProvider.initializeUser(authViewModel.id, authViewModel.type);
+                        await garageViewModel.leaveFamily(authViewModel.id,
+                            authViewModel.type, authViewModel.isLastMember);
+                        await globalTypesProvider.initializeUser(
+                            authViewModel.id, authViewModel.type);
                         activityProvider.clearActivities();
 
-                        navigator.pushNamedAndRemoveUntil(RouteNames.home, (route) => false);
+                        navigator.pushNamedAndRemoveUntil(
+                            RouteNames.home, (route) => false);
 
                         ToastHelper.show("Familia abandonada.");
                       }
@@ -352,7 +358,10 @@ class SettingsView extends StatelessWidget {
   Widget _buildSectionTitle(BuildContext context, String title) {
     return Text(
       title,
-      style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 18, fontWeight: FontWeight.bold),
+      style: TextStyle(
+          color: Theme.of(context).primaryColor,
+          fontSize: 18,
+          fontWeight: FontWeight.bold),
     );
   }
 }

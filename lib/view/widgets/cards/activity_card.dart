@@ -30,19 +30,15 @@ class ActivityCard extends StatelessWidget {
 
     return InkWell(
       onTap: () {
-        Navigator.pushNamed(
-          context, 
-          RouteNames.activity, 
-          arguments: {
-            "activity": activity
-          }
-        );
+        Navigator.pushNamed(context, RouteNames.activity,
+            arguments: {"activity": activity});
       },
       onLongPress: () async {
         final result = await DeleteActivityDialog.show(context, activity);
         if (!result) return;
         try {
-          await activityProvider.deleteActivity(garageProvider.id, authProvider.id, authProvider.type, activity);
+          await activityProvider.deleteActivity(
+              garageProvider.id, authProvider.id, authProvider.type, activity);
         } on GarageException catch (e) {
           ToastHelper.show(e.message);
           return;
@@ -59,7 +55,8 @@ class ActivityCard extends StatelessWidget {
 
               // Ícono del tipo de actividad
               CircleAvatar(
-                backgroundColor: context.read<ThemeNotifier>().currentTheme.primaryColor,
+                backgroundColor:
+                    context.read<ThemeNotifier>().currentTheme.primaryColor,
                 child: Builder(
                   builder: (context) {
                     IconData? icon;
@@ -79,7 +76,11 @@ class ActivityCard extends StatelessWidget {
                     }
                     return Icon(
                       icon,
-                      color: context.read<ThemeNotifier>().currentTheme.colorScheme.onPrimary,
+                      color: context
+                          .read<ThemeNotifier>()
+                          .currentTheme
+                          .colorScheme
+                          .onPrimary,
                       size: 30,
                     );
                   },
@@ -93,10 +94,15 @@ class ActivityCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(activity.getType),
-                    SizedBox(height: AppDimensions.screenHeight(context) * 0.005),
+                    SizedBox(
+                        height: AppDimensions.screenHeight(context) * 0.005),
                     Text(
                       DateFormat('dd/MM/yyyy').format(activity.date),
-                      style: context.read<ThemeNotifier>().currentTheme.textTheme.labelSmall,
+                      style: context
+                          .read<ThemeNotifier>()
+                          .currentTheme
+                          .textTheme
+                          .labelSmall,
                     )
                   ],
                 ),
@@ -105,7 +111,11 @@ class ActivityCard extends StatelessWidget {
               // Precio de la actividad
               Text(
                 activity.isCost ? '${activity.getCost}€' : '',
-                style: context.read<ThemeNotifier>().currentTheme.textTheme.labelMedium,
+                style: context
+                    .read<ThemeNotifier>()
+                    .currentTheme
+                    .textTheme
+                    .labelMedium,
               ),
               SizedBox(width: AppDimensions.screenWidth(context) * 0.02),
             ],

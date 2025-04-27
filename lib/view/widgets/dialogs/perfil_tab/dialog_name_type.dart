@@ -12,11 +12,12 @@ class EditTypeDialog extends StatelessWidget {
     required this.onNameChanged,
   });
 
-  static Future<bool> show(BuildContext context, String title, ValueChanged<String> onNameChanged) async {
+  static Future<bool> show(BuildContext context, String title,
+      ValueChanged<String> onNameChanged) async {
     return await showDialog(
-          context: context,
-          builder: (context) => EditTypeDialog(initialName: title, onNameChanged: onNameChanged)
-        ) ??
+            context: context,
+            builder: (context) => EditTypeDialog(
+                initialName: title, onNameChanged: onNameChanged)) ??
         false;
   }
 
@@ -31,8 +32,8 @@ class EditTypeDialog extends StatelessWidget {
       content: Form(
         key: formKey,
         child: MiTextFormField(
-          controller: controller, 
-          labelText: "Editar tipo", 
+          controller: controller,
+          labelText: "Editar tipo",
           hintText: "Nuevo tipo",
           validator: (value) {
             return Validator.validateNameType(value);
@@ -44,15 +45,17 @@ class EditTypeDialog extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             TextButton(
-              child: Text("Cancelar", style: TextStyle(color: Theme.of(context).primaryColor)),
+              child: Text("Cancelar",
+                  style: TextStyle(color: Theme.of(context).primaryColor)),
               onPressed: () => Navigator.pop(context),
             ),
             TextButton(
-              child: Text("Aceptar", style: TextStyle(color: Theme.of(context).primaryColor)),
-              onPressed: ()  {
+              child: Text("Aceptar",
+                  style: TextStyle(color: Theme.of(context).primaryColor)),
+              onPressed: () {
                 if (!formKey.currentState!.validate()) return;
-                  onNameChanged(controller.text);
-                  Navigator.pop(context);
+                onNameChanged(controller.text);
+                Navigator.pop(context);
               },
             ),
           ],

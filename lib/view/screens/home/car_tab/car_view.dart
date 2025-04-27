@@ -18,7 +18,8 @@ class CarTabView extends StatefulWidget {
   State<CarTabView> createState() => _CarTabViewState();
 }
 
-class _CarTabViewState extends State<CarTabView> with SingleTickerProviderStateMixin {
+class _CarTabViewState extends State<CarTabView>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late List<String> activityTypes;
   late List<Tab> tabs;
@@ -30,14 +31,17 @@ class _CarTabViewState extends State<CarTabView> with SingleTickerProviderStateM
     super.initState();
     _tabState = Provider.of<TabState>(context, listen: false);
 
-    activityTypes = Provider.of<GlobalTypesViewModel>(context, listen: false).getTabsList();
+    activityTypes =
+        Provider.of<GlobalTypesViewModel>(context, listen: false).getTabsList();
     _tabState.inicializar(activityTypes);
 
     tabs = _tabState.activityTypes.map((type) => Tab(text: type)).toList();
-    tabContents = _tabState.activityTypes.map((type) => _buildTabContent(type)).toList();
+    tabContents =
+        _tabState.activityTypes.map((type) => _buildTabContent(type)).toList();
 
     final tabIndex = _tabState.tabIndex;
-    _tabController = TabController(length: tabs.length, vsync: this, initialIndex: tabIndex);
+    _tabController =
+        TabController(length: tabs.length, vsync: this, initialIndex: tabIndex);
   }
 
   @override
@@ -54,7 +58,9 @@ class _CarTabViewState extends State<CarTabView> with SingleTickerProviderStateM
                 if (vehicle.photo != null)
                   CircleAvatar(
                     radius: 20,
-                    backgroundImage: context.read<ImageCacheProvider>().getImage("vehicle", vehicle.id!, vehicle.photo!),
+                    backgroundImage: context
+                        .read<ImageCacheProvider>()
+                        .getImage("vehicle", vehicle.id!, vehicle.photo!),
                   ),
                 const SizedBox(width: 10),
                 Text(vehicle.getNameTittle()),
@@ -108,12 +114,13 @@ class _CarTabViewState extends State<CarTabView> with SingleTickerProviderStateM
 
     return Consumer<ActivityProvider>(
       builder: (context, activityProvider, _) {
-
-        List<Activity> activities = activityProvider.getActivities(activityType);
+        List<Activity> activities =
+            activityProvider.getActivities(activityType);
 
         return RefreshIndicator(
           onRefresh: () async {
-            await activityProvider.loadActivities(vehicle.getId, authProvider.id, authProvider.type);
+            await activityProvider.loadActivities(
+                vehicle.getId, authProvider.id, authProvider.type);
           },
           child: ListView.builder(
             itemCount: activities.length,

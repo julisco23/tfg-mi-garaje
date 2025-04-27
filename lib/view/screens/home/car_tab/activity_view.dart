@@ -37,7 +37,8 @@ class _ActivityViewState extends State<ActivityView> {
     final ActivityProvider activityProvider = context.read<ActivityProvider>();
     final AuthProvider authProvider = context.read<AuthProvider>();
     final GarageProvider garageProvider = context.read<GarageProvider>();
-    final ImageCacheProvider imageCacheProvider = context.read<ImageCacheProvider>();
+    final ImageCacheProvider imageCacheProvider =
+        context.read<ImageCacheProvider>();
     final NavigatorState navigator = Navigator.of(context);
 
     return Scaffold(
@@ -46,18 +47,19 @@ class _ActivityViewState extends State<ActivityView> {
         actions: [
           IconButton(
             icon: const Icon(Icons.delete),
-            onPressed: () async{
+            onPressed: () async {
               bool result = await DeleteActivityDialog.show(context, activity);
 
               if (!result) return;
 
               try {
-                await activityProvider.deleteActivity(garageProvider.id, authProvider.id, authProvider.type, activity);
+                await activityProvider.deleteActivity(garageProvider.id,
+                    authProvider.id, authProvider.type, activity);
               } on GarageException catch (e) {
                 ToastHelper.show(e.message);
                 return;
               }
-              
+
               navigator.pop();
             },
           ),
@@ -74,7 +76,8 @@ class _ActivityViewState extends State<ActivityView> {
                   // Fecha
                   ListTile(
                     title: Text('Fecha'),
-                    subtitle: Text(DateFormat('dd/MM/yyyy').format(activity.date)),
+                    subtitle:
+                        Text(DateFormat('dd/MM/yyyy').format(activity.date)),
                   ),
 
                   // Coste
@@ -88,11 +91,13 @@ class _ActivityViewState extends State<ActivityView> {
                   if (activity is Refuel) ...[
                     ListTile(
                       title: Text('Precio por litro'),
-                      subtitle: Text('${(activity as Refuel).getPrecioLitros} €'),
+                      subtitle:
+                          Text('${(activity as Refuel).getPrecioLitros} €'),
                     ),
                     ListTile(
                       title: Text('Litros'),
-                      subtitle: Text('${(activity as Refuel).getLiters.toStringAsFixed(3)} L'),
+                      subtitle: Text(
+                          '${(activity as Refuel).getLiters.toStringAsFixed(3)} L'),
                     ),
                   ],
 
@@ -119,7 +124,11 @@ class _ActivityViewState extends State<ActivityView> {
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Image(image: imageCacheProvider.getImage("activity", activity.getDate.toIso8601String(), activity.getPhoto!)),
+                                  Image(
+                                      image: imageCacheProvider.getImage(
+                                          "activity",
+                                          activity.getDate.toIso8601String(),
+                                          activity.getPhoto!)),
                                 ],
                               ),
                             );
@@ -129,7 +138,11 @@ class _ActivityViewState extends State<ActivityView> {
                       child: Center(
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(10),
-                          child: Image(image: imageCacheProvider.getImage("activity", activity.getDate.toIso8601String(), activity.getPhoto!)),
+                          child: Image(
+                              image: imageCacheProvider.getImage(
+                                  "activity",
+                                  activity.getDate.toIso8601String(),
+                                  activity.getPhoto!)),
                         ),
                       ),
                     ),
@@ -138,19 +151,18 @@ class _ActivityViewState extends State<ActivityView> {
 
                   // Botón de edición
                   MiButton(
-                    text: "Editar",
-                    onPressed: () async{
-                      await DialogAddActivity.show(
-                        context,
-                        activity: activity,
-                        onActivityUpdated: (updatedActivity) {
-                          setState(() {
-                            activity = updatedActivity;
-                          });
-                        },
-                      );
-                    }
-                  ),
+                      text: "Editar",
+                      onPressed: () async {
+                        await DialogAddActivity.show(
+                          context,
+                          activity: activity,
+                          onActivityUpdated: (updatedActivity) {
+                            setState(() {
+                              activity = updatedActivity;
+                            });
+                          },
+                        );
+                      }),
                 ],
               ),
             ),

@@ -18,7 +18,8 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
-    final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedFile =
+        await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       final bytes = await pickedFile.readAsBytes();
@@ -33,9 +34,9 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Imagen adjunta', style: TextStyle(fontWeight: FontWeight.bold)),
+        const Text('Imagen adjunta',
+            style: TextStyle(fontWeight: FontWeight.bold)),
         SizedBox(height: AppDimensions.screenWidth(context) * 0.02),
-
         imageBytes == null
             ? ElevatedButton.icon(
                 onPressed: _pickImage,
@@ -57,7 +58,8 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
                   Expanded(
                     child: Text(
                       'Imagen cargada',
-                      style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          color: Colors.green, fontWeight: FontWeight.bold),
                     ),
                   ),
                   IconButton(

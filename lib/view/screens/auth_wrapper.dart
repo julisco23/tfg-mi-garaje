@@ -25,7 +25,8 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
   Future<void> _initializeUser() async {
     final AuthProvider authViewModel = context.read<AuthProvider>();
-    final GlobalTypesViewModel globalTypesViewModel = context.read<GlobalTypesViewModel>();
+    final GlobalTypesViewModel globalTypesViewModel =
+        context.read<GlobalTypesViewModel>();
 
     bool isAuthenticated = await authViewModel.checkUser();
     await globalTypesViewModel.loadGlobalTypes();

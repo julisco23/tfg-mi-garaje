@@ -29,7 +29,7 @@ class _DialogCambioCuentaState extends State<DialogCambioCuenta> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
-  
+
   final GlobalKey<FormState> profileFormKey = GlobalKey<FormState>();
 
   bool obscureText = true;
@@ -112,23 +112,21 @@ class _DialogCambioCuentaState extends State<DialogCambioCuenta> {
           text: "Crear cuenta",
           onPressed: () async {
             if (profileFormKey.currentState!.validate()) {
-              navigator.pushNamed(
-                RouteNames.loading, 
-                arguments: {
-                  'onInit': () async {
-                    String? response = await authProvider.crearCuenta(
-                      emailController.text,
-                      passwordController.text,
-                      nameController.text.trim(),
-                    );
-                    if (response != null) {
-                      ToastHelper.show(response);
-                    } else {
-                      navigator.pushNamedAndRemoveUntil(RouteNames.home, (route) => false);
-                    }
+              navigator.pushNamed(RouteNames.loading, arguments: {
+                'onInit': () async {
+                  String? response = await authProvider.crearCuenta(
+                    emailController.text,
+                    passwordController.text,
+                    nameController.text.trim(),
+                  );
+                  if (response != null) {
+                    ToastHelper.show(response);
+                  } else {
+                    navigator.pushNamedAndRemoveUntil(
+                        RouteNames.home, (route) => false);
                   }
                 }
-              );
+              });
             }
           },
         ),

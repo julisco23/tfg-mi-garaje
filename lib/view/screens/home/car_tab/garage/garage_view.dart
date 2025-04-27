@@ -28,7 +28,7 @@ class _GarageViewState extends State<GarageView> {
           IconButton(
             icon: const Icon(Icons.add_rounded),
             onPressed: () async {
-             await DialogAddVehicle.show(context);
+              await DialogAddVehicle.show(context);
             },
           ),
         ],
@@ -37,7 +37,8 @@ class _GarageViewState extends State<GarageView> {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          await garageProvider.refreshGarage(authProvider.id, authProvider.type);
+          await garageProvider.refreshGarage(
+              authProvider.id, authProvider.type);
         },
         child: Consumer<GarageProvider>(
           builder: (context, garageProvider, child) {
@@ -66,7 +67,8 @@ class _GarageViewState extends State<GarageView> {
                   },
                   onDismissed: (direction) async {
                     try {
-                      await garageProvider.deleteVehicle(authProvider.id, authProvider.type, vehicle);
+                      await garageProvider.deleteVehicle(
+                          authProvider.id, authProvider.type, vehicle);
                       ToastHelper.show('${vehicle.getVehicleType()} eliminado');
                     } on GarageException catch (e) {
                       ToastHelper.show(e.message);
@@ -83,9 +85,7 @@ class _GarageViewState extends State<GarageView> {
                   ),
                   child: Column(
                     children: [
-                      VehicleCard(
-                        vehicle: vehicle
-                      ),
+                      VehicleCard(vehicle: vehicle),
                     ],
                   ),
                 );

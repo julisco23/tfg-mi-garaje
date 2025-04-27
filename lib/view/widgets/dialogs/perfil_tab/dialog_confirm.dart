@@ -7,7 +7,8 @@ class ConfirmDialog extends StatelessWidget {
 
   const ConfirmDialog({super.key, required this.title, required this.mensaje});
 
-  static Future<bool> show(BuildContext context, String title, String mensaje) async {
+  static Future<bool> show(
+      BuildContext context, String title, String mensaje) async {
     return await showDialog(
           context: context,
           builder: (context) => ConfirmDialog(title: title, mensaje: mensaje),
@@ -34,26 +35,32 @@ class ConfirmDialog extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Column(
+            children: [
+              SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
+              Text(
+                mensaje,
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
-                  Text(mensaje, textAlign: TextAlign.center,),
-
-                  SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      TextButton(
-                        child: Text("Cancelar", style: TextStyle(color: Theme.of(context).primaryColor)),
-                        onPressed: () => Navigator.of(context).pop(false),
-                      ),
-                      TextButton(
-                        child: Text("Aceptar", style: TextStyle(color: Theme.of(context).primaryColor)),
-                        onPressed: () => Navigator.of(context).pop(true),
-                      ),
-                    ],
+                  TextButton(
+                    child: Text("Cancelar",
+                        style:
+                            TextStyle(color: Theme.of(context).primaryColor)),
+                    onPressed: () => Navigator.of(context).pop(false),
+                  ),
+                  TextButton(
+                    child: Text("Aceptar",
+                        style:
+                            TextStyle(color: Theme.of(context).primaryColor)),
+                    onPressed: () => Navigator.of(context).pop(true),
                   ),
                 ],
               ),
+            ],
+          ),
         ],
       ),
     );

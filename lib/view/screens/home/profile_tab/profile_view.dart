@@ -25,14 +25,16 @@ class Perfil extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
-              Navigator.pushNamed(context, RouteNames.settings, arguments: {"garageViewModel": garageViewModel});
+              Navigator.pushNamed(context, RouteNames.settings,
+                  arguments: {"garageViewModel": garageViewModel});
             },
           ),
         ],
       ),
       body: SafeArea(
         child: RefreshIndicator(
-          onRefresh: () async => await garageViewModel.refreshGarage(authProvider.id, authProvider.type),
+          onRefresh: () async => await garageViewModel.refreshGarage(
+              authProvider.id, authProvider.type),
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             child: Padding(
@@ -44,7 +46,8 @@ class Perfil extends StatelessWidget {
                   SizedBox(height: AppDimensions.screenHeight(context) * 0.05),
                   if (authProvider.isFamily) ...[
                     _buildFamilyList(context, authProvider),
-                    SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
+                    SizedBox(
+                        height: AppDimensions.screenHeight(context) * 0.02),
                   ],
                   _buildVehicleList(context),
                 ],
@@ -64,25 +67,30 @@ class Perfil extends StatelessWidget {
         GestureDetector(
           onTap: () {
             user.isPhoto
-              ? showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return Dialog(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Image(image: Provider.of<ImageCacheProvider>(context).getImage("user", user.id!, user.photoURL!, isNetwork: !user.hasPhotoChanged)),
-                      ],
-                    ),
-                  );
-                },
-              )
-              : null;
+                ? showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Dialog(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Image(
+                                image: Provider.of<ImageCacheProvider>(context)
+                                    .getImage("user", user.id!, user.photoURL!,
+                                        isNetwork: !user.hasPhotoChanged)),
+                          ],
+                        ),
+                      );
+                    },
+                  )
+                : null;
           },
           child: CircleAvatar(
               radius: 50,
               backgroundImage: user.isPhoto
-                  ? Provider.of<ImageCacheProvider>(context).getImage("user", user.id!, user.photoURL!, isNetwork: !user.hasPhotoChanged)
+                  ? Provider.of<ImageCacheProvider>(context).getImage(
+                      "user", user.id!, user.photoURL!,
+                      isNetwork: !user.hasPhotoChanged)
                   : null,
               backgroundColor: Theme.of(context).primaryColor,
               child: user.isPhoto
@@ -164,7 +172,8 @@ class Perfil extends StatelessWidget {
             SizedBox(width: AppDimensions.screenWidth(context) * 0.015),
             InkWell(
               onTap: () {
-                Clipboard.setData(ClipboardData(text: authProvider.family!.code));
+                Clipboard.setData(
+                    ClipboardData(text: authProvider.family!.code));
                 ToastHelper.show("Código de familia copiado al portapapeles");
               },
               borderRadius: BorderRadius.circular(10),
@@ -184,10 +193,8 @@ class Perfil extends StatelessWidget {
                 ),
               ),
             )
-
           ],
         ),
-
         SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
         SizedBox(
           height: 140,
@@ -210,24 +217,29 @@ class Perfil extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         CircleAvatar(
-                          radius: 35,
-                          backgroundImage: member.isPhoto
-                              ? member.hasPhotoChanged
-                                  ? Provider.of<ImageCacheProvider>(context).getImage("user", member.id!, member.photoURL!)
-                                  : NetworkImage(member.photoURL!)
-                              : null,
-                          backgroundColor: Theme.of(context).primaryColor,
-                          child: member.isPhoto
-                              ? null
-                              : Icon(
-                                  Icons.person,
-                                  size: 50,
-                                  color: Theme.of(context).colorScheme.onPrimary,
-                                )),
-                        SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
+                            radius: 35,
+                            backgroundImage: member.isPhoto
+                                ? member.hasPhotoChanged
+                                    ? Provider.of<ImageCacheProvider>(context)
+                                        .getImage("user", member.id!,
+                                            member.photoURL!)
+                                    : NetworkImage(member.photoURL!)
+                                : null,
+                            backgroundColor: Theme.of(context).primaryColor,
+                            child: member.isPhoto
+                                ? null
+                                : Icon(
+                                    Icons.person,
+                                    size: 50,
+                                    color:
+                                        Theme.of(context).colorScheme.onPrimary,
+                                  )),
+                        SizedBox(
+                            height: AppDimensions.screenHeight(context) * 0.02),
                         Text(
                           member.displayName,
-                          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              fontSize: 17, fontWeight: FontWeight.bold),
                           overflow: TextOverflow.ellipsis,
                           textWidthBasis: TextWidthBasis.longestLine,
                         ),

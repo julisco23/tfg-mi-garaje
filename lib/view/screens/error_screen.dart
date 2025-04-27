@@ -15,7 +15,6 @@ class ErrorScreen extends StatefulWidget {
 }
 
 class _ErrorScreenState extends State<ErrorScreen> {
-
   void _retry() {
     widget.onRetry();
   }

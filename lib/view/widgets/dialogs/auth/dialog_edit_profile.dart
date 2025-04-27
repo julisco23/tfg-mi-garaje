@@ -18,7 +18,7 @@ class DialogEditProfile extends StatefulWidget {
   @override
   State<DialogEditProfile> createState() => _DialogEditProfileState();
 
-  static Future<void> show(BuildContext context,{bool isFamily = false}) {
+  static Future<void> show(BuildContext context, {bool isFamily = false}) {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -46,7 +46,7 @@ class _DialogEditProfileState extends State<DialogEditProfile> {
       accountType = "familia";
     } else {
       nombreController = TextEditingController(text: authProvider.user!.name);
-      if (authProvider.isPhotoURL){
+      if (authProvider.isPhotoURL) {
         imageBase64 = authProvider.user!.photoURL!;
       }
       isPhotoChanged = authProvider.user!.isPhotoChanged;
@@ -62,10 +62,12 @@ class _DialogEditProfileState extends State<DialogEditProfile> {
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
-    final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedFile =
+        await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      String base64String = await pickedFile.readAsBytes().then((value) => base64Encode(value));
+      String base64String =
+          await pickedFile.readAsBytes().then((value) => base64Encode(value));
       setState(() {
         imageBase64 = base64String;
         isPhotoChanged = true;
@@ -77,7 +79,7 @@ class _DialogEditProfileState extends State<DialogEditProfile> {
   Widget build(BuildContext context) {
     final AuthProvider authProvider = context.watch<AuthProvider>();
     final NavigatorState navigator = Navigator.of(context);
-    
+
     return AlertDialog(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -94,10 +96,8 @@ class _DialogEditProfileState extends State<DialogEditProfile> {
       content: SizedBox(
         width: double.maxFinite,
         child: Form(
-          key: profileFormKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min, 
-            children: [
+            key: profileFormKey,
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
               MiTextFormField(
                 controller: nombreController,
                 labelText: 'Nombre en $accountType',
@@ -106,117 +106,118 @@ class _DialogEditProfileState extends State<DialogEditProfile> {
               ),
               if (!widget.isFamily) ...[
                 SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
-              
+
                 // Selector de imagen
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     imageBase64 == null
-                    ? ElevatedButton.icon(
-                        onPressed: _pickImage,
-                        icon: const Icon(Icons.image),
-                        label: const Text('Seleccionar Imagen',
-                            style: TextStyle(color: Colors.white)),
-                        style: ElevatedButton.styleFrom(
-                            iconColor: Colors.white),
-                      )
-                    : Row(
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return Dialog(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Image.memory(
-                                        base64Decode(imageBase64!),
-                                        fit: BoxFit.contain,
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            );
-                          },
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: isPhotoChanged
-                            ? Image.memory(
-                              base64Decode(imageBase64!),
-                              height: 50,
-                              width: 50,
-                              fit: BoxFit.cover,
-                            )
-                            : Image.network(
-                              imageBase64!,
-                              width: 50,
-                              height: 50,
-                              fit: BoxFit.cover,
-                            )
+                        ? ElevatedButton.icon(
+                            onPressed: _pickImage,
+                            icon: const Icon(Icons.image),
+                            label: const Text('Seleccionar Imagen',
+                                style: TextStyle(color: Colors.white)),
+                            style: ElevatedButton.styleFrom(
+                                iconColor: Colors.white),
+                          )
+                        : Row(
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return Dialog(
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Image.memory(
+                                              base64Decode(imageBase64!),
+                                              fit: BoxFit.contain,
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                                child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: isPhotoChanged
+                                        ? Image.memory(
+                                            base64Decode(imageBase64!),
+                                            height: 50,
+                                            width: 50,
+                                            fit: BoxFit.cover,
+                                          )
+                                        : Image.network(
+                                            imageBase64!,
+                                            width: 50,
+                                            height: 50,
+                                            fit: BoxFit.cover,
+                                          )),
+                              ),
+                              SizedBox(
+                                  width: AppDimensions.screenHeight(context) *
+                                      0.05),
+                              Expanded(
+                                child: Text(
+                                  'Imagen cargada',
+                                  style: TextStyle(
+                                      color: Colors.green,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    imageBase64 = null;
+                                  });
+                                },
+                                icon:
+                                    const Icon(Icons.close, color: Colors.red),
+                              ),
+                            ],
                           ),
-                        ),
-                        SizedBox(
-                          width: AppDimensions.screenHeight(context) * 0.05),
-                        Expanded(
-                          child: Text(
-                            'Imagen cargada',
-                            style: TextStyle(
-                              color: Colors.green,
-                              fontWeight: FontWeight.bold
-                            ),
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            setState(() {
-                              imageBase64 = null;
-                            });
-                          },
-                          icon: const Icon(Icons.close, color: Colors.red),
-                        ),
-                      ],
-                    ),
                   ],
                 ),
               ],
-            ]
-          )
-        ),
+            ])),
       ),
       actions: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             TextButton(
-              child: Text("Cancelar", style: TextStyle(color: Theme.of(context).primaryColor)),
+              child: Text("Cancelar",
+                  style: TextStyle(color: Theme.of(context).primaryColor)),
               onPressed: () => navigator.pop(),
             ),
             TextButton(
-              child: Text("Guardar", style: TextStyle(color: Theme.of(context).primaryColor)),
+              child: Text("Guardar",
+                  style: TextStyle(color: Theme.of(context).primaryColor)),
               onPressed: () async {
                 if (profileFormKey.currentState!.validate()) {
-
-                  navigator.pushNamed(
-                    RouteNames.loading, 
-                    arguments: {
-                      'onInit': () async {
-                        String? response;
-                        if (widget.isFamily) {
-                          response = await authProvider.actualizarFamilia(nombreController.text.trim());
-                        } else {
-                          response = await authProvider.actualizarProfile(nombreController.text.trim(), imageBase64, isPhotoChanged);
-                        }
-                        if (response != null) {
-                          ToastHelper.show(response);
-                        } else {
-                          navigator.pushNamedAndRemoveUntil(RouteNames.home, (route) => false);
-                        }
+                  navigator.pushNamed(RouteNames.loading, arguments: {
+                    'onInit': () async {
+                      String? response;
+                      if (widget.isFamily) {
+                        response = await authProvider
+                            .actualizarFamilia(nombreController.text.trim());
+                      } else {
+                        response = await authProvider.actualizarProfile(
+                            nombreController.text.trim(),
+                            imageBase64,
+                            isPhotoChanged);
+                      }
+                      if (response != null) {
+                        ToastHelper.show(response);
+                      } else {
+                        navigator.pushNamedAndRemoveUntil(
+                            RouteNames.home, (route) => false);
                       }
                     }
-                  );
+                  });
                 }
               },
             ),
