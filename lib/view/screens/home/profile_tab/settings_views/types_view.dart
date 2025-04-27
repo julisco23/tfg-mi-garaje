@@ -70,7 +70,11 @@ class _TypesViewState extends State<TypesView> {
       FocusScope.of(context).unfocus();
 
       await typeViewModel.addType(
-          authProvider.id, authProvider.type, controller.text, widget.type);
+          authProvider.id,
+          authProvider.type,
+          controller.text[0].toUpperCase() +
+              controller.text.substring(1).trim(),
+          widget.type);
       if (isActivity) {
         tabState.newTab(controller.text);
       }

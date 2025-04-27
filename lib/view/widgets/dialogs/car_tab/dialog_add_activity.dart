@@ -401,15 +401,18 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
                                   break;
                                 default:
                                   newActivity = CustomActivity(
-                                    date: selectedDate!,
-                                    cost: num.parse(costController.text),
-                                    details: detailsController.text,
-                                    photo: imageBytes != null
-                                        ? base64Encode(imageBytes!)
-                                        : null,
-                                    customType: customType,
-                                    type: activityTypeController.text,
-                                  );
+                                      date: selectedDate!,
+                                      cost: num.parse(costController.text),
+                                      details: detailsController.text,
+                                      photo: imageBytes != null
+                                          ? base64Encode(imageBytes!)
+                                          : null,
+                                      customType: customType,
+                                      type: activityTypeController.text[0]
+                                              .toUpperCase() +
+                                          activityTypeController.text
+                                              .substring(1)
+                                              .trim());
                                   break;
                               }
 

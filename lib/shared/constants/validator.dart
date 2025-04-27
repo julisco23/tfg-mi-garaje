@@ -10,9 +10,6 @@ class Validator {
     if (value == null || value.isEmpty) {
       return '* Tipo es obligatorio.';
     }
-    if (!value.startsWith(RegExp(r'[A-Z]'))) {
-      return '* Debe empezar por mayúscula.';
-    }
     return null;
   }
 
@@ -43,9 +40,6 @@ class Validator {
   static String? validateName(String? value) {
     if (value == null || value.isEmpty) {
       return '* Nombre es obligatorio.';
-    }
-    if (!value.startsWith(RegExp(r'[A-Z]'))) {
-      return '* Debe empezar por mayúscula.';
     }
     return null;
   }
@@ -99,9 +93,6 @@ class Validator {
   static String? validateNameType(String? value) {
     if (value == null || value.isEmpty) {
       return '* Nombre es obligatorio.';
-    }
-    if (!value.startsWith(RegExp(r'[A-Z]'))) {
-      return '* Debe empezar por mayúscula.';
     }
     return null;
   }

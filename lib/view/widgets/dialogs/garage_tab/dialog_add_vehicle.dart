@@ -302,11 +302,14 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
                               final Vehicle vehicle = Vehicle(
                                 name: nameController.text.isEmpty
                                     ? null
-                                    : nameController.text,
-                                brand: brandController.text,
+                                    : nameController.text[0].toUpperCase() +
+                                        nameController.text.substring(1),
+                                brand: brandController.text[0].toUpperCase() +
+                                    brandController.text.substring(1),
                                 model: modelController.text.isEmpty
                                     ? null
-                                    : modelController.text,
+                                    : modelController.text[0].toUpperCase() +
+                                        modelController.text.substring(1),
                                 photo: imageBytes != null
                                     ? base64Encode(imageBytes!)
                                     : null,

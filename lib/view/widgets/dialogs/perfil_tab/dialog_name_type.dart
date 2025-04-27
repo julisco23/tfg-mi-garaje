@@ -54,7 +54,8 @@ class EditTypeDialog extends StatelessWidget {
                   style: TextStyle(color: Theme.of(context).primaryColor)),
               onPressed: () {
                 if (!formKey.currentState!.validate()) return;
-                onNameChanged(controller.text);
+                onNameChanged(controller.text[0].toUpperCase() +
+                    controller.text.substring(1).trim());
                 Navigator.pop(context);
               },
             ),

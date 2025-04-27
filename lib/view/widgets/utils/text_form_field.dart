@@ -27,26 +27,22 @@ class MiTextFormField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      controller: _controller,
-      keyboardType: keyboardType,
-      maxLines: maxLines,
-      cursorColor: Theme.of(context).primaryColor,
-      cursorErrorColor: Theme.of(context).primaryColor,
-      decoration: InputDecoration(
-        alignLabelWithHint: true,
-        labelText: _labelText,
-
-        hintText: _hintText,
-        floatingLabelBehavior: FloatingLabelBehavior.auto,
-        floatingLabelStyle: TextStyle(
-          color: Theme.of(context).primaryColor,
+        controller: _controller,
+        keyboardType: keyboardType,
+        maxLines: maxLines,
+        cursorColor: Theme.of(context).primaryColor,
+        cursorErrorColor: Theme.of(context).primaryColor,
+        decoration: InputDecoration(
+          alignLabelWithHint: true,
+          labelText: _labelText,
+          hintText: _hintText,
+          floatingLabelBehavior: FloatingLabelBehavior.auto,
+          floatingLabelStyle: TextStyle(
+            color: Theme.of(context).primaryColor,
+          ),
+          suffixIcon: suffixIcon,
         ),
-        suffixIcon: suffixIcon,
-      ),
-      obscureText: obscureText,
-      validator: validator
-    );
+        obscureText: obscureText,
+        validator: validator);
   }
 }
-
-

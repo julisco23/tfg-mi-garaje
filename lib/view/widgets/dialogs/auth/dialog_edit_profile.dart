@@ -29,7 +29,7 @@ class DialogEditProfile extends StatefulWidget {
 }
 
 class _DialogEditProfileState extends State<DialogEditProfile> {
-  late TextEditingController nombreController;
+  late TextEditingController nameController;
   final GlobalKey<FormState> profileFormKey = GlobalKey<FormState>();
 
   String? imageBase64;
@@ -42,10 +42,10 @@ class _DialogEditProfileState extends State<DialogEditProfile> {
     final AuthProvider authProvider = context.read<AuthProvider>();
     super.initState();
     if (widget.isFamily) {
-      nombreController = TextEditingController(text: authProvider.family!.name);
+      nameController = TextEditingController(text: authProvider.family!.name);
       accountType = "familia";
     } else {
-      nombreController = TextEditingController(text: authProvider.user!.name);
+      nameController = TextEditingController(text: authProvider.user!.name);
       if (authProvider.isPhotoURL) {
         imageBase64 = authProvider.user!.photoURL!;
       }
@@ -56,7 +56,7 @@ class _DialogEditProfileState extends State<DialogEditProfile> {
 
   @override
   void dispose() {
-    nombreController.dispose();
+    nameController.dispose();
     super.dispose();
   }
 
@@ -99,7 +99,7 @@ class _DialogEditProfileState extends State<DialogEditProfile> {
             key: profileFormKey,
             child: Column(mainAxisSize: MainAxisSize.min, children: [
               MiTextFormField(
-                controller: nombreController,
+                controller: nameController,
                 labelText: 'Nombre en $accountType',
                 hintText: 'Mi Garaje',
                 validator: Validator.validateName,
@@ -202,11 +202,13 @@ class _DialogEditProfileState extends State<DialogEditProfile> {
                     'onInit': () async {
                       String? response;
                       if (widget.isFamily) {
-                        response = await authProvider
-                            .actualizarFamilia(nombreController.text.trim());
+                        response = await authProvider.actualizarFamilia(
+                            nameController.text[0].toUpperCase() +
+                                nameController.text.substring(1).trim());
                       } else {
                         response = await authProvider.actualizarProfile(
-                            nombreController.text.trim(),
+                            nameController.text[0].toUpperCase() +
+                                nameController.text.substring(1).trim(),
                             imageBase64,
                             isPhotoChanged);
                       }

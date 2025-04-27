@@ -115,10 +115,10 @@ class _DialogCambioCuentaState extends State<DialogCambioCuenta> {
               navigator.pushNamed(RouteNames.loading, arguments: {
                 'onInit': () async {
                   String? response = await authProvider.crearCuenta(
-                    emailController.text,
-                    passwordController.text,
-                    nameController.text.trim(),
-                  );
+                      emailController.text,
+                      passwordController.text,
+                      nameController.text[0].toUpperCase() +
+                          nameController.text.substring(1).trim());
                   if (response != null) {
                     ToastHelper.show(response);
                   } else {

@@ -110,7 +110,8 @@ class _SignupViewState extends State<SignupView> {
                               String? response = await loginViewModel.signup(
                                 emailController.text,
                                 passwordController.text,
-                                nameController.text,
+                                nameController.text[0].toUpperCase() +
+                                    nameController.text.substring(1).trim(),
                               );
                               if (response != null) {
                                 ToastHelper.show(response);
