@@ -9,6 +9,7 @@ class AppThemes {
   static final gris = Colors.grey[600];
 
   static final verde = Colors.green[700];
+  static final rojo = Colors.red[500];
 
   // Tema Claro
   static ThemeData lightTheme = ThemeData(
@@ -44,7 +45,8 @@ class AppThemes {
       bodyMedium: TextStyle(color: oscuro, fontSize: 18),
       bodySmall: TextStyle(color: oscuro, fontSize: 14),
       labelLarge: TextStyle(color: oscuro, fontSize: 20),
-      labelMedium: TextStyle(color: verde, fontSize: 16),
+      labelMedium:
+          TextStyle(color: rojo, fontSize: 16, fontWeight: FontWeight.bold),
       labelSmall: TextStyle(color: gris, fontSize: 14),
     ),
     listTileTheme: ListTileThemeData(
