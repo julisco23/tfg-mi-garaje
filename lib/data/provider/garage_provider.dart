@@ -15,7 +15,7 @@ class GarageProvider extends ChangeNotifier {
   Vehicle? get selectedVehicle => _selectedVehicle;
 
   List<Vehicle> get vehicles {
-    _vehicles.sort((a, b) => a.creationDate!.compareTo(b.creationDate!));
+    _vehicles.sort((a, b) => a.getNameTittle().compareTo(b.getNameTittle()));
     return _vehicles;
   }
 
@@ -53,7 +53,7 @@ class GarageProvider extends ChangeNotifier {
     _vehicles = await carService.getVehiclesFuture(ownerId, ownerType);
 
     await setSelectedVehicle(_vehicles.firstWhere(
-      (vehicle) => vehicle.id == _selectedVehicle?.id, 
+      (vehicle) => vehicle.id == _selectedVehicle?.id,
       orElse: () => _vehicles.first,
     ));
   }
@@ -65,19 +65,22 @@ class GarageProvider extends ChangeNotifier {
     _selectedVehicle = null;
   }
 
-  Future<void> eliminarCuenta(String ownerId, String ownerType, bool deleteFamily) async {
+  Future<void> eliminarCuenta(
+      String ownerId, String ownerType, bool deleteFamily) async {
     _initialized = false;
     leaveFamily(ownerId, ownerType, deleteFamily);
   }
 
   // Métodos para manejar vehículos
-  Future<void> addVehicle(String ownerId, String ownerType, Vehicle vehicle) async {
+  Future<void> addVehicle(
+      String ownerId, String ownerType, Vehicle vehicle) async {
     await carService.addVehicle(vehicle, ownerId, ownerType);
     _vehicles.add(vehicle);
     setSelectedVehicle(vehicle);
   }
 
-  Future<void> deleteVehicle(String ownerId, String ownerType, Vehicle vehicle) async {
+  Future<void> deleteVehicle(
+      String ownerId, String ownerType, Vehicle vehicle) async {
     await carService.deleteVehicle(vehicle.id!, ownerId, ownerType);
     _vehicles.remove(vehicle);
 
@@ -88,21 +91,25 @@ class GarageProvider extends ChangeNotifier {
     if (_selectedVehicle == null) _initialized = false;
   }
 
-  Future<void> updateVehicle(String ownerId, String ownerType, Vehicle vehicle) async {
+  Future<void> updateVehicle(
+      String ownerId, String ownerType, Vehicle vehicle) async {
     await carService.updateVehicle(vehicle, ownerId, ownerType);
     _vehicles[_vehicles.indexWhere((v) => v.id == vehicle.id)] = vehicle;
     setSelectedVehicle(vehicle);
     notifyListeners();
   }
 
-  Future<void> deleteVehicleType(String ownerId, String ownerType, String type, String typeName) async {
+  Future<void> deleteVehicleType(
+      String ownerId, String ownerType, String type, String typeName) async {
     await carService.deleteVehicleType(ownerId, type, typeName, ownerType);
     refreshGarage(ownerId, ownerType);
     notifyListeners();
   }
 
-  Future<void> updateVehicleType(String ownerId, String ownerType, String oldName, String newName, String type) async {
-    await carService.updateVehicleType(ownerId, oldName, newName, type, ownerType);
+  Future<void> updateVehicleType(String ownerId, String ownerType,
+      String oldName, String newName, String type) async {
+    await carService.updateVehicleType(
+        ownerId, oldName, newName, type, ownerType);
     refreshGarage(ownerId, ownerType);
     notifyListeners();
   }
@@ -122,7 +129,8 @@ class GarageProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> leaveFamily(String ownerId, String ownerType, bool delete) async {
+  Future<void> leaveFamily(
+      String ownerId, String ownerType, bool delete) async {
     if (delete) {
       await carService.deleteVehicles(ownerId, ownerType);
     }

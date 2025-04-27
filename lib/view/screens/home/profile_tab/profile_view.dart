@@ -16,7 +16,7 @@ class Perfil extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AuthProvider authProvider = context.watch<AuthProvider>();
-    final GarageProvider garageViewModel = context.read<GarageProvider>();
+    final GarageProvider garageProvider = context.watch<GarageProvider>();
 
     return Scaffold(
       appBar: AppBar(
@@ -26,32 +26,31 @@ class Perfil extends StatelessWidget {
             icon: const Icon(Icons.settings),
             onPressed: () {
               Navigator.pushNamed(context, RouteNames.settings,
-                  arguments: {"garageViewModel": garageViewModel});
+                  arguments: {"garageViewModel": garageProvider});
             },
           ),
         ],
       ),
-      body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: () async => await garageViewModel.refreshGarage(
-              authProvider.id, authProvider.type),
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  _buildProfileHeader(context, authProvider),
-                  SizedBox(height: AppDimensions.screenHeight(context) * 0.05),
-                  if (authProvider.isFamily) ...[
-                    _buildFamilyList(context, authProvider),
-                    SizedBox(
-                        height: AppDimensions.screenHeight(context) * 0.02),
-                  ],
-                  _buildVehicleList(context),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await garageProvider.refreshGarage(
+              authProvider.id, authProvider.type);
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                _buildProfileHeader(context, authProvider),
+                SizedBox(height: AppDimensions.screenHeight(context) * 0.05),
+                if (authProvider.isFamily) ...[
+                  _buildFamilyList(context, authProvider),
+                  SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
                 ],
-              ),
+                _buildVehicleList(),
+              ],
             ),
           ),
         ),
@@ -110,14 +109,10 @@ class Perfil extends StatelessWidget {
     );
   }
 
-  Widget _buildVehicleList(BuildContext context) {
+  Widget _buildVehicleList() {
     return Consumer<GarageProvider>(
-      builder: (context, garageViewModel, child) {
-        final vehicles = garageViewModel.vehicles;
-
-        vehicles.sort((a, b) {
-          return a.getNameTittle().compareTo(b.getNameTittle());
-        });
+      builder: (context, garageProvider, child) {
+        final vehicles = garageProvider.vehicles;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
