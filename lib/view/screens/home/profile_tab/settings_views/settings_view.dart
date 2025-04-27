@@ -45,8 +45,6 @@ class SettingsView extends StatelessWidget {
                     title: "Crear cuenta",
                     onTap: () async {
                       await DialogCambioCuenta.show(context, authViewModel);
-
-                      ToastHelper.show("Cuenta creada.");
                     },
                   )
                 : SettingCard(
@@ -54,8 +52,6 @@ class SettingsView extends StatelessWidget {
                     title: "Actualizar perfil",
                     onTap: () async {
                       await DialogEditProfile.show(context);
-
-                      ToastHelper.show("Cuenta actualizada.");
                     },
                   ),
             if (!authViewModel.user!.isGoogle)
