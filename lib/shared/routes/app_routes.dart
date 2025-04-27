@@ -19,7 +19,9 @@ class AppRoutes {
   };
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
-    final args = settings.arguments != null ? settings.arguments as Map<String, dynamic> : {};
+    final args = settings.arguments != null
+        ? settings.arguments as Map<String, dynamic>
+        : {};
     switch (settings.name) {
       case RouteNames.loading:
         return MaterialPageRoute(
@@ -27,8 +29,9 @@ class AppRoutes {
         );
 
       case RouteNames.firstCar:
-        return _slideTransition(FirstCar(onVehicleChanged: args['onVehicleChanged']));
-        
+        return _slideTransition(
+            FirstCar(onVehicleChanged: args['onVehicleChanged']));
+
       case RouteNames.garage:
         return _slideTransition(const GarageView());
 
@@ -38,15 +41,18 @@ class AppRoutes {
         ));
 
       case RouteNames.settings:
-        return _slideTransition(SettingsView(garageViewModel: args['garageViewModel']));
+        return _slideTransition(
+            SettingsView(garageViewModel: args['garageViewModel']));
 
       case RouteNames.types:
         return _slideTransition(TypesView(type: args['type']));
-        
+
       default:
-        return MaterialPageRoute(builder: (context) => Scaffold(
-          body: Center(child: Text('No route defined for ${settings.name}')),
-        ));
+        return MaterialPageRoute(
+            builder: (context) => Scaffold(
+                  body: Center(
+                      child: Text('No route defined for ${settings.name}')),
+                ));
     }
   }
 
@@ -57,7 +63,8 @@ class AppRoutes {
         const begin = Offset(1.0, 0.0);
         const end = Offset.zero;
         const curve = Curves.easeInOut;
-        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        var tween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
         var offsetAnimation = animation.drive(tween);
         return SlideTransition(position: offsetAnimation, child: child);
       },

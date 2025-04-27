@@ -23,18 +23,21 @@ class AppThemes {
     ),
     dividerColor: blancoTransparente,
     colorScheme: ColorScheme(
-    brightness: Brightness.light, // Define si el tema es claro o oscuro
-    primary: azul,         // El color primario
-    onPrimary: blanco,      // El color de los elementos sobre el color primario
-    secondary: azulClaro,     // El color secundario
-    onSecondary: blanco,    // El color de los elementos sobre el color secundario
-    error: Colors.red,            // El color para mensajes de error
-    onError: Colors.grey,        // El color de los elementos sobre el color de error
-    surface: Colors.grey[300]!,   // El color de la superficie (generalmente para tarjetas, etc.)
-    onSurface: gris!,      // El color de los elementos sobre la superficie
+      brightness: Brightness.light, // Define si el tema es claro o oscuro
+      primary: azul, // El color primario
+      onPrimary: blanco, // El color de los elementos sobre el color primario
+      secondary: azulClaro, // El color secundario
+      onSecondary:
+          blanco, // El color de los elementos sobre el color secundario
+      error: Colors.red, // El color para mensajes de error
+      onError: Colors.grey, // El color de los elementos sobre el color de error
+      surface: Colors.grey[
+          300]!, // El color de la superficie (generalmente para tarjetas, etc.)
+      onSurface: gris!, // El color de los elementos sobre la superficie
     ),
     textTheme: TextTheme(
-      titleLarge: TextStyle(color: azul, fontSize: 28), // Titulo login/register/titulos dialog
+      titleLarge: TextStyle(
+          color: azul, fontSize: 28), // Titulo login/register/titulos dialog
       titleMedium: TextStyle(color: oscuro, fontSize: 30), // Titulos dialog
       titleSmall: TextStyle(color: Colors.amber),
       bodyLarge: TextStyle(color: oscuro),
@@ -45,7 +48,8 @@ class AppThemes {
       labelSmall: TextStyle(color: gris, fontSize: 14),
     ),
     listTileTheme: ListTileThemeData(
-      titleTextStyle: TextStyle(color: oscuro, fontSize: 16, fontWeight: FontWeight.bold),
+      titleTextStyle:
+          TextStyle(color: oscuro, fontSize: 16, fontWeight: FontWeight.bold),
       subtitleTextStyle: TextStyle(color: oscuro, fontSize: 14),
     ),
     inputDecorationTheme: InputDecorationTheme(
@@ -57,7 +61,6 @@ class AppThemes {
       counterStyle: TextStyle(color: Colors.grey),
       errorStyle: TextStyle(color: Colors.red),
       suffixIconColor: Colors.grey,
-      
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
@@ -93,8 +96,8 @@ class AppThemes {
       showUnselectedLabels: false,
     ),
     tabBarTheme: TabBarTheme(
-      labelColor: Colors.white, 
-      unselectedLabelColor: Colors.white54, 
+      labelColor: Colors.white,
+      unselectedLabelColor: Colors.white54,
       indicator: UnderlineTabIndicator(
         borderSide: BorderSide(
           color: Colors.white, // Color del indicador
@@ -103,20 +106,17 @@ class AppThemes {
         insets: EdgeInsets.symmetric(vertical: 5), // Margen elegante
       ),
       labelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-      unselectedLabelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+      unselectedLabelStyle:
+          TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
       dividerColor: Colors.transparent,
     ),
-
     floatingActionButtonTheme: FloatingActionButtonThemeData(
-      backgroundColor: azul,
-      foregroundColor: blancoTransparente
-    ),
+        backgroundColor: azul, foregroundColor: blancoTransparente),
     dividerTheme: DividerThemeData(
       color: blanco,
       thickness: 0.5,
       space: 0,
     ),
-
     datePickerTheme: DatePickerThemeData(
       backgroundColor: blanco,
       shape: RoundedRectangleBorder(
@@ -144,13 +144,13 @@ class AppThemes {
         }
         return null;
       }),
-      todayBackgroundColor: WidgetStateProperty.resolveWith((states) { 
+      todayBackgroundColor: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {
           return azul;
         }
         return blanco;
       }),
-      todayForegroundColor: WidgetStateProperty.resolveWith((states) { 
+      todayForegroundColor: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {
           return blanco;
         }
@@ -159,9 +159,6 @@ class AppThemes {
       todayBorder: BorderSide(color: azul, width: 2),
     ),
   );
-
-
-
 
   // Tema Oscuro
   static ThemeData darkTheme = ThemeData(

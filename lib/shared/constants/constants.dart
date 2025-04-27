@@ -5,8 +5,10 @@ import 'package:mi_garaje/view/screens/home/profile_tab/profile_view.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
 
 class AppDimensions {
-  static double screenHeight(BuildContext context) => MediaQuery.of(context).size.height;
-  static double screenWidth(BuildContext context) => MediaQuery.of(context).size.width;
+  static double screenHeight(BuildContext context) =>
+      MediaQuery.of(context).size.height;
+  static double screenWidth(BuildContext context) =>
+      MediaQuery.of(context).size.width;
 }
 
 class AppConstants {
