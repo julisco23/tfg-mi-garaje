@@ -6,7 +6,7 @@ import 'package:mi_garaje/view/screens/home/car_tab/garage/garage_view.dart';
 import 'package:mi_garaje/view/screens/home/first_car_view.dart';
 import 'package:mi_garaje/view/screens/home/home_view.dart';
 import 'package:mi_garaje/view/screens/home/profile_tab/settings_views/types_view.dart';
-import 'package:mi_garaje/view/screens/home/profile_tab/settings_view.dart';
+import 'package:mi_garaje/view/screens/home/profile_tab/settings_views/settings_view.dart';
 import 'package:mi_garaje/view/screens/splash_screen.dart';
 
 import 'route_names.dart';
