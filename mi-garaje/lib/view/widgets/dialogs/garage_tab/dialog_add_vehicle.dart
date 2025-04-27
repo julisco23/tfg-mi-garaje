@@ -7,6 +7,7 @@ import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:mi_garaje/data/provider/global_types_view_model.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/constants/validator.dart';
+import 'package:mi_garaje/shared/exceptions/garage_exception.dart';
 import 'package:mi_garaje/view/widgets/utils/elevated_button_utils.dart';
 import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
@@ -291,26 +292,30 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
                                 vehicleType: selectedVehicleType!,
                               );
 
-                              if (widget.vehicle == null) {
-                                // Añadir vehículo
-                                await garageProvider.addVehicle(authProvider.id, authProvider.type, vehicle);
+                              try {
+                                if (widget.vehicle == null) {
+                                  // Añadir vehículo
+                                  await garageProvider.addVehicle(authProvider.id, authProvider.type, vehicle);
                                 
-                                if (widget.onVehicleChanged != null) {
-                                  widget.onVehicleChanged!(null);
+                                  if (widget.onVehicleChanged != null) {
+                                    widget.onVehicleChanged!(null);
+                                  }
+
+                                  ToastHelper.show('$selectedVehicleType añadido');
+                                } else {
+                                  // Actualizar vehículo  
+                                  vehicle.id = widget.vehicle!.id;
+                                  await garageProvider.updateVehicle(authProvider.id, authProvider.type, vehicle);
+
+                                  widget.onVehicleChanged!(vehicle);
+                                  
+                                  ToastHelper.show('$selectedVehicleType actualizado');
+                                  
                                 }
-
-                                ToastHelper.show('$selectedVehicleType añadido');
-                              } else {
-                                // Actualizar vehículo
-                                vehicle.id = widget.vehicle!.id;
-                                await garageProvider.updateVehicle(authProvider.id, authProvider.type, vehicle);
-
-                                widget.onVehicleChanged!(vehicle);
-                                
-                                ToastHelper.show('$selectedVehicleType actualizado');
+                                navigator.pop();
+                              } on GarageException catch (e) {
+                                ToastHelper.show(e.message);
                               }
-                              
-                              navigator.pop();
                             }
                           },
                         ),

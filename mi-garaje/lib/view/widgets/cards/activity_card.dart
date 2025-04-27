@@ -5,6 +5,7 @@ import 'package:mi_garaje/data/provider/activity_provider.dart';
 import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
+import 'package:mi_garaje/shared/exceptions/garage_exception.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/shared/themes/theme_notifier.dart';
 import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_delete_activity.dart';
@@ -38,11 +39,14 @@ class ActivityCard extends StatelessWidget {
         );
       },
       onLongPress: () async {
-
         final result = await DeleteActivityDialog.show(context, activity);
         if (!result) return;
-        
-        await activityProvider.deleteActivity(garageProvider.id, authProvider.id, authProvider.type, activity);
+        try {
+          await activityProvider.deleteActivity(garageProvider.id, authProvider.id, authProvider.type, activity);
+        } on GarageException catch (e) {
+          ToastHelper.show(e.message);
+          return;
+        }
         ToastHelper.show('${activity.getCustomType} eliminado');
       },
       child: Card(

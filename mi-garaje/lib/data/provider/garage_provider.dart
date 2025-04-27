@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mi_garaje/data/models/vehicle.dart';
-import 'package:mi_garaje/data/services/car_service.dart';
+import 'package:mi_garaje/data/services/garage_service.dart';
 
 class GarageProvider extends ChangeNotifier {
   final CarService carService = CarService();

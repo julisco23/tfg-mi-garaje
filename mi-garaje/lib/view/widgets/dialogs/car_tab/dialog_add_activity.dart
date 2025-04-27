@@ -13,6 +13,7 @@ import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:mi_garaje/data/provider/global_types_view_model.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/constants/validator.dart';
+import 'package:mi_garaje/shared/exceptions/garage_exception.dart';
 import 'package:mi_garaje/view/widgets/utils/date_form_field.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
@@ -396,17 +397,21 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
                                   break;
                               }
 
-                              if (widget.activity == null) {
-                                await activityProvider.addActivity(garageProvider.id, authProvider.id, authProvider.type, newActivity);
-                                ToastHelper.show('$customType añadida');
-                              } else {
-                                newActivity.idActivity = widget.activity!.idActivity;
-                                await activityProvider.updateActivity(garageProvider.id, authProvider.id, authProvider.type, newActivity);
-                                await widget.onActivityUpdated?.call(newActivity);
-                                ToastHelper.show('$customType actualizada');
-                              }
+                              try {
+                                if (widget.activity == null) {
+                                  await activityProvider.addActivity(garageProvider.id, authProvider.id, authProvider.type, newActivity);
+                                  ToastHelper.show('$customType añadida');
+                                } else {
+                                  newActivity.idActivity = widget.activity!.idActivity;
+                                  await activityProvider.updateActivity(garageProvider.id, authProvider.id, authProvider.type, newActivity);
+                                  await widget.onActivityUpdated?.call(newActivity);
+                                  ToastHelper.show('$customType actualizada');
+                                }
 
-                              navigator.pop();
+                                navigator.pop();
+                              } on GarageException catch (e) {
+                                ToastHelper.show(e.message);
+                              }
                             }
                           },
                         ),

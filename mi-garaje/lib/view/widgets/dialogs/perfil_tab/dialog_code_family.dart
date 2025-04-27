@@ -64,12 +64,10 @@ class DialogFamilyCode extends StatelessWidget {
                 if (!formKey.currentState!.validate()) return;
 
                 await authProvider.unirseAFamilia(controller.text);
-
                 await garageViewModel.getVehicles(authProvider.id, authProvider.type);
                 await activityProvider.loadActivities(garageViewModel.id, authProvider.id, authProvider.type);
-
                 await globalTypesViewModel.initializeUser(authProvider.id, authProvider.type);
-                
+
                 navigator.pop(true);
               },
             ),

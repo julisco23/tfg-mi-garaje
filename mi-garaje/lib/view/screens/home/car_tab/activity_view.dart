@@ -6,9 +6,11 @@ import 'package:mi_garaje/data/provider/activity_provider.dart';
 import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:mi_garaje/data/provider/image_cache_provider.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
+import 'package:mi_garaje/shared/exceptions/garage_exception.dart';
 import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_delete_activity.dart';
 import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_add_activity.dart';
 import 'package:mi_garaje/view/widgets/utils/elevated_button_utils.dart';
+import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
 
@@ -49,7 +51,12 @@ class _ActivityViewState extends State<ActivityView> {
 
               if (!result) return;
 
-              await activityProvider.deleteActivity(garageProvider.id, authProvider.id, authProvider.type, activity);
+              try {
+                await activityProvider.deleteActivity(garageProvider.id, authProvider.id, authProvider.type, activity);
+              } on GarageException catch (e) {
+                ToastHelper.show(e.message);
+                return;
+              }
               
               navigator.pop();
             },

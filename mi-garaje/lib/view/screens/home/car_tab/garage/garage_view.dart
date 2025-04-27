@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mi_garaje/data/models/vehicle.dart';
 import 'package:mi_garaje/data/provider/auth_provider.dart';
+import 'package:mi_garaje/shared/exceptions/garage_exception.dart';
 import 'package:mi_garaje/view/widgets/cards/vehicle_card.dart';
 import 'package:mi_garaje/view/widgets/dialogs/garage_tab/dialog_add_vehicle.dart';
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_confirm.dart';
@@ -64,8 +65,12 @@ class _GarageViewState extends State<GarageView> {
                     );
                   },
                   onDismissed: (direction) async {
-                    await garageProvider.deleteVehicle(authProvider.id, authProvider.type, vehicle);
-                    ToastHelper.show('${vehicle.getVehicleType()} eliminado');
+                    try {
+                      await garageProvider.deleteVehicle(authProvider.id, authProvider.type, vehicle);
+                      ToastHelper.show('${vehicle.getVehicleType()} eliminado');
+                    } on GarageException catch (e) {
+                      ToastHelper.show(e.message);
+                    }
                   },
                   background: Container(
                     color: Colors.red,

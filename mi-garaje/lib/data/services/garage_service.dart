@@ -2,32 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mi_garaje/data/models/activity.dart';
 import 'package:mi_garaje/data/models/vehicle.dart';
+import 'package:mi_garaje/shared/exceptions/garage_exception.dart';
 
 class CarService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Obtener un stream de vehículos 
-  Stream<List<Vehicle>> getVehiclesStream(String userId) {
-    try {
-      return _firestore
-        .collection('users')
-        .doc(userId)
-        .collection('vehicles')
-        .snapshots()
-        .map((snapshot) {
-          debugPrint("Vehículos obtenidos: ${snapshot.docs.length}");
-          return snapshot.docs.map((doc) {
-            final data = doc.data();
-            return Vehicle.fromMap(data)..id = doc.id;
-          }).toList();
-        });
-    } catch (e) {
-      debugPrint("Error al obtener todos los vehículos: $e");
-      rethrow;
-    }
-  }
-
-  // Obtener un future de vehículos
   Future<List<Vehicle>> getVehiclesFuture(String id, String collection) async {
     try {
       final snapshot = await _firestore
@@ -43,38 +22,11 @@ class CarService {
         return Vehicle.fromMap(data)..id = doc.id;
       }).toList();
     } catch (e) {
-      debugPrint("Error al obtener todos los vehículos: $e");
-      rethrow;
+      debugPrint("Error al obtener vehículos: $e");
+      throw GarageException("fetch_vehicles_error");
     }
   }
-
-
-  /// Obtener el primer vehículo 
-  Future<Vehicle?> getFirstVehicle(String userId) async {
-    try {
-      print("User ID: $userId");
-      final querySnapshot = await _firestore
-        .collection('users')
-        .doc(userId)
-        .collection('vehicles')
-        .limit(1)
-        .get();
-
-      if (querySnapshot.docs.isNotEmpty) {
-        final doc = querySnapshot.docs.first;
-        final vehicle = Vehicle.fromMap(doc.data())..id = doc.id;
-        return vehicle;
-      }
-
-      debugPrint("No hay vehículos disponibles.");
-      return null;
-    } catch (e) {
-      print("Error al obtener el primer vehículo: $e");
-      debugPrint("Error al obtener el primer vehículo: $e");
-      rethrow;
-    }
-  }
-
+  
   // Añadir un vehículo
   Future<void> addVehicle(Vehicle vehicle, String id, String collection) async {
     try {
@@ -90,7 +42,7 @@ class CarService {
       debugPrint("Vehículo añadido: ${vehicle.toString()}");
     } catch (e) {
       debugPrint("Error al añadir vehículo: $e");
-      rethrow;
+      throw GarageException("add_vehicle_error");
     }
   }
 
@@ -107,7 +59,7 @@ class CarService {
       debugPrint("Vehículo actualizado: ${vehicle.toString()}");
     } catch (e) {
       debugPrint("Error al actualizar vehículo: $e");
-      rethrow;
+      throw GarageException("update_vehicle_error");
     }
   }
 
@@ -124,7 +76,7 @@ class CarService {
       debugPrint("Vehículo eliminado: $vehicleId");
     } catch (e) {
       debugPrint("Error al eliminar vehículo: $e");
-      rethrow;
+      throw GarageException("delete_vehicle_error");
     }
   }
 
@@ -146,7 +98,7 @@ class CarService {
         });
     } catch (e) {
       debugPrint("Error al obtener todas las actividades: $e");
-      rethrow;
+      throw GarageException("fetch_activities_error");
     }
   }
 
@@ -167,7 +119,7 @@ class CarService {
       debugPrint("Actividad añadida: ${activity.toMap()}");
     } catch (e) {
       debugPrint("Error al añadir actividad: $e");
-      rethrow;
+      throw GarageException("add_activity_error");
     }
   }
 
@@ -186,7 +138,7 @@ class CarService {
       debugPrint("Actividad eliminada: $activityId");
     } catch (e) {
       debugPrint("Error al eliminar actividad: $e");
-      rethrow;
+      throw GarageException("delete_activity_error");
     }
   }
 
@@ -205,7 +157,7 @@ class CarService {
       debugPrint("Actividad actualizada: ${activity.toMap()}");
     } catch (e) {
       debugPrint("Error al actualizar actividad: $e");
-      rethrow;
+      throw GarageException("update_activity_error");
     }
   }
 
@@ -250,16 +202,15 @@ class CarService {
           }
         }
       }
-
       print("Todas las actividades eliminadas correctamente.");
     } catch (e) {
-      print("Error al eliminar actividades: $e");
+      print("Error al eliminar todas las actividades: $e");
+      throw GarageException("delete_all_activities_error");
     }
   }
 
   Future<void> editAllActivities(String id, String oldName, String newName, String type, String collection) async {
     try {
-      print(type);
       var vehiclesSnapshot = await _firestore
         .collection(collection)
         .doc(id)
@@ -296,6 +247,7 @@ class CarService {
       print("Todas las actividades editadas correctamente.");
     } catch (e) {
       print("Error al editar actividades: $e");
+      throw GarageException("edit_activityType_error");
     }
   }
 
@@ -323,7 +275,7 @@ class CarService {
 
       print("Todas los vehiculos editadas correctamente.");
     } catch (e) {
-      print("Error al editar actividades: $e");
+      throw GarageException("edit_vehicleType_error");
     }
   }
 
@@ -351,7 +303,7 @@ class CarService {
 
       print("Todas los vehiculos eliminados correctamente.");
     } catch (e) {
-      print("Error al editar actividades: $e");
+      throw GarageException("delete_vehicleType_error");
     }
   }
 
@@ -409,7 +361,7 @@ class CarService {
       }
       print("Usuario convertido a familia correctamente.");
     } catch (e) {
-      print("Error al convertir usuario a familia: $e");
+      throw GarageException("create_familype_error");
     }
   }
 
@@ -455,7 +407,7 @@ class CarService {
 
       print("Vehículos eliminados correctamente.");
     } catch (e) {
-      print("Error al eliminar vehículos: $e");
+      throw GarageException("delete_all_vehicles_error");
     }
   }
 

@@ -3,6 +3,8 @@ import 'package:mi_garaje/data/provider/activity_provider.dart';
 import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:mi_garaje/data/provider/global_types_view_model.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
+import 'package:mi_garaje/shared/exceptions/garage_exception.dart';
+import 'package:mi_garaje/view/screens/error_screen.dart';
 import 'package:mi_garaje/view/screens/splash_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:mi_garaje/view/screens/home/first_car_view.dart';
@@ -39,17 +41,27 @@ class _HomeViewState extends State<HomeView> {
       }
 
       await globalTypesViewModel.initializeUser(authProvider.id, authProvider.type);
-      
+
       setState(() {
         _hasVehicles = result;
         _isLoading = false;
       });
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
+    } on GarageException catch (e) {
+      if (mounted) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => ErrorScreen(
+              errorMessage: e.message,
+              onRetry: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ),
+        );
+      }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
