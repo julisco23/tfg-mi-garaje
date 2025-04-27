@@ -115,6 +115,10 @@ class Perfil extends StatelessWidget {
       builder: (context, garageViewModel, child) {
         final vehicles = garageViewModel.vehicles;
 
+        vehicles.sort((a, b) {
+          return a.getNameTittle().compareTo(b.getNameTittle());
+        });
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

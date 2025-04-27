@@ -43,6 +43,9 @@ class _GarageViewState extends State<GarageView> {
         child: Consumer<GarageProvider>(
           builder: (context, garageProvider, child) {
             final vehicles = garageProvider.vehicles;
+            vehicles.sort((a, b) {
+              return a.getNameTittle().compareTo(b.getNameTittle());
+            });
 
             return ListView.builder(
               padding:
