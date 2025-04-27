@@ -177,7 +177,7 @@ class Perfil extends StatelessWidget {
                 child: Row(
                   children: [
                     Text(
-                      authProvider.family!.code,
+                      "Código: ${authProvider.family!.code}",
                       style: TextStyle(color: Theme.of(context).primaryColor),
                     ),
                   ],
