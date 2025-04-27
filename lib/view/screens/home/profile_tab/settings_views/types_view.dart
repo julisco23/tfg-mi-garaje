@@ -167,6 +167,8 @@ class _TypesViewState extends State<TypesView> {
 
                         List<String> userTypes = snapshot.data!;
 
+                        userTypes.sort((a, b) => a.compareTo(b));
+
                         return SingleChildScrollView(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
