@@ -24,16 +24,12 @@ class GarageProvider extends ChangeNotifier {
     if (_initialized) return isVehicleSelected;
     _initialized = true;
 
-    _vehicles = await carService.getVehiclesFuture(ownerId, ownerType);
-
-    if (_vehicles.isNotEmpty) {
-      _selectedVehicle = _vehicles.first;
-    }
+    await getVehicles(ownerId, ownerType);
 
     return isVehicleSelected;
   }
 
-  // obtener vehículo seleccionado
+  // Obtener vehículo seleccionado
   Future<void> getVehicles(String ownerId, String ownerType) async {
     _vehicles = await carService.getVehiclesFuture(ownerId, ownerType);
 

@@ -133,6 +133,7 @@ class Perfil extends StatelessWidget {
               itemBuilder: (context, index) {
                 final vehicle = vehicles[index];
                 return VehicleCard(
+                  key: ValueKey(vehicle.hashCode),
                   vehicle: vehicle,
                   profile: true,
                 );
