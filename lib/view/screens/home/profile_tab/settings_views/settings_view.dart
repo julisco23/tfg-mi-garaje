@@ -95,6 +95,7 @@ class SettingsView extends StatelessWidget {
                       'onInit': () async {
                         await authViewModel.signout();
                         garageViewModel.cerrarSesion();
+                        activityProvider.clearActivities();
 
                         navigator.pushNamedAndRemoveUntil(
                             RouteNames.login, (route) => false);
@@ -122,6 +123,8 @@ class SettingsView extends StatelessWidget {
                       await garageViewModel.eliminarCuenta(authViewModel.id,
                           authViewModel.type, authViewModel.user!.hasFamily);
                       await authViewModel.eliminarCuenta();
+
+                      activityProvider.clearActivities();
 
                       navigator.pushNamedAndRemoveUntil(
                           RouteNames.login, (route) => false);
