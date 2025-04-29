@@ -28,16 +28,27 @@ class EditTypeDialog extends StatelessWidget {
     final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
     return AlertDialog(
-      title: const Text("Cambiar nombre del tipo"),
-      content: Form(
-        key: formKey,
-        child: MiTextFormField(
-          controller: controller,
-          labelText: "Editar tipo",
-          hintText: "Nuevo tipo",
-          validator: (value) {
-            return Validator.validateNameType(value);
-          },
+      insetPadding: EdgeInsets.all(10),
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text("Cambiar nombre", style: Theme.of(context).textTheme.titleLarge),
+          IconButton(
+            icon: Icon(Icons.close, color: Theme.of(context).primaryColor),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
+      ),
+      content: SizedBox(
+        width: MediaQuery.of(context).size.width,
+        child: Form(
+          key: formKey,
+          child: MiTextFormField(
+            controller: controller,
+            labelText: "Editar tipo",
+            hintText: "Nuevo tipo",
+            validator: Validator.validateNameType,
+          ),
         ),
       ),
       actions: [

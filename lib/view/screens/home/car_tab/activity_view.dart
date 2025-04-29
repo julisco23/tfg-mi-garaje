@@ -7,8 +7,8 @@ import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:mi_garaje/data/provider/image_cache_provider.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/exceptions/garage_exception.dart';
-import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_delete_activity.dart';
 import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_add_activity.dart';
+import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_confirm.dart';
 import 'package:mi_garaje/view/widgets/utils/elevated_button_utils.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:provider/provider.dart';
@@ -48,7 +48,10 @@ class _ActivityViewState extends State<ActivityView> {
           IconButton(
             icon: const Icon(Icons.delete),
             onPressed: () async {
-              bool result = await DeleteActivityDialog.show(context, activity);
+              final bool result = await ConfirmDialog.show(
+                  context,
+                  'Eliminar ${activity.getType}',
+                  '¿Estás seguro de que quieres eliminar la actividad?');
 
               if (!result) return;
 

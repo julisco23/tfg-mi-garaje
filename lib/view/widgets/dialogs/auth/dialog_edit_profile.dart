@@ -81,6 +81,7 @@ class _DialogEditProfileState extends State<DialogEditProfile> {
     final NavigatorState navigator = Navigator.of(context);
 
     return AlertDialog(
+      insetPadding: EdgeInsets.all(10),
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

@@ -8,7 +8,7 @@ import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/exceptions/garage_exception.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/shared/themes/theme_notifier.dart';
-import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_delete_activity.dart';
+import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_confirm.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
@@ -34,7 +34,10 @@ class ActivityCard extends StatelessWidget {
             arguments: {"activity": activity});
       },
       onLongPress: () async {
-        final result = await DeleteActivityDialog.show(context, activity);
+        final result = await ConfirmDialog.show(
+            context,
+            'Eliminar ${activity.getType}',
+            '¿Estás seguro de que quieres eliminar la actividad?');
         if (!result) return;
         try {
           await activityProvider.deleteActivity(

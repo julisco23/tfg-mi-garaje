@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mi_garaje/shared/constants/constants.dart';
 
 class ConfirmDialog extends StatelessWidget {
   final String title;
@@ -19,6 +18,7 @@ class ConfirmDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      insetPadding: EdgeInsets.all(10),
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -31,38 +31,35 @@ class ConfirmDialog extends StatelessWidget {
           ),
         ],
       ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Column(
-            children: [
-              SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
-              Text(
-                mensaje,
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  TextButton(
-                    child: Text("Cancelar",
-                        style:
-                            TextStyle(color: Theme.of(context).primaryColor)),
-                    onPressed: () => Navigator.of(context).pop(false),
-                  ),
-                  TextButton(
-                    child: Text("Aceptar",
-                        style:
-                            TextStyle(color: Theme.of(context).primaryColor)),
-                    onPressed: () => Navigator.of(context).pop(true),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
+      content: SizedBox(
+        width: MediaQuery.of(context).size.width,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              mensaje,
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
+      actions: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            TextButton(
+              child: Text("Cancelar",
+                  style: TextStyle(color: Theme.of(context).primaryColor)),
+              onPressed: () => Navigator.of(context).pop(false),
+            ),
+            TextButton(
+              child: Text("Aceptar",
+                  style: TextStyle(color: Theme.of(context).primaryColor)),
+              onPressed: () => Navigator.of(context).pop(true),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

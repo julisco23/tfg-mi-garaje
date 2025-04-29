@@ -40,6 +40,7 @@ class _DialogCambioCuentaState extends State<DialogCambioCuenta> {
     final NavigatorState navigator = Navigator.of(context);
 
     return AlertDialog(
+      insetPadding: EdgeInsets.all(10),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

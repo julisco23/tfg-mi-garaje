@@ -132,6 +132,7 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
     final NavigatorState navigator = Navigator.of(context);
 
     return Dialog(
+      insetPadding: EdgeInsets.all(10),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       child: GestureDetector(
@@ -140,7 +141,6 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
         },
         child: SingleChildScrollView(
           child: Container(
-            width: MediaQuery.of(context).size.width * 0.90,
             padding: const EdgeInsets.all(16.0),
             child: Form(
               key: _formKey,

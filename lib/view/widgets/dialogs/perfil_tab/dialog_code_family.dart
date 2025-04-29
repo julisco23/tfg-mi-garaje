@@ -31,6 +31,7 @@ class DialogFamilyCode extends StatelessWidget {
     final NavigatorState navigator = Navigator.of(context);
 
     return AlertDialog(
+      insetPadding: EdgeInsets.all(10),
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -43,13 +44,16 @@ class DialogFamilyCode extends StatelessWidget {
           ),
         ],
       ),
-      content: Form(
-        key: formKey,
-        child: MiTextFormField(
-          controller: controller,
-          labelText: "Código de familia",
-          hintText: "1234AB",
-          validator: Validator.validateFamilyCode,
+      content: SizedBox(
+        width: MediaQuery.of(context).size.width,
+        child: Form(
+          key: formKey,
+          child: MiTextFormField(
+            controller: controller,
+            labelText: "Código de familia",
+            hintText: "1234AB",
+            validator: Validator.validateFamilyCode,
+          ),
         ),
       ),
       actions: [
