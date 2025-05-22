@@ -144,19 +144,19 @@ class SettingsView extends StatelessWidget {
               icon: Icons.color_lens,
               title: "Cambiar tema",
               onTap: () async {
+                final themeNotifier =
+                    Provider.of<ThemeNotifier>(context, listen: false);
+                final isDarkMode = themeNotifier.isDarkMode;
                 bool confirm = await ConfirmDialog.show(
                   context,
                   "Cambiar tema",
-                  "¿Deseas cambiar a modo ${Provider.of<ThemeNotifier>(context, listen: false).isLightTheme() ? "oscuro?" : "claro?"}?",
+                  "¿Deseas cambiar a modo ${isDarkMode ? "claro" : "oscuro"}?",
                 );
                 if (!confirm) return;
 
-                //TODO: Implementar cambio de tema
-
-                ToastHelper.show("Funcionalidad no disponible.");
-
-                //Provider.of<ThemeNotifier>(context, listen: false).toggleTheme();
-                //ToastHelper.show("Tema cambiado.");
+                themeNotifier.toggleTheme(!isDarkMode);
+                ToastHelper.show(
+                    "Tema cambiado a modo ${!isDarkMode ? "oscuro" : "claro"}.");
               },
             ),
             SettingCard(

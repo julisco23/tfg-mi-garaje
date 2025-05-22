@@ -1,7 +1,5 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:mi_garaje/shared/themes/theme_notifier.dart';
-import 'package:provider/provider.dart';
 
 class PieChartWidget extends StatelessWidget {
   final Map<String, double> dataMap;
@@ -26,9 +24,7 @@ class PieChartWidget extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 15),
                 decoration: BoxDecoration(
-                  color: context
-                      .read<ThemeNotifier>()
-                      .currentTheme
+                  color: Theme.of(context)
                       .colorScheme
                       .primary
                       .withValues(alpha: 0.1),
@@ -41,11 +37,7 @@ class PieChartWidget extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: context
-                            .read<ThemeNotifier>()
-                            .currentTheme
-                            .colorScheme
-                            .primary,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
                   ],

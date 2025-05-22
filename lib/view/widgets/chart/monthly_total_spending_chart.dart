@@ -1,10 +1,8 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:mi_garaje/shared/themes/theme_notifier.dart';
 import 'package:mi_garaje/shared/utils/monthly_total_spending.dart';
 import 'package:intl/intl.dart';
 import 'package:mi_garaje/shared/utils/statics.dart';
-import 'package:provider/provider.dart';
 
 class MonthlyTotalSpendingChart extends StatefulWidget {
   final List<MonthlyTotalSpending> data;
@@ -71,9 +69,7 @@ class _MonthlyTotalSpendingChartState extends State<MonthlyTotalSpendingChart> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
                 decoration: BoxDecoration(
-                  color: context
-                      .read<ThemeNotifier>()
-                      .currentTheme
+                  color: Theme.of(context)
                       .colorScheme
                       .primary
                       .withValues(alpha: 0.1),
@@ -86,22 +82,14 @@ class _MonthlyTotalSpendingChartState extends State<MonthlyTotalSpendingChart> {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: context
-                            .read<ThemeNotifier>()
-                            .currentTheme
-                            .colorScheme
-                            .primary,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
                     DropdownButton<String>(
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: context
-                              .read<ThemeNotifier>()
-                              .currentTheme
-                              .colorScheme
-                              .primary),
+                          color: Theme.of(context).colorScheme.primary),
                       value: selectedYear,
                       items: availableYears
                           .map((year) => DropdownMenuItem(
@@ -122,11 +110,7 @@ class _MonthlyTotalSpendingChartState extends State<MonthlyTotalSpendingChart> {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: context
-                            .read<ThemeNotifier>()
-                            .currentTheme
-                            .colorScheme
-                            .primary,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
                   ],
@@ -161,11 +145,7 @@ class _MonthlyTotalSpendingChartState extends State<MonthlyTotalSpendingChart> {
                             '${monthName[0].toUpperCase()}${monthName.substring(1)}',
                             style: TextStyle(
                                 fontSize: 10,
-                                color: context
-                                    .read<ThemeNotifier>()
-                                    .currentTheme
-                                    .colorScheme
-                                    .primary),
+                                color: Theme.of(context).colorScheme.primary),
                           );
                         }),
                   ),
@@ -179,11 +159,7 @@ class _MonthlyTotalSpendingChartState extends State<MonthlyTotalSpendingChart> {
                           value.toInt().toString(),
                           style: TextStyle(
                               fontSize: 10,
-                              color: context
-                                  .read<ThemeNotifier>()
-                                  .currentTheme
-                                  .colorScheme
-                                  .primary),
+                              color: Theme.of(context).colorScheme.primary),
                         );
                       },
                     ),
@@ -197,12 +173,7 @@ class _MonthlyTotalSpendingChartState extends State<MonthlyTotalSpendingChart> {
                   show: true,
                   horizontalInterval: maxY / 10,
                   getDrawingHorizontalLine: (value) => FlLine(
-                    color: context
-                        .read<ThemeNotifier>()
-                        .currentTheme
-                        .colorScheme
-                        .primary
-                        .withAlpha(50),
+                    color: Theme.of(context).colorScheme.primary.withAlpha(50),
                     strokeWidth: 1,
                   ),
                   drawVerticalLine: false,
@@ -216,11 +187,7 @@ class _MonthlyTotalSpendingChartState extends State<MonthlyTotalSpendingChart> {
                     barRods: [
                       BarChartRodData(
                         toY: item.total,
-                        color: context
-                            .read<ThemeNotifier>()
-                            .currentTheme
-                            .colorScheme
-                            .primary,
+                        color: Theme.of(context).colorScheme.primary,
                         borderRadius: BorderRadius.circular(2),
                         width: 12,
                       ),
@@ -231,17 +198,9 @@ class _MonthlyTotalSpendingChartState extends State<MonthlyTotalSpendingChart> {
                   show: true,
                   border: Border(
                     left: BorderSide(
-                        color: context
-                            .read<ThemeNotifier>()
-                            .currentTheme
-                            .colorScheme
-                            .primary),
+                        color: Theme.of(context).colorScheme.primary),
                     bottom: BorderSide(
-                        color: context
-                            .read<ThemeNotifier>()
-                            .currentTheme
-                            .colorScheme
-                            .primary),
+                        color: Theme.of(context).colorScheme.primary),
                   ),
                 ),
               ),

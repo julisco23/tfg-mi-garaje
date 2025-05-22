@@ -162,49 +162,87 @@ class AppThemes {
     ),
   );
 
-  // Tema Oscuro
   static ThemeData darkTheme = ThemeData(
     typography: Typography.material2018(),
     brightness: Brightness.dark,
-    primaryColor: blanco,
+    primaryColor: azul,
     scaffoldBackgroundColor: oscuro,
     appBarTheme: AppBarTheme(
       backgroundColor: oscuro,
       iconTheme: IconThemeData(color: blanco, size: 40),
-      titleTextStyle: TextStyle(color: blanco, fontSize: 30),
+      titleTextStyle: TextStyle(color: blanco, fontSize: 20),
+    ),
+    dividerColor: blancoTransparente,
+    colorScheme: ColorScheme(
+      brightness: Brightness.dark,
+      primary: azul,
+      onPrimary: blanco,
+      secondary: azulClaro,
+      onSecondary: blanco,
+      error: Colors.red,
+      onError: blanco,
+      surface: Color(0xFF1E1E1E),
+      onSurface: blanco,
     ),
     textTheme: TextTheme(
-      titleLarge: TextStyle(color: blanco, fontSize: 30),
-      titleMedium: TextStyle(color: blanco),
-      titleSmall: TextStyle(color: blanco),
+      titleLarge: TextStyle(color: blanco, fontSize: 28),
+      titleMedium: TextStyle(color: blanco, fontSize: 30),
+      titleSmall: TextStyle(color: azulClaro),
       bodyLarge: TextStyle(color: blanco),
       bodyMedium: TextStyle(color: blanco, fontSize: 18),
+      bodySmall: TextStyle(color: blanco, fontSize: 14),
       labelLarge: TextStyle(color: blanco, fontSize: 20),
-      labelMedium: TextStyle(color: blanco, fontSize: 16),
-      labelSmall: TextStyle(color: blanco, fontSize: 14),
+      labelMedium: TextStyle(
+          color: azulClaro, fontSize: 16, fontWeight: FontWeight.bold),
+      labelSmall: TextStyle(color: gris, fontSize: 14),
+    ),
+    listTileTheme: ListTileThemeData(
+      tileColor: Colors.transparent,
+      titleTextStyle:
+          TextStyle(color: blanco, fontSize: 16, fontWeight: FontWeight.bold),
+      subtitleTextStyle: TextStyle(color: blanco, fontSize: 14),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
+      fillColor: Color(0xFF2A2A2A),
       border: OutlineInputBorder(
           borderSide: BorderSide.none, borderRadius: BorderRadius.circular(14)),
+      labelStyle: TextStyle(color: Colors.grey[300]),
+      hintStyle: TextStyle(color: Colors.grey),
+      counterStyle: TextStyle(color: Colors.grey),
+      errorStyle: TextStyle(color: Colors.red),
+      suffixIconColor: Colors.grey[300],
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: blanco,
+        backgroundColor: azul,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(14),
         ),
         minimumSize: Size(double.infinity, 60),
         elevation: 0,
-        textStyle: TextStyle(color: oscuro, fontSize: 16),
+        textStyle: TextStyle(color: blanco, fontSize: 16),
       ),
     ),
+    dialogTheme: DialogTheme(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+      ),
+      backgroundColor: Color(0xFF1C1C1E),
+      titleTextStyle: TextStyle(color: blanco, fontSize: 20),
+      contentTextStyle: TextStyle(color: blanco),
+    ),
     cardTheme: CardTheme(
-      margin: EdgeInsets.only(top: 0, left: 7, right: 7, bottom: 10),
+      elevation: 3,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      color: Color(0xFF2E2E2E),
     ),
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
-      selectedItemColor: blanco,
-      unselectedItemColor: blanco,
+      backgroundColor: oscuro,
+      selectedItemColor: azulClaro,
+      unselectedItemColor: gris,
       selectedIconTheme: IconThemeData(size: 30),
       unselectedIconTheme: IconThemeData(size: 30),
       showSelectedLabels: false,
@@ -212,15 +250,65 @@ class AppThemes {
     ),
     tabBarTheme: TabBarTheme(
       labelColor: blanco,
-      unselectedLabelColor: blanco,
-      indicator: BoxDecoration(
-        color: const Color.fromARGB(50, 255, 255, 255),
-        borderRadius: BorderRadius.circular(30),
+      unselectedLabelColor: Colors.white54,
+      indicator: UnderlineTabIndicator(
+        borderSide: BorderSide(color: blanco, width: 3),
+        insets: EdgeInsets.symmetric(vertical: 5),
       ),
+      labelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+      unselectedLabelStyle:
+          TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+      dividerColor: Colors.transparent,
     ),
     floatingActionButtonTheme: FloatingActionButtonThemeData(
-      backgroundColor: const Color.fromARGB(175, 255, 255, 255),
-      foregroundColor: oscuro,
+      backgroundColor: azul,
+      foregroundColor: blancoTransparente,
+    ),
+    dividerTheme: DividerThemeData(
+      color: blancoTransparente,
+      thickness: 0.5,
+      space: 0,
+    ),
+    datePickerTheme: DatePickerThemeData(
+      backgroundColor: Color(0xFF1C1C1E),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      surfaceTintColor: Colors.transparent,
+      shadowColor: Colors.black54,
+      headerBackgroundColor: azul,
+      headerForegroundColor: blanco,
+      cancelButtonStyle: ButtonStyle(
+        foregroundColor: WidgetStateProperty.all(azulClaro),
+      ),
+      confirmButtonStyle: ButtonStyle(
+        foregroundColor: WidgetStateProperty.all(azulClaro),
+      ),
+      dayBackgroundColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return azul;
+        }
+        return null;
+      }),
+      dayForegroundColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return blanco;
+        }
+        return null;
+      }),
+      todayBackgroundColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return azul;
+        }
+        return oscuro;
+      }),
+      todayForegroundColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return blanco;
+        }
+        return azulClaro;
+      }),
+      todayBorder: BorderSide(color: azul, width: 2),
     ),
   );
 }

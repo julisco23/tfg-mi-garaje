@@ -7,7 +7,6 @@ import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/exceptions/garage_exception.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
-import 'package:mi_garaje/shared/themes/theme_notifier.dart';
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_confirm.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:provider/provider.dart';
@@ -58,8 +57,7 @@ class ActivityCard extends StatelessWidget {
 
               // Ícono del tipo de actividad
               CircleAvatar(
-                backgroundColor:
-                    context.read<ThemeNotifier>().currentTheme.primaryColor,
+                backgroundColor: Theme.of(context).primaryColor,
                 child: Builder(
                   builder: (context) {
                     IconData? icon;
@@ -79,11 +77,7 @@ class ActivityCard extends StatelessWidget {
                     }
                     return Icon(
                       icon,
-                      color: context
-                          .read<ThemeNotifier>()
-                          .currentTheme
-                          .colorScheme
-                          .onPrimary,
+                      color: Theme.of(context).colorScheme.onPrimary,
                       size: 30,
                     );
                   },
@@ -101,11 +95,7 @@ class ActivityCard extends StatelessWidget {
                         height: AppDimensions.screenHeight(context) * 0.005),
                     Text(
                       DateFormat('dd/MM/yyyy').format(activity.date),
-                      style: context
-                          .read<ThemeNotifier>()
-                          .currentTheme
-                          .textTheme
-                          .labelSmall,
+                      style: Theme.of(context).textTheme.labelSmall,
                     )
                   ],
                 ),
@@ -114,11 +104,7 @@ class ActivityCard extends StatelessWidget {
               // Precio de la actividad
               Text(
                 activity.isCost ? '${activity.getCost}€' : '',
-                style: context
-                    .read<ThemeNotifier>()
-                    .currentTheme
-                    .textTheme
-                    .labelMedium,
+                style: Theme.of(context).textTheme.labelMedium,
               ),
               SizedBox(width: AppDimensions.screenWidth(context) * 0.02),
             ],

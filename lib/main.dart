@@ -29,8 +29,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-            create: (_) => ThemeNotifier(AppThemes.lightTheme)),
+        ChangeNotifierProvider(create: (_) => ThemeNotifier()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => GarageProvider()),
         ChangeNotifierProvider(create: (_) => ActivityProvider()),
@@ -41,7 +40,9 @@ class MyApp extends StatelessWidget {
       child: Consumer<ThemeNotifier>(
         builder: (context, themeNotifier, child) {
           return MaterialApp(
-            theme: themeNotifier.currentTheme,
+            theme: AppThemes.lightTheme,
+            darkTheme: AppThemes.darkTheme,
+            themeMode: themeNotifier.themeMode,
             routes: AppRoutes.routes,
             onGenerateRoute: AppRoutes.onGenerateRoute,
             debugShowCheckedModeBanner: false,

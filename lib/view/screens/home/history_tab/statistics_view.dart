@@ -4,7 +4,6 @@ import 'package:mi_garaje/data/models/vehicle.dart';
 import 'package:mi_garaje/data/provider/activity_provider.dart';
 import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
-import 'package:mi_garaje/shared/themes/theme_notifier.dart';
 import 'package:mi_garaje/shared/utils/statics.dart';
 import 'package:mi_garaje/view/widgets/chart/monthly_total_spending_chart.dart';
 import 'package:mi_garaje/view/widgets/chart/pie_chart_widget.dart';
@@ -147,12 +146,7 @@ class _StatisticsViewState extends State<StatisticsView> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: context
-            .read<ThemeNotifier>()
-            .currentTheme
-            .colorScheme
-            .primary
-            .withValues(alpha: 0.1),
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(

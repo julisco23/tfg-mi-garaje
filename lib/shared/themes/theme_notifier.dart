@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:mi_garaje/shared/themes/app_themes.dart';
 
 class ThemeNotifier extends ChangeNotifier {
-  ThemeData _currentTheme;
+  ThemeMode _themeMode = ThemeMode.system;
 
-  ThemeNotifier(this._currentTheme);
+  ThemeMode get themeMode => _themeMode;
 
-  ThemeData get currentTheme => _currentTheme;
-
-  void toggleTheme() {
-    _currentTheme = isLightTheme() ? AppThemes.darkTheme : AppThemes.lightTheme;
-    notifyListeners();
+  bool get isDarkMode {
+    if (_themeMode == ThemeMode.system) {
+      return WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+          Brightness.dark;
+    }
+    return _themeMode == ThemeMode.dark;
   }
 
-  bool isLightTheme() {
-    return _currentTheme == AppThemes.lightTheme;
+  void toggleTheme(bool isOn) {
+    _themeMode = isOn ? ThemeMode.dark : ThemeMode.light;
+    notifyListeners();
   }
 }

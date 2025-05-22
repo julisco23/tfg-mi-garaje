@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:mi_garaje/data/models/activity.dart';
 import 'package:mi_garaje/data/models/vehicle.dart';
 import 'package:mi_garaje/data/provider/activity_provider.dart';
-import 'package:mi_garaje/shared/themes/theme_notifier.dart';
 import 'package:mi_garaje/view/widgets/cards/activity_card.dart';
 import 'package:provider/provider.dart';
 
@@ -70,11 +69,7 @@ class VehicleHistoryView extends StatelessWidget {
                           width: 16,
                           height: 16,
                           decoration: BoxDecoration(
-                            color: context
-                                .read<ThemeNotifier>()
-                                .currentTheme
-                                .colorScheme
-                                .primary,
+                            color: Theme.of(context).colorScheme.primary,
                             shape: BoxShape.circle,
                           ),
                         ),
@@ -82,11 +77,7 @@ class VehicleHistoryView extends StatelessWidget {
                         Container(
                           width: 2,
                           height: 14,
-                          color: context
-                              .read<ThemeNotifier>()
-                              .currentTheme
-                              .colorScheme
-                              .primary,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                       ],
                     ),
@@ -96,9 +87,7 @@ class VehicleHistoryView extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 8),
                       decoration: BoxDecoration(
-                        color: context
-                            .read<ThemeNotifier>()
-                            .currentTheme
+                        color: Theme.of(context)
                             .colorScheme
                             .primary
                             .withValues(alpha: 0.1),
@@ -109,11 +98,7 @@ class VehicleHistoryView extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: context
-                              .read<ThemeNotifier>()
-                              .currentTheme
-                              .colorScheme
-                              .primary,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
                     ),
@@ -130,27 +115,15 @@ class VehicleHistoryView extends StatelessWidget {
                           Container(
                             width: 2,
                             height: 30,
-                            color: context
-                                .read<ThemeNotifier>()
-                                .currentTheme
-                                .colorScheme
-                                .primary,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                           Container(
                             width: 16,
                             height: 16,
                             decoration: BoxDecoration(
-                              color: context
-                                  .read<ThemeNotifier>()
-                                  .currentTheme
-                                  .colorScheme
-                                  .onPrimary,
+                              color: Theme.of(context).colorScheme.onPrimary,
                               border: Border.all(
-                                  color: context
-                                      .read<ThemeNotifier>()
-                                      .currentTheme
-                                      .colorScheme
-                                      .primary,
+                                  color: Theme.of(context).colorScheme.primary,
                                   width: 2),
                               shape: BoxShape.circle,
                             ),
@@ -160,11 +133,7 @@ class VehicleHistoryView extends StatelessWidget {
                               : Container(
                                   width: 2,
                                   height: 24,
-                                  color: context
-                                      .read<ThemeNotifier>()
-                                      .currentTheme
-                                      .colorScheme
-                                      .primary,
+                                  color: Theme.of(context).colorScheme.primary,
                                 ),
                         ],
                       ),
