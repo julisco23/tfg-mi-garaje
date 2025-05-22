@@ -46,7 +46,7 @@ class AppThemes {
       bodySmall: TextStyle(color: oscuro, fontSize: 14),
       labelLarge: TextStyle(color: oscuro, fontSize: 20),
       labelMedium:
-          TextStyle(color: rojo, fontSize: 16, fontWeight: FontWeight.bold),
+          TextStyle(color: azul, fontSize: 16, fontWeight: FontWeight.bold),
       labelSmall: TextStyle(color: gris, fontSize: 14),
     ),
     listTileTheme: ListTileThemeData(

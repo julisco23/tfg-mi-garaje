@@ -27,6 +27,12 @@ class ActivityProvider extends ChangeNotifier {
     return filteredActivities;
   }
 
+  // Obtener todas las actividades por vehículo
+  Future<List<Activity>> getActivitiesByVehicle(
+      String idVehicle, String ownerId, String ownerType) async {
+    return await carService.getActivities(idVehicle, ownerId, ownerType);
+  }
+
   // Cargar actividades del vehículo seleccionado
   Future<void> loadActivities(
       String vehicleId, String ownerId, String ownerType) async {

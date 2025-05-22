@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:mi_garaje/data/provider/image_cache_provider.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
-import 'package:mi_garaje/view/screens/home/history_tab/vehicle_history_list.dart';
+import 'package:mi_garaje/view/screens/home/history_tab/statistics_view.dart';
+import 'package:mi_garaje/view/screens/home/history_tab/vehicle_history_view.dart';
 import 'package:provider/provider.dart';
 
 class HistoryView extends StatefulWidget {
@@ -70,10 +71,10 @@ class _HistoryViewState extends State<HistoryView>
           body: TabBarView(
             controller: _tabController,
             children: [
-              VehicleHistoryList(
+              VehicleHistoryView(
                 vehicle: vehicle,
               ),
-              Center(child: Text("Estadísticas del Vehículo")),
+              StatisticsView(garageProvider: garageProvider),
             ],
           ),
         );

@@ -3,13 +3,14 @@ import 'package:intl/intl.dart';
 import 'package:mi_garaje/data/models/activity.dart';
 import 'package:mi_garaje/data/models/vehicle.dart';
 import 'package:mi_garaje/data/provider/activity_provider.dart';
+import 'package:mi_garaje/shared/themes/theme_notifier.dart';
 import 'package:mi_garaje/view/widgets/cards/activity_card.dart';
 import 'package:provider/provider.dart';
 
-class VehicleHistoryList extends StatelessWidget {
+class VehicleHistoryView extends StatelessWidget {
   final Vehicle vehicle;
 
-  const VehicleHistoryList({super.key, required this.vehicle});
+  const VehicleHistoryView({super.key, required this.vehicle});
 
   Map<String, List<Activity>> _groupActivitiesByMonth(
       List<Activity> activities) {
@@ -59,23 +60,33 @@ class VehicleHistoryList extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Línea continua vertical + nodos
                     Column(
                       children: [
+                        SizedBox(
+                          height: 14,
+                        ),
                         // Nodo del mes
                         Container(
                           width: 16,
                           height: 16,
                           decoration: BoxDecoration(
-                            color: Colors.blueAccent,
+                            color: context
+                                .read<ThemeNotifier>()
+                                .currentTheme
+                                .colorScheme
+                                .primary,
                             shape: BoxShape.circle,
                           ),
                         ),
                         // Línea entre mes y primera actividad
                         Container(
                           width: 2,
-                          height: 22,
-                          color: Colors.blueAccent,
+                          height: 14,
+                          color: context
+                              .read<ThemeNotifier>()
+                              .currentTheme
+                              .colorScheme
+                              .primary,
                         ),
                       ],
                     ),
@@ -85,15 +96,24 @@ class VehicleHistoryList extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 8),
                       decoration: BoxDecoration(
-                        color: Colors.blueAccent.withValues(alpha: 0.1),
+                        color: context
+                            .read<ThemeNotifier>()
+                            .currentTheme
+                            .colorScheme
+                            .primary
+                            .withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         monthYear,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.blueAccent,
+                          color: context
+                              .read<ThemeNotifier>()
+                              .currentTheme
+                              .colorScheme
+                              .primary,
                         ),
                       ),
                     ),
@@ -110,23 +130,42 @@ class VehicleHistoryList extends StatelessWidget {
                           Container(
                             width: 2,
                             height: 30,
-                            color: Colors.grey.shade300,
+                            color: context
+                                .read<ThemeNotifier>()
+                                .currentTheme
+                                .colorScheme
+                                .primary,
                           ),
                           Container(
                             width: 16,
                             height: 16,
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: context
+                                  .read<ThemeNotifier>()
+                                  .currentTheme
+                                  .colorScheme
+                                  .onPrimary,
                               border: Border.all(
-                                  color: Colors.blueAccent, width: 2),
+                                  color: context
+                                      .read<ThemeNotifier>()
+                                      .currentTheme
+                                      .colorScheme
+                                      .primary,
+                                  width: 2),
                               shape: BoxShape.circle,
                             ),
                           ),
-                          Container(
-                            width: 2,
-                            height: 23,
-                            color: Colors.grey.shade300,
-                          ),
+                          (activity == monthActivities.last)
+                              ? SizedBox()
+                              : Container(
+                                  width: 2,
+                                  height: 24,
+                                  color: context
+                                      .read<ThemeNotifier>()
+                                      .currentTheme
+                                      .colorScheme
+                                      .primary,
+                                ),
                         ],
                       ),
                       const SizedBox(width: 12),

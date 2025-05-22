@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:mi_garaje/data/provider/activity_provider.dart';
 import 'package:mi_garaje/view/screens/auth_wrapper.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +17,7 @@ import 'package:mi_garaje/shared/themes/theme_notifier.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await initializeDateFormatting('es', null);
 
   runApp(const MyApp());
 }

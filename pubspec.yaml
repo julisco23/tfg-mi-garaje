@@ -43,6 +43,7 @@ dependencies:
   flutter_native_splash: ^2.4.4
   google_sign_in: ^6.2.2
   image_picker: ^1.1.2
+  fl_chart: ^0.71.0
 
 dev_dependencies:
   flutter_test:
