@@ -50,10 +50,10 @@ class AppThemes {
       labelSmall: TextStyle(color: gris, fontSize: 14),
     ),
     listTileTheme: ListTileThemeData(
-      titleTextStyle:
-          TextStyle(color: oscuro, fontSize: 16, fontWeight: FontWeight.bold),
-      subtitleTextStyle: TextStyle(color: oscuro, fontSize: 14),
-    ),
+        titleTextStyle:
+            TextStyle(color: oscuro, fontSize: 16, fontWeight: FontWeight.bold),
+        subtitleTextStyle: TextStyle(color: oscuro, fontSize: 14),
+        iconColor: azul),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       border: OutlineInputBorder(
@@ -202,6 +202,7 @@ class AppThemes {
       titleTextStyle:
           TextStyle(color: blanco, fontSize: 16, fontWeight: FontWeight.bold),
       subtitleTextStyle: TextStyle(color: blanco, fontSize: 14),
+      iconColor: azul,
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,

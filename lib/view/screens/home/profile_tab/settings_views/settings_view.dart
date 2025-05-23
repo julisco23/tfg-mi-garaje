@@ -12,7 +12,7 @@ import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:mi_garaje/shared/themes/theme_notifier.dart';
+import 'package:mi_garaje/data/provider/theme_notifier.dart';
 
 class SettingsView extends StatelessWidget {
   final GarageProvider garageViewModel;

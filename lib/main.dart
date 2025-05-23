@@ -12,7 +12,7 @@ import 'package:mi_garaje/data/provider/image_cache_provider.dart';
 import 'package:mi_garaje/data/provider/tab_update_notifier.dart';
 import 'package:mi_garaje/shared/routes/app_routes.dart';
 import 'package:mi_garaje/shared/themes/app_themes.dart';
-import 'package:mi_garaje/shared/themes/theme_notifier.dart';
+import 'package:mi_garaje/data/provider/theme_notifier.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
