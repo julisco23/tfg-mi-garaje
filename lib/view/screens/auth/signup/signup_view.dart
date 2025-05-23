@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
-import 'package:mi_garaje/shared/constants/validator.dart';
+import 'package:mi_garaje/shared/utils/validator.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';

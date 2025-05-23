@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mi_garaje/shared/constants/validator.dart';
+import 'package:mi_garaje/shared/utils/validator.dart';
 import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
 
 class EditTypeDialog extends StatelessWidget {

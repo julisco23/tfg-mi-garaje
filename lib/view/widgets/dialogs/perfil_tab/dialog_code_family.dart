@@ -3,7 +3,7 @@ import 'package:mi_garaje/data/provider/activity_provider.dart';
 import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:mi_garaje/data/provider/global_types_view_model.dart';
-import 'package:mi_garaje/shared/constants/validator.dart';
+import 'package:mi_garaje/shared/utils/validator.dart';
 import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
 import 'package:provider/provider.dart';
 

@@ -78,18 +78,16 @@ class _MonthlyTotalSpendingChartState extends State<MonthlyTotalSpendingChart> {
                 child: Row(
                   children: [
                     Text(
-                      "Gasto en  ",
+                      "Gasto en:",
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
+                    const SizedBox(width: 8),
                     DropdownButton<String>(
-                      style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.primary),
+                      style: Theme.of(context).textTheme.bodyMedium,
                       value: selectedYear,
                       items: availableYears
                           .map((year) => DropdownMenuItem(
@@ -104,14 +102,6 @@ class _MonthlyTotalSpendingChartState extends State<MonthlyTotalSpendingChart> {
                           });
                         }
                       },
-                    ),
-                    Text(
-                      ": ",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
                     ),
                   ],
                 )),

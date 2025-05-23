@@ -169,8 +169,9 @@ class AppThemes {
     scaffoldBackgroundColor: oscuro,
     appBarTheme: AppBarTheme(
       backgroundColor: oscuro,
-      iconTheme: IconThemeData(color: blanco, size: 40),
-      titleTextStyle: TextStyle(color: blanco, fontSize: 20),
+      iconTheme: IconThemeData(color: azul, size: 40),
+      titleTextStyle:
+          TextStyle(color: azul, fontSize: 20, fontWeight: FontWeight.bold),
     ),
     dividerColor: blancoTransparente,
     colorScheme: ColorScheme(
@@ -185,7 +186,7 @@ class AppThemes {
       onSurface: blanco,
     ),
     textTheme: TextTheme(
-      titleLarge: TextStyle(color: blanco, fontSize: 28),
+      titleLarge: TextStyle(color: azul, fontSize: 28),
       titleMedium: TextStyle(color: blanco, fontSize: 30),
       titleSmall: TextStyle(color: azulClaro),
       bodyLarge: TextStyle(color: blanco),
@@ -228,7 +229,7 @@ class AppThemes {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(14),
       ),
-      backgroundColor: Color(0xFF1C1C1E),
+      backgroundColor: Color(0xFF2E2E2E),
       titleTextStyle: TextStyle(color: blanco, fontSize: 20),
       contentTextStyle: TextStyle(color: blanco),
     ),
@@ -241,7 +242,7 @@ class AppThemes {
     ),
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       backgroundColor: oscuro,
-      selectedItemColor: azulClaro,
+      selectedItemColor: azul,
       unselectedItemColor: gris,
       selectedIconTheme: IconThemeData(size: 30),
       unselectedIconTheme: IconThemeData(size: 30),
@@ -249,10 +250,10 @@ class AppThemes {
       showUnselectedLabels: false,
     ),
     tabBarTheme: TabBarTheme(
-      labelColor: blanco,
+      labelColor: azul,
       unselectedLabelColor: Colors.white54,
       indicator: UnderlineTabIndicator(
-        borderSide: BorderSide(color: blanco, width: 3),
+        borderSide: BorderSide(color: azul, width: 3),
         insets: EdgeInsets.symmetric(vertical: 5),
       ),
       labelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
@@ -276,13 +277,13 @@ class AppThemes {
       ),
       surfaceTintColor: Colors.transparent,
       shadowColor: Colors.black54,
-      headerBackgroundColor: azul,
-      headerForegroundColor: blanco,
+      headerBackgroundColor: Color(0xFF1C1C1E),
+      headerForegroundColor: azul,
       cancelButtonStyle: ButtonStyle(
-        foregroundColor: WidgetStateProperty.all(azulClaro),
+        foregroundColor: WidgetStateProperty.all(azul),
       ),
       confirmButtonStyle: ButtonStyle(
-        foregroundColor: WidgetStateProperty.all(azulClaro),
+        foregroundColor: WidgetStateProperty.all(azul),
       ),
       dayBackgroundColor: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {

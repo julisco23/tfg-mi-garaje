@@ -95,44 +95,48 @@ class _StatisticsViewState extends State<StatisticsView> {
   }
 
   Widget _buildVehicleSelector() {
-    return ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width),
-      child: DropdownButtonFormField<Vehicle>(
-        value: selectedVehicle,
-        decoration: InputDecoration(
-          floatingLabelStyle: TextStyle(color: Theme.of(context).primaryColor),
-          labelText: 'Vehículo',
-          border: OutlineInputBorder(
-            borderSide: BorderSide.none,
-            borderRadius: BorderRadius.circular(14),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            "Vehículo:",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide.none,
-            borderRadius: BorderRadius.circular(14),
+          const SizedBox(width: 8),
+          DropdownButton<Vehicle>(
+            style: Theme.of(context).textTheme.bodyMedium,
+            value: selectedVehicle,
+            items: [
+              DropdownMenuItem<Vehicle>(
+                value: null,
+                child: Text("Todos"),
+              ),
+              ...vehicles.map((v) => DropdownMenuItem<Vehicle>(
+                    value: v,
+                    child: Text(v.getNameTittle()),
+                  )),
+            ],
+            onChanged: (value) {
+              setState(() {
+                selectedVehicle = value;
+                stats = Statics.generateStats(
+                  vehicleActivities,
+                  selectedVehicle?.id,
+                );
+              });
+            },
           ),
-          filled: true,
-        ),
-        isExpanded: true,
-        items: [
-          DropdownMenuItem<Vehicle>(
-            value: null,
-            child: Text("Todos", style: Theme.of(context).textTheme.bodyMedium),
-          ),
-          ...vehicles.map((v) => DropdownMenuItem<Vehicle>(
-                value: v,
-                child: Text(v.getNameTittle(),
-                    style: Theme.of(context).textTheme.bodyMedium),
-              )),
         ],
-        onChanged: (value) {
-          setState(() {
-            selectedVehicle = value;
-            stats = Statics.generateStats(
-              vehicleActivities,
-              selectedVehicle?.id,
-            );
-          });
-        },
       ),
     );
   }

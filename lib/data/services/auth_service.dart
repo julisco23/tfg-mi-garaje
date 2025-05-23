@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mi_garaje/data/models/family.dart';
 import 'package:mi_garaje/data/models/user.dart' as app;
-import 'package:mi_garaje/shared/constants/mapper.dart';
+import 'package:mi_garaje/shared/utils/mapper.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;

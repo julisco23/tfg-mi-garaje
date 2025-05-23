@@ -12,7 +12,7 @@ import 'package:mi_garaje/data/provider/activity_provider.dart';
 import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:mi_garaje/data/provider/global_types_view_model.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
-import 'package:mi_garaje/shared/constants/validator.dart';
+import 'package:mi_garaje/shared/utils/validator.dart';
 import 'package:mi_garaje/shared/exceptions/garage_exception.dart';
 import 'package:mi_garaje/view/widgets/utils/date_form_field.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
@@ -133,7 +133,6 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
 
     return Dialog(
       insetPadding: EdgeInsets.all(10),
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       child: GestureDetector(
         onTap: () {

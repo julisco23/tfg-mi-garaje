@@ -4,7 +4,7 @@ import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:mi_garaje/data/provider/tab_update_notifier.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
-import 'package:mi_garaje/shared/constants/validator.dart';
+import 'package:mi_garaje/shared/utils/validator.dart';
 import 'package:mi_garaje/view/widgets/cards/types_card.dart';
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_confirm.dart';
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_name_type.dart';
@@ -130,7 +130,10 @@ class _TypesViewState extends State<TypesView> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text('Tipos de ${widget.type}'), centerTitle: true),
+      appBar: AppBar(
+          title: Text('Tipos de ${widget.type}'),
+          centerTitle: true,
+          scrolledUnderElevation: 0),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -173,86 +176,76 @@ class _TypesViewState extends State<TypesView> {
 
                         userTypes.sort((a, b) => a.compareTo(b));
 
-                        return SingleChildScrollView(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Título 'Tipos' dentro del StreamBuilder
-                              _buildSectionTitle(context, 'Tipos'),
-                              SizedBox(
-                                  height: AppDimensions.screenHeight(context) *
-                                      0.01),
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Título 'Tipos' dentro del StreamBuilder
+                            _buildSectionTitle(context, 'Tipos'),
+                            SizedBox(
+                                height:
+                                    AppDimensions.screenHeight(context) * 0.01),
 
-                              // Lista de tipos
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  ListView.builder(
-                                    shrinkWrap: true,
-                                    itemCount: userTypes.length,
-                                    itemBuilder: (context, index) {
-                                      String typeItem = userTypes[index];
-                                      return Dismissible(
-                                        key: Key(typeItem),
-                                        direction: (isActivity &&
-                                                getTypesGlobal
-                                                    .contains(typeItem))
-                                            ? DismissDirection.none
-                                            : DismissDirection.endToStart,
-                                        background: Container(
-                                          color: Colors.red,
-                                          alignment: Alignment.centerRight,
-                                          padding: EdgeInsets.only(right: 20.0),
-                                          child: Icon(Icons.delete,
-                                              color: Colors.white),
-                                        ),
-                                        confirmDismiss: (direction) async {
-                                          if (userTypes.length == 1) {
-                                            ToastHelper.show(
-                                                'No puedes eliminar el último ${widget.type}');
-                                            return false;
-                                          }
-                                          return await ConfirmDialog.show(
-                                            context,
-                                            'Eliminar $typeItem',
-                                            isVehicle
-                                                ? '¿Estás seguro de que quieres eliminar $typeItem y todos los vehículos asociados?'
-                                                : '¿Estás seguro de que quieres eliminar $typeItem y todas las actividades asociadas?',
-                                          );
-                                        },
-                                        onDismissed: (direction) {
-                                          removeType(typeItem);
-                                        },
-                                        child: TypesCard(
-                                          initialTitle: typeItem,
-                                          icon: Icons.edit,
-                                          contains:
-                                              getTypesGlobal.contains(typeItem),
-                                          onNameChanged: (newName) =>
-                                              typeViewModel.editType(
-                                                  authProvider.id,
-                                                  authProvider.type,
-                                                  typeItem,
-                                                  newName,
-                                                  widget.type),
-                                          onPressed: () => EditTypeDialog.show(
-                                            context,
-                                            typeItem,
-                                            (newName) =>
-                                                editType(typeItem, newName),
-                                          ),
-                                        ),
-                                      );
-                                    },
+                            // Lista de tipos
+                            ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: userTypes.length,
+                              itemBuilder: (context, index) {
+                                String typeItem = userTypes[index];
+                                return Dismissible(
+                                  key: Key(typeItem),
+                                  direction: (isActivity &&
+                                          getTypesGlobal.contains(typeItem))
+                                      ? DismissDirection.none
+                                      : DismissDirection.endToStart,
+                                  background: Container(
+                                    color: Colors.red,
+                                    alignment: Alignment.centerRight,
+                                    padding: EdgeInsets.only(right: 20.0),
+                                    child:
+                                        Icon(Icons.delete, color: Colors.white),
                                   ),
-                                  SizedBox(
-                                      height:
-                                          AppDimensions.screenHeight(context) *
-                                              0.02),
-                                ],
-                              ),
-                            ],
-                          ),
+                                  confirmDismiss: (direction) async {
+                                    if (userTypes.length == 1) {
+                                      ToastHelper.show(
+                                          'No puedes eliminar el último ${widget.type}');
+                                      return false;
+                                    }
+                                    return await ConfirmDialog.show(
+                                      context,
+                                      'Eliminar $typeItem',
+                                      isVehicle
+                                          ? '¿Estás seguro de que quieres eliminar $typeItem y todos los vehículos asociados?'
+                                          : '¿Estás seguro de que quieres eliminar $typeItem y todas las actividades asociadas?',
+                                    );
+                                  },
+                                  onDismissed: (direction) {
+                                    removeType(typeItem);
+                                  },
+                                  child: TypesCard(
+                                    initialTitle: typeItem,
+                                    icon: Icons.edit,
+                                    contains: getTypesGlobal.contains(typeItem),
+                                    onNameChanged: (newName) =>
+                                        typeViewModel.editType(
+                                            authProvider.id,
+                                            authProvider.type,
+                                            typeItem,
+                                            newName,
+                                            widget.type),
+                                    onPressed: () => EditTypeDialog.show(
+                                      context,
+                                      typeItem,
+                                      (newName) => editType(typeItem, newName),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                            SizedBox(
+                                height:
+                                    AppDimensions.screenHeight(context) * 0.02),
+                          ],
                         );
                       },
                     ),

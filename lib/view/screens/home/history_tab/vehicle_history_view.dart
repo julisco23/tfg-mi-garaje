@@ -69,7 +69,10 @@ class VehicleHistoryView extends StatelessWidget {
                           width: 16,
                           height: 16,
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.primary,
+                            color: Theme.of(context).colorScheme.onPrimary,
+                            border: Border.all(
+                                color: Theme.of(context).colorScheme.primary,
+                                width: 2),
                             shape: BoxShape.circle,
                           ),
                         ),
@@ -121,10 +124,7 @@ class VehicleHistoryView extends StatelessWidget {
                             width: 16,
                             height: 16,
                             decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.onPrimary,
-                              border: Border.all(
-                                  color: Theme.of(context).colorScheme.primary,
-                                  width: 2),
+                              color: Theme.of(context).colorScheme.primary,
                               shape: BoxShape.circle,
                             ),
                           ),

@@ -20,6 +20,7 @@ class Perfil extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        scrolledUnderElevation: 0,
         title: const Text("Mi Perfil"),
         actions: [
           IconButton(
@@ -44,7 +45,7 @@ class Perfil extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 _buildProfileHeader(context, authProvider),
-                SizedBox(height: AppDimensions.screenHeight(context) * 0.05),
+                SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
                 if (authProvider.isFamily) ...[
                   _buildFamilyList(context, authProvider),
                   SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
@@ -63,6 +64,7 @@ class Perfil extends StatelessWidget {
 
     return Column(
       children: [
+        SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
         GestureDetector(
           onTap: () {
             user.isPhoto

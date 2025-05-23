@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
-import 'package:mi_garaje/shared/constants/validator.dart';
+import 'package:mi_garaje/shared/utils/validator.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
@@ -41,7 +41,6 @@ class _DialogCambioCuentaState extends State<DialogCambioCuenta> {
 
     return AlertDialog(
       insetPadding: EdgeInsets.all(10),
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
