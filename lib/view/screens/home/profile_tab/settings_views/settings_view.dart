@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:mi_garaje/data/models/activity.dart';
 import 'package:mi_garaje/data/provider/activity_provider.dart';
 import 'package:mi_garaje/data/provider/global_types_view_model.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
+import 'package:mi_garaje/shared/utils/mapper_csv.dart';
+import 'package:mi_garaje/utils/export_utils.dart';
 import 'package:mi_garaje/view/widgets/cards/settings_card.dart';
 import 'package:mi_garaje/view/widgets/dialogs/auth/dialog_create_profile.dart';
 import 'package:mi_garaje/view/widgets/dialogs/auth/dialog_edit_profile.dart';
@@ -138,101 +141,6 @@ class SettingsView extends StatelessWidget {
             ),
             SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 
-            // SECCIÓN: APARIENCIA
-            _buildSectionTitle(context, "Apariencia"),
-            SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
-            SettingCard(
-              icon: Icons.color_lens,
-              title: "Cambiar tema",
-              onTap: () async {
-                final themeNotifier =
-                    Provider.of<ThemeNotifier>(context, listen: false);
-                final isDarkMode = themeNotifier.isDarkMode;
-                bool confirm = await ConfirmDialog.show(
-                  context,
-                  "Cambiar tema",
-                  "¿Deseas cambiar a modo ${isDarkMode ? "claro" : "oscuro"}?",
-                );
-                if (!confirm) return;
-
-                themeNotifier.toggleTheme(!isDarkMode);
-                ToastHelper.show(
-                    "Tema cambiado a modo ${!isDarkMode ? "oscuro" : "claro"}.");
-              },
-            ),
-            SettingCard(
-              icon: Icons.language_rounded,
-              title: "Cambiar idioma",
-              onTap: () {
-                //TODO: Implementar cambio de idioma
-
-                ToastHelper.show("Funcionalidad no disponible.");
-                //ToastHelper.show("Idioma cambiado.");
-              },
-            ),
-            SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
-
-            // SECCIÓN: NOTIFICACIONES
-            _buildSectionTitle(context, "Notificaciones"),
-            SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
-            SettingCard(
-              icon: Icons.notifications_active_rounded,
-              title: "Activar/Desactivar",
-              onTap: () {
-                //TODO: Implementar notificaciones
-                ToastHelper.show("Funcionalidad no disponible.");
-              },
-            ),
-            SettingCard(
-              icon: Icons.alarm_rounded,
-              title: "Alertas personalizadas",
-              onTap: () {
-                //TODO: Implementar alertas personalizadas
-                ToastHelper.show("Funcionalidad no disponible.");
-              },
-            ),
-            SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
-
-            // SECCIÓN: PERSONALIZACIÓN
-            _buildSectionTitle(context, "Personalización"),
-            SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
-            SettingCard(
-                icon: Icons.local_gas_station_rounded,
-                title: "Tipos de repostaje",
-                onTap: () {
-                  navigator.pushNamed(RouteNames.types,
-                      arguments: {"type": "Refuel"});
-                }),
-            SettingCard(
-                icon: Icons.build_rounded,
-                title: "Tipos de mantenimiento",
-                onTap: () {
-                  navigator.pushNamed(RouteNames.types,
-                      arguments: {"type": "Repair"});
-                }),
-            SettingCard(
-                icon: Icons.description_rounded,
-                title: "Tipos de documentos",
-                onTap: () {
-                  navigator.pushNamed(RouteNames.types,
-                      arguments: {"type": "Record"});
-                }),
-            SettingCard(
-                icon: Icons.commute_rounded,
-                title: "Tipos de vehículos",
-                onTap: () {
-                  navigator.pushNamed(RouteNames.types,
-                      arguments: {"type": "Vehicle"});
-                }),
-            SettingCard(
-                icon: Icons.star_rounded,
-                title: "Nueva actividad",
-                onTap: () {
-                  navigator.pushNamed(RouteNames.types,
-                      arguments: {"type": "Activity"});
-                }),
-            SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
-
             // SECCIÓN: FAMILIA
             _buildSectionTitle(context, "Familia"),
             SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
@@ -328,6 +236,131 @@ class SettingsView extends StatelessWidget {
                 },
               ),
             ],
+            SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
+
+            // SECCIÓN: PERSONALIZACIÓN
+            _buildSectionTitle(context, "Personalización"),
+            SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
+            SettingCard(
+                icon: Icons.local_gas_station_rounded,
+                title: "Tipos de repostaje",
+                onTap: () {
+                  navigator.pushNamed(RouteNames.types,
+                      arguments: {"type": "Refuel"});
+                }),
+            SettingCard(
+                icon: Icons.build_rounded,
+                title: "Tipos de mantenimiento",
+                onTap: () {
+                  navigator.pushNamed(RouteNames.types,
+                      arguments: {"type": "Repair"});
+                }),
+            SettingCard(
+                icon: Icons.description_rounded,
+                title: "Tipos de documentos",
+                onTap: () {
+                  navigator.pushNamed(RouteNames.types,
+                      arguments: {"type": "Record"});
+                }),
+            SettingCard(
+                icon: Icons.commute_rounded,
+                title: "Tipos de vehículos",
+                onTap: () {
+                  navigator.pushNamed(RouteNames.types,
+                      arguments: {"type": "Vehicle"});
+                }),
+            SettingCard(
+                icon: Icons.star_rounded,
+                title: "Nueva actividad",
+                onTap: () {
+                  navigator.pushNamed(RouteNames.types,
+                      arguments: {"type": "Activity"});
+                }),
+            SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
+
+            // SECCIÓN: APARIENCIA
+            _buildSectionTitle(context, "Aparencia"),
+            SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
+            SettingCard(
+              icon: Icons.color_lens,
+              title: "Cambiar tema",
+              onTap: () async {
+                final themeNotifier =
+                    Provider.of<ThemeNotifier>(context, listen: false);
+                final isDarkMode = themeNotifier.isDarkMode;
+                bool confirm = await ConfirmDialog.show(
+                  context,
+                  "Cambiar tema",
+                  "¿Deseas cambiar a modo ${isDarkMode ? "claro" : "oscuro"}?",
+                );
+                if (!confirm) return;
+
+                themeNotifier.toggleTheme(!isDarkMode);
+                ToastHelper.show(
+                    "Tema cambiado a modo ${!isDarkMode ? "oscuro" : "claro"}.");
+              },
+            ),
+            SettingCard(
+              icon: Icons.language_rounded,
+              title: "Cambiar idioma",
+              onTap: () {
+                //TODO: Implementar cambio de idioma
+
+                ToastHelper.show("Funcionalidad no disponible.");
+                //ToastHelper.show("Idioma cambiado.");
+              },
+            ),
+            SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
+
+            _buildSectionTitle(context, "Datos"),
+            SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
+            SettingCard(
+              icon: Icons.table_chart,
+              title: "Exportar datos",
+              onTap: () async {
+                bool confirm = await ConfirmDialog.show(
+                  context,
+                  "Exportar datos",
+                  "¿Deseas exportar los datos a un archivo csv?",
+                );
+                if (!confirm) return;
+
+                final vehicles = garageViewModel.vehicles;
+
+                final Map<String, List<Activity>> activitiesMap = {};
+
+                for (var vehicle in vehicles) {
+                  final acts = await activityProvider.getActivitiesByVehicle(
+                    vehicle.id!,
+                    authViewModel.id,
+                    authViewModel.type,
+                  );
+                  activitiesMap[vehicle.id!] = acts;
+                }
+                try {
+                  await exportToCSV(exportAllCarsWithActivitiesToCSV(
+                    vehicles,
+                    activitiesMap,
+                  ));
+                  ToastHelper.show("Datos exportados.");
+                } on Exception catch (e) {
+                  return ToastHelper.show(e.toString());
+                }
+              },
+            ),
+            SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
+
+            // SECCIÓN: NOTIFICACIONES
+            _buildSectionTitle(context, "Notificaciones"),
+            SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
+            SettingCard(
+              icon: Icons.notifications_active_rounded,
+              title: "Activar/Desactivar",
+              onTap: () {
+                //TODO: Implementar notificaciones
+                ToastHelper.show("Funcionalidad no disponible.");
+              },
+            ),
             SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 
             // SECCIÓN: SOPORTE Y AYUDA
