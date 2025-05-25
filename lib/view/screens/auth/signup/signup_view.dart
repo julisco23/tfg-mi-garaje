@@ -7,6 +7,7 @@ import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/view/widgets/utils/elevated_button_utils.dart';
 import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
 import 'package:mi_garaje/data/provider/auth_provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SignupView extends StatefulWidget {
   const SignupView({super.key});
@@ -28,6 +29,7 @@ class _SignupViewState extends State<SignupView> {
   Widget build(BuildContext context) {
     final AuthProvider loginViewModel = Provider.of<AuthProvider>(context);
     final NavigatorState navigator = Navigator.of(context);
+    final localizations = AppLocalizations.of(context)!;
 
     return Scaffold(
         resizeToAvoidBottomInset: true,
@@ -44,7 +46,7 @@ class _SignupViewState extends State<SignupView> {
                   children: [
                     // Título de la pantalla
                     Center(
-                      child: Text('Bienvenido a Mi Garaje',
+                      child: Text(localizations.welcomeTitle,
                           style: Theme.of(context).textTheme.titleLarge),
                     ),
                     SizedBox(
@@ -56,7 +58,7 @@ class _SignupViewState extends State<SignupView> {
                     // Campo de nombre de perfil
                     MiTextFormField(
                       controller: nameController,
-                      labelText: 'Nombre en perfil',
+                      labelText: localizations.profileName,
                       hintText: 'Mi Garaje',
                       validator: (value) {
                         return Validator.validateName(value);
@@ -68,7 +70,7 @@ class _SignupViewState extends State<SignupView> {
                     // Campo de correo electrónico
                     MiTextFormField(
                       controller: emailController,
-                      labelText: 'Correo electrónico',
+                      labelText: localizations.email,
                       hintText: 'migaraje@gmail.com',
                       validator: (value) {
                         return Validator.validateEmail(value);
@@ -81,8 +83,8 @@ class _SignupViewState extends State<SignupView> {
                     MiTextFormField(
                       controller: passwordController,
                       obscureText: obscureText,
-                      labelText: 'Contraseña',
-                      hintText: obscureText ? '******' : 'Contraseña',
+                      labelText: localizations.password,
+                      hintText: obscureText ? '******' : localizations.password,
                       validator: (value) {
                         return Validator.validatePassword(value);
                       },
@@ -102,7 +104,7 @@ class _SignupViewState extends State<SignupView> {
 
                     // Botón de registro
                     MiButton(
-                      text: "Registarse",
+                      text: localizations.register,
                       onPressed: () async {
                         if (signupFormKey.currentState!.validate()) {
                           navigator.pushNamed(RouteNames.loading, arguments: {
@@ -129,7 +131,7 @@ class _SignupViewState extends State<SignupView> {
 
                     // Botón de invitado
                     MiButton(
-                      text: "Continuar como invitado",
+                      text: localizations.continueAsGuest,
                       onPressed: () async {
                         navigator.pushNamed(RouteNames.loading, arguments: {
                           'onInit': () async {
@@ -151,7 +153,7 @@ class _SignupViewState extends State<SignupView> {
 
                     // Botón de Google
                     MiButton(
-                      text: "Crear cuenta con Google",
+                      text: localizations.createAccountWithGoogle,
                       onPressed: () async {
                         navigator.pushNamed(RouteNames.loading, arguments: {
                           'onInit': () async {
@@ -174,7 +176,7 @@ class _SignupViewState extends State<SignupView> {
 
                     // Botón de navegación a login
                     MiButton(
-                      text: "Ya tengo cuenta",
+                      text: localizations.alreadyHaveAccount,
                       onPressed: () {
                         navigator.pushReplacementNamed(RouteNames.login);
                       },

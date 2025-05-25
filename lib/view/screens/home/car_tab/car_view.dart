@@ -10,6 +10,7 @@ import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/view/widgets/cards/activity_card.dart';
 import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_add_activity.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CarTabView extends StatefulWidget {
   const CarTabView({super.key});
@@ -46,6 +47,8 @@ class _CarTabViewState extends State<CarTabView>
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return Consumer<GarageProvider>(
       builder: (context, garageProvider, _) {
         final vehicle = garageProvider.selectedVehicle!;
@@ -72,7 +75,7 @@ class _CarTabViewState extends State<CarTabView>
                 onPressed: () {
                   Navigator.pushNamed(context, RouteNames.garage);
                 },
-                tooltip: "Garaje",
+                tooltip: localizations.garage,
               ),
             ],
             bottom: TabBar(
@@ -91,7 +94,7 @@ class _CarTabViewState extends State<CarTabView>
               FloatingActionButton(
                 heroTag: "add",
                 onPressed: () async => await _addActivityDialog(garageProvider),
-                tooltip: "Añadir actividad",
+                tooltip: localizations.addActivity,
                 child: const Icon(Icons.add_rounded, size: 40),
               ),
             ],

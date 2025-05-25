@@ -19,6 +19,7 @@ import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DialogAddActivity extends StatefulWidget {
   final Activity? activity;
@@ -130,6 +131,7 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
     final AuthProvider authProvider = context.read<AuthProvider>();
     final GarageProvider garageProvider = context.read<GarageProvider>();
     final NavigatorState navigator = Navigator.of(context);
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
 
     return Dialog(
       insetPadding: EdgeInsets.all(10),
@@ -149,8 +151,9 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
                   // Título
                   Text(
                     widget.activity == null
-                        ? 'Añadir ${customType.toLowerCase()}'
-                        : 'Editar ${customType.toLowerCase()}',
+                        ? localizations.addCustomType(customType.toLowerCase())
+                        : localizations
+                            .editCustomType(customType.toLowerCase()),
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   SizedBox(height: AppDimensions.screenHeight(context) * 0.05),
@@ -159,8 +162,10 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
                   if (isCustom) ...[
                     MiTextFormField(
                       controller: activityTypeController,
-                      labelText: 'Tipo de ${customType.toLowerCase()}',
-                      hintText: 'Tipo de ${customType.toLowerCase()}',
+                      labelText: localizations
+                          .typeOfCustomType(customType.toLowerCase()),
+                      hintText: localizations
+                          .typeOfCustomType(customType.toLowerCase()),
                       validator: Validator.validateCustomType,
                     ),
                   ] else ...[
@@ -174,7 +179,8 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
                             decoration: InputDecoration(
                               floatingLabelStyle: TextStyle(
                                   color: Theme.of(context).primaryColor),
-                              labelText: 'Tipo de ${customType.toLowerCase()}',
+                              labelText: localizations
+                                  .typeOfCustomType(customType.toLowerCase()),
                               border: OutlineInputBorder(
                                 borderSide: BorderSide.none,
                                 borderRadius: BorderRadius.circular(14),
@@ -193,7 +199,9 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
                             items: [
                               DropdownMenuItem<String>(
                                 value: null,
-                                child: Text("Tipo de Repostaje",
+                                child: Text(
+                                    localizations.typeOfCustomType(
+                                        customType.toLowerCase()),
                                     style:
                                         Theme.of(context).textTheme.bodyMedium),
                               ),
@@ -243,7 +251,7 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
                   // Coste
                   MiTextFormField(
                     controller: costController,
-                    labelText: 'Coste (€)',
+                    labelText: localizations.costE,
                     hintText: '20 €',
                     keyboardType: TextInputType.number,
                     validator: Validator.validateCostRequired,
@@ -255,7 +263,7 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
                       widget.activity is Refuel) ...[
                     MiTextFormField(
                       controller: costLiterController,
-                      labelText: 'Precio por Litro (€)',
+                      labelText: localizations.pricePerLiterE,
                       hintText: '1.442 €',
                       keyboardType: TextInputType.number,
                       validator: Validator.validateCostLi,
@@ -264,8 +272,8 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
                     // Campo de descripción
                     MiTextFormField(
                       controller: detailsController,
-                      labelText: 'Descripción (opcional)',
-                      hintText: 'Descripción del documento',
+                      labelText: localizations.descriptionOptional,
+                      hintText: localizations.documentDescription,
                       maxLines: 5,
                     ),
                     SizedBox(
@@ -279,7 +287,7 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
                             ? ElevatedButton.icon(
                                 onPressed: _pickImage,
                                 icon: const Icon(Icons.image),
-                                label: const Text('Seleccionar Imagen',
+                                label: Text(localizations.selectImage,
                                     style: TextStyle(color: Colors.white)),
                                 style: ElevatedButton.styleFrom(
                                   iconColor: Colors.white,
@@ -322,7 +330,7 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
                                               0.02),
                                   Expanded(
                                     child: Text(
-                                      'Imagen cargada',
+                                      localizations.imageLoaded,
                                       style: TextStyle(
                                           color: Colors.green,
                                           fontWeight: FontWeight.bold),
@@ -350,7 +358,7 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
                     children: [
                       Expanded(
                         child: TextButton(
-                          child: Text('Cancelar',
+                          child: Text(localizations.cancel,
                               style: TextStyle(
                                   color: Theme.of(context).primaryColor)),
                           onPressed: () => navigator.pop(),
@@ -359,7 +367,7 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
                       SizedBox(width: 20),
                       Expanded(
                         child: TextButton(
-                          child: Text('Guardar',
+                          child: Text(localizations.save,
                               style: TextStyle(
                                   color: Theme.of(context).primaryColor)),
                           onPressed: () async {

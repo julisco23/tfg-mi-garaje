@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ConfirmDialog extends StatelessWidget {
   final String title;
@@ -17,6 +18,8 @@ class ConfirmDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
+
     return AlertDialog(
       insetPadding: EdgeInsets.all(10),
       title: Row(
@@ -48,12 +51,12 @@ class ConfirmDialog extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             TextButton(
-              child: Text("Cancelar",
+              child: Text(localizations.cancel,
                   style: TextStyle(color: Theme.of(context).primaryColor)),
               onPressed: () => Navigator.of(context).pop(false),
             ),
             TextButton(
-              child: Text("Aceptar",
+              child: Text(localizations.confirm,
                   style: TextStyle(color: Theme.of(context).primaryColor)),
               onPressed: () => Navigator.of(context).pop(true),
             ),

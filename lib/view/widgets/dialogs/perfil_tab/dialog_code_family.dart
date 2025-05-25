@@ -6,6 +6,7 @@ import 'package:mi_garaje/data/provider/global_types_view_model.dart';
 import 'package:mi_garaje/shared/utils/validator.dart';
 import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DialogFamilyCode extends StatelessWidget {
   const DialogFamilyCode({
@@ -29,13 +30,15 @@ class DialogFamilyCode extends StatelessWidget {
     final GlobalTypesViewModel globalTypesViewModel =
         context.read<GlobalTypesViewModel>();
     final NavigatorState navigator = Navigator.of(context);
+    final AppLocalizations localizations =
+        AppLocalizations.of(context)!;
 
     return AlertDialog(
       insetPadding: EdgeInsets.all(10),
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text("Unirse", style: Theme.of(context).textTheme.titleLarge),
+          Text(localizations.join, style: Theme.of(context).textTheme.titleLarge),
           IconButton(
             icon: Icon(Icons.close, color: Theme.of(context).primaryColor),
             onPressed: () {
@@ -50,7 +53,7 @@ class DialogFamilyCode extends StatelessWidget {
           key: formKey,
           child: MiTextFormField(
             controller: controller,
-            labelText: "Código de familia",
+            labelText: localizations.familyCode,
             hintText: "1234AB",
             validator: Validator.validateFamilyCode,
           ),
@@ -61,12 +64,12 @@ class DialogFamilyCode extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             TextButton(
-              child: Text("Cancelar",
+              child: Text(localizations.cancel,
                   style: TextStyle(color: Theme.of(context).primaryColor)),
               onPressed: () => navigator.pop(false),
             ),
             TextButton(
-              child: Text("Aceptar",
+              child: Text(localizations.confirm,
                   style: TextStyle(color: Theme.of(context).primaryColor)),
               onPressed: () async {
                 if (!formKey.currentState!.validate()) return;

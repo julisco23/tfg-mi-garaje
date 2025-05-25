@@ -5,6 +5,7 @@ import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/view/screens/home/history_tab/statistics_view.dart';
 import 'package:mi_garaje/view/screens/home/history_tab/vehicle_history_view.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HistoryView extends StatefulWidget {
   const HistoryView({super.key});
@@ -31,6 +32,8 @@ class _HistoryViewState extends State<HistoryView>
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return Consumer<GarageProvider>(
       builder: (context, garageProvider, _) {
         final vehicle = garageProvider.selectedVehicle!;
@@ -57,14 +60,14 @@ class _HistoryViewState extends State<HistoryView>
                 onPressed: () {
                   Navigator.pushNamed(context, RouteNames.garage);
                 },
-                tooltip: "Garaje",
+                tooltip: localizations.garage,
               ),
             ],
             bottom: TabBar(
               controller: _tabController,
-              tabs: const [
-                Tab(text: "Historial"),
-                Tab(text: "Estadísticas"),
+              tabs: [
+                Tab(text: localizations.history),
+                Tab(text: localizations.statistics),
               ],
             ),
           ),

@@ -9,6 +9,7 @@ import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
 import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DialogEditProfile extends StatefulWidget {
   final bool isFamily;
@@ -79,13 +80,18 @@ class _DialogEditProfileState extends State<DialogEditProfile> {
   Widget build(BuildContext context) {
     final AuthProvider authProvider = context.watch<AuthProvider>();
     final NavigatorState navigator = Navigator.of(context);
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
 
     return AlertDialog(
       insetPadding: EdgeInsets.all(10),
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text('Actualizar', style: Theme.of(context).textTheme.titleLarge),
+          Text(
+              widget.isFamily
+                  ? localizations.updateFamily
+                  : localizations.updateProfile,
+              style: Theme.of(context).textTheme.titleLarge),
           IconButton(
             icon: Icon(Icons.close, color: Theme.of(context).primaryColor),
             onPressed: () {
@@ -101,7 +107,7 @@ class _DialogEditProfileState extends State<DialogEditProfile> {
             child: Column(mainAxisSize: MainAxisSize.min, children: [
               MiTextFormField(
                 controller: nameController,
-                labelText: 'Nombre en $accountType',
+                labelText: localizations.accountName(accountType),
                 hintText: 'Mi Garaje',
                 validator: Validator.validateName,
               ),
@@ -116,7 +122,7 @@ class _DialogEditProfileState extends State<DialogEditProfile> {
                         ? ElevatedButton.icon(
                             onPressed: _pickImage,
                             icon: const Icon(Icons.image),
-                            label: const Text('Seleccionar Imagen',
+                            label: Text(localizations.selectImage,
                                 style: TextStyle(color: Colors.white)),
                             style: ElevatedButton.styleFrom(
                                 iconColor: Colors.white),
@@ -163,7 +169,7 @@ class _DialogEditProfileState extends State<DialogEditProfile> {
                                       0.05),
                               Expanded(
                                 child: Text(
-                                  'Imagen cargada',
+                                  localizations.imageLoaded,
                                   style: TextStyle(
                                       color: Colors.green,
                                       fontWeight: FontWeight.bold),
@@ -190,12 +196,12 @@ class _DialogEditProfileState extends State<DialogEditProfile> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             TextButton(
-              child: Text("Cancelar",
+              child: Text(localizations.cancel,
                   style: TextStyle(color: Theme.of(context).primaryColor)),
               onPressed: () => navigator.pop(),
             ),
             TextButton(
-              child: Text("Guardar",
+              child: Text(localizations.save,
                   style: TextStyle(color: Theme.of(context).primaryColor)),
               onPressed: () async {
                 if (profileFormKey.currentState!.validate()) {

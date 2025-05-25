@@ -11,11 +11,13 @@ import 'package:mi_garaje/view/widgets/dialogs/auth/dialog_create_profile.dart';
 import 'package:mi_garaje/view/widgets/dialogs/auth/dialog_edit_profile.dart';
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_code_family.dart';
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_confirm.dart';
+import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/language_selector_dialog.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:mi_garaje/data/provider/theme_notifier.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SettingsView extends StatelessWidget {
   final GarageProvider garageViewModel;
@@ -28,11 +30,12 @@ class SettingsView extends StatelessWidget {
         context.read<GlobalTypesViewModel>();
     final ActivityProvider activityProvider = context.read<ActivityProvider>();
     final NavigatorState navigator = Navigator.of(context);
+    final localizations = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
         scrolledUnderElevation: 0,
-        title: Text("Ajustes"),
+        title: Text(localizations.settings),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -41,19 +44,19 @@ class SettingsView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // SECCIÓN: CUENTA
-            _buildSectionTitle(context, "Cuenta"),
+            _buildSectionTitle(context, localizations.account),
             SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
             authViewModel.user!.isAnonymous
                 ? SettingCard(
                     icon: Icons.person_add_alt_1_rounded,
-                    title: "Crear cuenta",
+                    title: localizations.createAccount,
                     onTap: () async {
                       await DialogCambioCuenta.show(context, authViewModel);
                     },
                   )
                 : SettingCard(
                     icon: Icons.person_rounded,
-                    title: "Actualizar perfil",
+                    title: localizations.updateProfile,
                     onTap: () async {
                       await DialogEditProfile.show(context);
                     },
@@ -61,12 +64,12 @@ class SettingsView extends StatelessWidget {
             if (!authViewModel.user!.isGoogle)
               SettingCard(
                 imageUrl: 'assets/images/google.png',
-                title: "Continuar con Google",
+                title: localizations.continueWithGoogle,
                 onTap: () async {
                   bool confirm = await ConfirmDialog.show(
                     context,
                     "Google",
-                    "¿Deseas continuar con Google?",
+                    localizations.confirmContinueWithGoogle,
                   );
                   if (!confirm) return;
 
@@ -74,7 +77,7 @@ class SettingsView extends StatelessWidget {
                     'onInit': () async {
                       await authViewModel.linkWithGoogle();
                       navigator.pop();
-
+                      //TODO: arreglar
                       ToastHelper.show("Cuenta vinculada con Google.");
                       //TODO: posible segundo pop
                     }
@@ -84,12 +87,12 @@ class SettingsView extends StatelessWidget {
             if (!authViewModel.user!.isAnonymous)
               SettingCard(
                 icon: Icons.logout_rounded,
-                title: "Cerrar Sesión",
+                title: localizations.logout,
                 onTap: () async {
                   bool confirm = await ConfirmDialog.show(
                     context,
-                    "Cerrar Sesión",
-                    "¿Deseas cerrar sesión?",
+                    localizations.logout,
+                    localizations.confirmLogout,
                   );
                   if (!confirm) return;
 
@@ -111,12 +114,12 @@ class SettingsView extends StatelessWidget {
               ),
             SettingCard(
               icon: Icons.delete_rounded,
-              title: "Eliminar Cuenta",
+              title: localizations.deleteAccount,
               onTap: () async {
                 bool confirm = await ConfirmDialog.show(
                   context,
-                  "Eliminar Cuenta",
-                  "¿Deseas eliminar tu cuenta?",
+                  localizations.deleteAccount,
+                  localizations.confirmDeleteAccount,
                 );
                 if (!confirm) return;
 
@@ -142,17 +145,17 @@ class SettingsView extends StatelessWidget {
             SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 
             // SECCIÓN: FAMILIA
-            _buildSectionTitle(context, "Familia"),
+            _buildSectionTitle(context, localizations.family),
             SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
             if (!authViewModel.user!.hasFamily) ...[
               SettingCard(
                 icon: Icons.group_add_rounded,
-                title: "Crear familia",
+                title: localizations.createFamily,
                 onTap: () async {
                   bool confirm = await ConfirmDialog.show(
                     context,
-                    "Crear familia",
-                    "¿Deseas crear una familia y transferir tus datos? Si aceptas se eliminarán tus datos actuales.",
+                    localizations.createFamily,
+                    localizations.confirmCreateFamily,
                   );
                   if (!confirm) return;
 
@@ -175,7 +178,7 @@ class SettingsView extends StatelessWidget {
               ),
               SettingCard(
                 icon: Icons.group_rounded,
-                title: "Unirse a una familia",
+                title: localizations.joinFamily,
                 onTap: () async {
                   bool isFamily = await DialogFamilyCode.show(context);
                   if (!isFamily) return;
@@ -198,19 +201,19 @@ class SettingsView extends StatelessWidget {
             ] else ...[
               SettingCard(
                 icon: Icons.group_rounded,
-                title: "Actualizar familia",
+                title: localizations.updateFamily,
                 onTap: () {
                   DialogEditProfile.show(context, isFamily: true);
                 },
               ),
               SettingCard(
                 icon: Icons.exit_to_app_rounded,
-                title: "Salir de la familia",
+                title: localizations.leaveFamily,
                 onTap: () async {
                   bool confirm = await ConfirmDialog.show(
                     context,
-                    "Abandonar",
-                    "¿Deseas salir de la familia? Si eres el único miembro, la familia se eliminará.",
+                    localizations.leave,
+                    localizations.confirmLeaveFamily,
                   );
 
                   if (!confirm) return;
@@ -239,39 +242,39 @@ class SettingsView extends StatelessWidget {
             SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 
             // SECCIÓN: PERSONALIZACIÓN
-            _buildSectionTitle(context, "Personalización"),
+            _buildSectionTitle(context, localizations.customization),
             SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
             SettingCard(
                 icon: Icons.local_gas_station_rounded,
-                title: "Tipos de repostaje",
+                title: localizations.fuelTypes,
                 onTap: () {
                   navigator.pushNamed(RouteNames.types,
                       arguments: {"type": "Refuel"});
                 }),
             SettingCard(
                 icon: Icons.build_rounded,
-                title: "Tipos de mantenimiento",
+                title: localizations.maintenanceTypes,
                 onTap: () {
                   navigator.pushNamed(RouteNames.types,
                       arguments: {"type": "Repair"});
                 }),
             SettingCard(
                 icon: Icons.description_rounded,
-                title: "Tipos de documentos",
+                title: localizations.recordTypes,
                 onTap: () {
                   navigator.pushNamed(RouteNames.types,
                       arguments: {"type": "Record"});
                 }),
             SettingCard(
                 icon: Icons.commute_rounded,
-                title: "Tipos de vehículos",
+                title: localizations.vehicleTypes,
                 onTap: () {
                   navigator.pushNamed(RouteNames.types,
                       arguments: {"type": "Vehicle"});
                 }),
             SettingCard(
                 icon: Icons.star_rounded,
-                title: "Nueva actividad",
+                title: localizations.newActivity,
                 onTap: () {
                   navigator.pushNamed(RouteNames.types,
                       arguments: {"type": "Activity"});
@@ -279,49 +282,47 @@ class SettingsView extends StatelessWidget {
             SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 
             // SECCIÓN: APARIENCIA
-            _buildSectionTitle(context, "Aparencia"),
+            _buildSectionTitle(context, localizations.appearance),
             SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
             SettingCard(
               icon: Icons.color_lens,
-              title: "Cambiar tema",
+              title: localizations.changeTheme,
               onTap: () async {
                 final themeNotifier =
                     Provider.of<ThemeNotifier>(context, listen: false);
                 final isDarkMode = themeNotifier.isDarkMode;
                 bool confirm = await ConfirmDialog.show(
                   context,
-                  "Cambiar tema",
-                  "¿Deseas cambiar a modo ${isDarkMode ? "claro" : "oscuro"}?",
+                  localizations.changeTheme,
+                  localizations
+                      .confirmChangeTheme(isDarkMode ? "claro" : "oscuro"),
                 );
                 if (!confirm) return;
 
                 themeNotifier.toggleTheme(!isDarkMode);
-                ToastHelper.show(
-                    "Tema cambiado a modo ${!isDarkMode ? "oscuro" : "claro"}.");
+                ToastHelper.show(localizations
+                    .themeChangedTo(isDarkMode ? "claro" : "oscuro"));
               },
             ),
             SettingCard(
               icon: Icons.language_rounded,
-              title: "Cambiar idioma",
-              onTap: () {
-                //TODO: Implementar cambio de idioma
-
-                ToastHelper.show("Funcionalidad no disponible.");
-                //ToastHelper.show("Idioma cambiado.");
+              title: localizations.changeLanguage,
+              onTap: () async {
+                await LanguageSelectorDialog.show(context);
               },
             ),
             SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 
-            _buildSectionTitle(context, "Datos"),
+            _buildSectionTitle(context, localizations.data),
             SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
             SettingCard(
               icon: Icons.table_chart,
-              title: "Exportar datos",
+              title: localizations.exportData,
               onTap: () async {
                 bool confirm = await ConfirmDialog.show(
                   context,
-                  "Exportar datos",
-                  "¿Deseas exportar los datos a un archivo csv?",
+                  localizations.exportData,
+                  localizations.confirmExportData,
                 );
                 if (!confirm) return;
 
@@ -351,35 +352,35 @@ class SettingsView extends StatelessWidget {
             SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 
             // SECCIÓN: NOTIFICACIONES
-            _buildSectionTitle(context, "Notificaciones"),
+            _buildSectionTitle(context, localizations.notifications),
             SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
             SettingCard(
               icon: Icons.notifications_active_rounded,
-              title: "Activar/Desactivar",
+              title: localizations.toggleNotifications,
               onTap: () {
                 //TODO: Implementar notificaciones
-                ToastHelper.show("Funcionalidad no disponible.");
+                ToastHelper.show(localizations.functionalityNotAvailable);
               },
             ),
             SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 
             // SECCIÓN: SOPORTE Y AYUDA
-            _buildSectionTitle(context, "Soporte y Ayuda"),
+            _buildSectionTitle(context, localizations.supportAndHelp),
             SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
             SettingCard(
               icon: Icons.help_rounded,
-              title: "Prreguntas frecuentes",
+              title: localizations.faq,
               onTap: () {
                 //TODO: Implementar preguntas frecuentes
-                ToastHelper.show("Funcionalidad no disponible.");
+                ToastHelper.show(localizations.functionalityNotAvailable);
               },
             ),
             SettingCard(
               icon: Icons.feedback_rounded,
-              title: "Enviar comentarios",
+              title: localizations.sendFeedback,
               onTap: () {
                 //TODO: Implementar comentarios
-                ToastHelper.show("Funcionalidad no disponible.");
+                ToastHelper.show(localizations.functionalityNotAvailable);
               },
             ),
           ],

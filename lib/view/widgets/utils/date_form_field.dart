@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DatePickerField extends StatefulWidget {
-  final String label;
   final DateTime? initialDate;
   final ValueChanged<DateTime?>? onDateSelected;
 
   const DatePickerField({
     super.key,
-    this.label = "Fecha",
     this.initialDate,
     this.onDateSelected,
   });
@@ -55,20 +54,22 @@ class _DatePickerFieldState extends State<DatePickerField> {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
+
     return TextFormField(
       controller: _controller,
       readOnly: true,
       onTap: () => _selectDate(context),
       decoration: InputDecoration(
-        labelText: widget.label,
-        hintText: "Selecciona una fecha",
+        labelText: localizations.date,
+        hintText: localizations.selectDate,
         floatingLabelStyle: TextStyle(color: Theme.of(context).primaryColor),
         floatingLabelBehavior: FloatingLabelBehavior.auto,
         suffixIcon: const Icon(Icons.calendar_today),
       ),
       validator: (value) {
         if (selectedDate == null) {
-          return "* Seleccione una fecha.";
+          return localizations.pleaseSelectDate;
         }
         return null;
       },

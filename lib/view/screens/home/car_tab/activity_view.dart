@@ -13,6 +13,7 @@ import 'package:mi_garaje/view/widgets/utils/elevated_button_utils.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ActivityView extends StatefulWidget {
   final Activity activity;
@@ -40,6 +41,7 @@ class _ActivityViewState extends State<ActivityView> {
     final ImageCacheProvider imageCacheProvider =
         context.read<ImageCacheProvider>();
     final NavigatorState navigator = Navigator.of(context);
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
@@ -50,8 +52,8 @@ class _ActivityViewState extends State<ActivityView> {
             onPressed: () async {
               final bool result = await ConfirmDialog.show(
                   context,
-                  'Eliminar ${activity.getType}',
-                  '¿Estás seguro de que quieres eliminar la actividad?');
+                  '${localizations.delete} ${activity.getType}',
+                  localizations.confirmDeleteActivity);
 
               if (!result) return;
 
@@ -78,7 +80,7 @@ class _ActivityViewState extends State<ActivityView> {
                 children: [
                   // Fecha
                   ListTile(
-                    title: Text('Fecha'),
+                    title: Text(localizations.date),
                     subtitle:
                         Text(DateFormat('dd/MM/yyyy').format(activity.date)),
                   ),
@@ -86,19 +88,19 @@ class _ActivityViewState extends State<ActivityView> {
                   // Coste
                   if (activity.getCost != null) ...[
                     ListTile(
-                      title: Text('Coste'),
+                      title: Text(localizations.cost),
                       subtitle: Text('${activity.getCost} €'),
                     ),
                   ],
 
                   if (activity is Refuel) ...[
                     ListTile(
-                      title: Text('Precio por litro'),
+                      title: Text(localizations.pricePerLiter),
                       subtitle:
                           Text('${(activity as Refuel).getPrecioLitros} €'),
                     ),
                     ListTile(
-                      title: Text('Litros'),
+                      title: Text(localizations.liters),
                       subtitle: Text(
                           '${(activity as Refuel).getLiters.toStringAsFixed(3)} L'),
                     ),
@@ -108,7 +110,7 @@ class _ActivityViewState extends State<ActivityView> {
                   if (activity.getDetails != null &&
                       activity.getDetails!.isNotEmpty) ...[
                     ListTile(
-                      title: Text('Descripción'),
+                      title: Text(localizations.detail),
                       subtitle: Text(activity.getDetails!),
                     ),
                   ],
@@ -116,7 +118,7 @@ class _ActivityViewState extends State<ActivityView> {
                   // Foto
                   if (activity.isPhoto) ...[
                     ListTile(
-                      title: Text('Imagen'),
+                      title: Text(localizations.image),
                     ),
                     GestureDetector(
                       onTap: () {
@@ -154,7 +156,7 @@ class _ActivityViewState extends State<ActivityView> {
 
                   // Botón de edición
                   MiButton(
-                      text: "Editar",
+                      text: localizations.edit,
                       onPressed: () async {
                         await DialogAddActivity.show(
                           context,

@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class Perfil extends StatelessWidget {
   const Perfil({super.key});
@@ -17,11 +18,12 @@ class Perfil extends StatelessWidget {
   Widget build(BuildContext context) {
     final AuthProvider authProvider = context.watch<AuthProvider>();
     final GarageProvider garageProvider = context.watch<GarageProvider>();
+    final localizations = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
         scrolledUnderElevation: 0,
-        title: const Text("Mi Perfil"),
+        title: Text(localizations.myProfile),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
@@ -47,10 +49,10 @@ class Perfil extends StatelessWidget {
                 _buildProfileHeader(context, authProvider),
                 SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
                 if (authProvider.isFamily) ...[
-                  _buildFamilyList(context, authProvider),
+                  _buildFamilyList(context, authProvider, localizations),
                   SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
                 ],
-                _buildVehicleList(),
+                _buildVehicleList(localizations),
               ],
             ),
           ),
@@ -111,7 +113,7 @@ class Perfil extends StatelessWidget {
     );
   }
 
-  Widget _buildVehicleList() {
+  Widget _buildVehicleList(AppLocalizations localizations) {
     return Consumer<GarageProvider>(
       builder: (context, garageProvider, child) {
         final vehicles = garageProvider.vehicles;
@@ -120,7 +122,7 @@ class Perfil extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Mis vehículos",
+              localizations.myVehicles,
               style: TextStyle(
                 color: Theme.of(context).primaryColor,
                 fontSize: 18,
@@ -147,7 +149,8 @@ class Perfil extends StatelessWidget {
     );
   }
 
-  Widget _buildFamilyList(BuildContext context, AuthProvider authProvider) {
+  Widget _buildFamilyList(BuildContext context, AuthProvider authProvider,
+      AppLocalizations localizations) {
     if (authProvider.family == null) {
       return CircularProgressIndicator();
     }
@@ -157,7 +160,7 @@ class Perfil extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Mi familia",
+          localizations.myFamily,
           style: TextStyle(
             color: Theme.of(context).primaryColor,
             fontSize: 18,
@@ -188,7 +191,7 @@ class Perfil extends StatelessWidget {
                 child: Row(
                   children: [
                     Text(
-                      "Código: ${authProvider.family!.code}",
+                      "${localizations.code} ${authProvider.family!.code}",
                       style: TextStyle(color: Theme.of(context).primaryColor),
                     ),
                   ],

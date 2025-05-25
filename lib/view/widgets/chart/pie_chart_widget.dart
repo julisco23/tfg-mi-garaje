@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PieChartWidget extends StatelessWidget {
   final Map<String, double> dataMap;
@@ -15,6 +16,8 @@ class PieChartWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -33,7 +36,7 @@ class PieChartWidget extends StatelessWidget {
                 child: Row(
                   children: [
                     Text(
-                      "Distribución por tipo de actividad:",
+                      localizations.distributionByType,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,

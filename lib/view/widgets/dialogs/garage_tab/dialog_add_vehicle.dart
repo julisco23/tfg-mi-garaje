@@ -13,6 +13,7 @@ import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DialogAddVehicle extends StatefulWidget {
   final Vehicle? vehicle;
@@ -89,6 +90,7 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
     final AuthProvider authProvider = context.read<AuthProvider>();
     final GarageProvider garageProvider = context.read<GarageProvider>();
     final NavigatorState navigator = Navigator.of(context);
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
 
     return Dialog(
       insetPadding: EdgeInsets.all(10),
@@ -107,8 +109,8 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
                 children: [
                   Text(
                     widget.vehicle == null
-                        ? 'Añadir Vehículo'
-                        : 'Editar Vehículo',
+                        ? localizations.addVehicle
+                        : localizations.editVehicle,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   SizedBox(height: AppDimensions.screenHeight(context) * 0.05),
@@ -116,7 +118,7 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
                   // Campo de nombre (opcional)
                   MiTextFormField(
                     controller: nameController,
-                    labelText: 'Nombre (opcional)',
+                    labelText: localizations.nameOptional,
                     hintText: 'Mi coche',
                   ),
                   SizedBox(height: AppDimensions.screenHeight(context) * 0.03),
@@ -132,7 +134,7 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
                           decoration: InputDecoration(
                             floatingLabelStyle: TextStyle(
                                 color: Theme.of(context).primaryColor),
-                            labelText: 'Tipo de Vehículo',
+                            labelText: localizations.vehicleType,
                             border: OutlineInputBorder(
                               borderSide: BorderSide.none,
                               borderRadius: BorderRadius.circular(14),
@@ -151,7 +153,7 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
                           items: [
                             DropdownMenuItem<String>(
                               value: null,
-                              child: Text("Tipo de Vehiculo",
+                              child: Text(localizations.vehicleType,
                                   style:
                                       Theme.of(context).textTheme.bodyMedium),
                             ),
@@ -188,7 +190,7 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
                   // Campo de marca
                   MiTextFormField(
                     controller: brandController,
-                    labelText: 'Marca',
+                    labelText: localizations.brand,
                     hintText: 'Renault',
                     validator: Validator.validateBrand,
                   ),
@@ -197,7 +199,7 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
                   // Campo de modelo
                   MiTextFormField(
                     controller: modelController,
-                    labelText: 'Modelo (opcional)',
+                    labelText: localizations.modelOptional,
                     hintText: 'Clio',
                   ),
                   SizedBox(height: AppDimensions.screenHeight(context) * 0.03),
@@ -208,7 +210,7 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
                     children: [
                       imageBytes == null
                           ? MiButton(
-                              text: 'Seleccionar Imagen',
+                              text: localizations.selectImage,
                               onPressed: _pickImage,
                               icon: Icons.image,
                               backgroundColor: Colors.transparent,
@@ -250,7 +252,7 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
                                         0.015),
                                 Expanded(
                                   child: Text(
-                                    'Imagen cargada',
+                                    localizations.imageLoaded,
                                     style: TextStyle(
                                         color: Colors.green,
                                         fontWeight: FontWeight.bold),
@@ -279,7 +281,7 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
                         child: TextButton(
                           style: TextButton.styleFrom(
                               padding: EdgeInsets.symmetric(vertical: 12)),
-                          child: Text('Cancelar',
+                          child: Text(localizations.cancel,
                               style: TextStyle(
                                   color: Theme.of(context).primaryColor)),
                           onPressed: () => navigator.pop(),
@@ -292,7 +294,7 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
                           style: TextButton.styleFrom(
                               padding: EdgeInsets.symmetric(vertical: 12)),
                           child: Text(
-                              widget.vehicle == null ? 'Añadir' : 'Actualizar',
+                              widget.vehicle == null ? localizations.add : localizations.update,
                               style: TextStyle(
                                   color: Theme.of(context).primaryColor)),
                           onPressed: () async {

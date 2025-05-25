@@ -7,6 +7,7 @@ import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
 import 'package:mi_garaje/view/widgets/utils/elevated_button_utils.dart';
 import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DialogCambioCuenta extends StatefulWidget {
   const DialogCambioCuenta({super.key});
@@ -38,13 +39,15 @@ class _DialogCambioCuentaState extends State<DialogCambioCuenta> {
   Widget build(BuildContext context) {
     final AuthProvider authProvider = context.read<AuthProvider>();
     final NavigatorState navigator = Navigator.of(context);
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
 
     return AlertDialog(
       insetPadding: EdgeInsets.all(10),
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text('Crear cuenta', style: Theme.of(context).textTheme.titleLarge),
+          Text(localizations.createAccount,
+              style: Theme.of(context).textTheme.titleLarge),
           IconButton(
             icon: Icon(Icons.close, color: Theme.of(context).primaryColor),
             onPressed: () {
@@ -63,7 +66,7 @@ class _DialogCambioCuentaState extends State<DialogCambioCuenta> {
               // Titulo del dialog
               MiTextFormField(
                 controller: nameController,
-                labelText: 'Nombre en perfil',
+                labelText: localizations.profileName,
                 hintText: 'Mi Garaje',
                 validator: (value) {
                   return Validator.validateName(value);
@@ -74,7 +77,7 @@ class _DialogCambioCuentaState extends State<DialogCambioCuenta> {
               // Campo de correo electrónico
               MiTextFormField(
                 controller: emailController,
-                labelText: 'Correo electrónico',
+                labelText: localizations.email,
                 hintText: 'migaraje@gmail.com',
                 validator: (value) {
                   return Validator.validateEmail(value);
@@ -86,8 +89,8 @@ class _DialogCambioCuentaState extends State<DialogCambioCuenta> {
               MiTextFormField(
                 controller: passwordController,
                 obscureText: obscureText,
-                labelText: 'Contraseña',
-                hintText: obscureText ? '******' : 'Contraseña',
+                labelText: localizations.password,
+                hintText: obscureText ? '******' : localizations.password,
                 validator: (value) {
                   return Validator.validatePassword(value);
                 },
@@ -109,7 +112,7 @@ class _DialogCambioCuentaState extends State<DialogCambioCuenta> {
       actions: [
         // Botón de crear cuenta
         MiButton(
-          text: "Crear cuenta",
+          text: localizations.createAccount,
           onPressed: () async {
             if (profileFormKey.currentState!.validate()) {
               navigator.pushNamed(RouteNames.loading, arguments: {

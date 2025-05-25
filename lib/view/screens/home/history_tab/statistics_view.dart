@@ -8,6 +8,7 @@ import 'package:mi_garaje/shared/utils/statics.dart';
 import 'package:mi_garaje/view/widgets/chart/monthly_total_spending_chart.dart';
 import 'package:mi_garaje/view/widgets/chart/pie_chart_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class StatisticsView extends StatefulWidget {
   final GarageProvider garageProvider;
@@ -60,6 +61,8 @@ class _StatisticsViewState extends State<StatisticsView> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     if (vehicles.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -69,22 +72,20 @@ class _StatisticsViewState extends State<StatisticsView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildVehicleSelector(),
+          _buildVehicleSelector(localizations),
           const SizedBox(height: 16),
           stats['activityCount'] == 0
               ? selectedVehicle == null
-                  ? const Center(
-                      child: Text(
-                          "No tienes actividades en ningun vehículo. Crea una actividad."),
+                  ? Center(
+                      child: Text(localizations.noActivitiesAnyVehicle),
                     )
-                  : const Center(
-                      child: Text(
-                          "No tienes actividades en este vehículo. Crea una actividad."),
+                  : Center(
+                      child: Text(localizations.noActivitiesThisVehicle),
                     )
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildSummaryCard(),
+                    _buildSummaryCard(localizations),
                     const SizedBox(height: 24),
                     _buildCharts()
                   ],
@@ -94,7 +95,7 @@ class _StatisticsViewState extends State<StatisticsView> {
     );
   }
 
-  Widget _buildVehicleSelector() {
+  Widget _buildVehicleSelector(AppLocalizations localizations) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
       decoration: BoxDecoration(
@@ -105,7 +106,7 @@ class _StatisticsViewState extends State<StatisticsView> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            "Vehículo:",
+            localizations.vehicle,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -119,7 +120,7 @@ class _StatisticsViewState extends State<StatisticsView> {
             items: [
               DropdownMenuItem<Vehicle>(
                 value: null,
-                child: Text("Todos"),
+                child: Text(localizations.all),
               ),
               ...vehicles.map((v) => DropdownMenuItem<Vehicle>(
                     value: v,
@@ -141,7 +142,7 @@ class _StatisticsViewState extends State<StatisticsView> {
     );
   }
 
-  Widget _buildSummaryCard() {
+  Widget _buildSummaryCard(AppLocalizations localizations) {
     final totalSpent = stats['totalSpent'];
     final activityCount = stats['activityCount'];
     final avgMonthly = stats['avgMonthly'];
@@ -157,13 +158,13 @@ class _StatisticsViewState extends State<StatisticsView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildCompactStat(
-              "Gasto total: ", "${totalSpent.toStringAsFixed(2)} €"),
+              localizations.totalSpent, "${totalSpent.toStringAsFixed(2)} €"),
           _buildCompactStat(
-              "Número de actividades: ", activityCount.toString()),
-          _buildCompactStat("Gasto medio por actividad: ",
+              localizations.numberOfActivities, activityCount.toString()),
+          _buildCompactStat(localizations.averageSpentPerActivity,
               "${avgActivity.toStringAsFixed(2)} €"),
-          _buildCompactStat(
-              "Gasto medio mensual: ", "${avgMonthly.toStringAsFixed(2)} €"),
+          _buildCompactStat(localizations.averageMonthlySpent,
+              "${avgMonthly.toStringAsFixed(2)} €"),
         ],
       ),
     );

@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/view/widgets/utils/elevated_button_utils.dart';
 import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -27,6 +28,7 @@ class _LoginViewState extends State<LoginView> {
   Widget build(BuildContext context) {
     final AuthProvider loginViewModel = context.read<AuthProvider>();
     final NavigatorState navigator = Navigator.of(context);
+    final localizations = AppLocalizations.of(context)!;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -90,7 +92,7 @@ class _LoginViewState extends State<LoginView> {
                   // Campo de correo electrónico
                   MiTextFormField(
                     controller: emailController,
-                    labelText: 'Correo electrónico',
+                    labelText: localizations.email,
                     hintText: 'migaraje@gmail.com',
                     validator: (value) {
                       return Validator.validateEmail(value);
@@ -102,8 +104,8 @@ class _LoginViewState extends State<LoginView> {
                   MiTextFormField(
                     controller: passwordController,
                     obscureText: obscureText,
-                    labelText: 'Contraseña',
-                    hintText: obscureText ? '******' : 'Contraseña',
+                    labelText: localizations.password,
+                    hintText: obscureText ? '******' : localizations.password,
                     validator: (value) {
                       return Validator.validatePassword(value);
                     },
@@ -122,7 +124,7 @@ class _LoginViewState extends State<LoginView> {
 
                   // Botón de inicio de sesión
                   MiButton(
-                    text: "Iniciar sesión",
+                    text: localizations.signIn,
                     onPressed: () async {
                       if (loginFormKey.currentState!.validate()) {
                         navigator.pushNamed(RouteNames.loading, arguments: {
@@ -145,10 +147,10 @@ class _LoginViewState extends State<LoginView> {
 
                   // Olvidar contraseña
                   GestureDetector(
-                    onTap: () =>
-                        ToastHelper.show("Funcionalidad no disponible."),
+                    onTap: () => ToastHelper.show(
+                        localizations.functionalityNotAvailable),
                     child: Text(
-                      "¿Has olvidado la contraseña?",
+                      localizations.forgotPassword,
                       style: TextStyle(color: Theme.of(context).primaryColor),
                     ),
                   ),
@@ -156,7 +158,7 @@ class _LoginViewState extends State<LoginView> {
 
                   // Botón de Google
                   MiButton(
-                    text: "Inicia sesión con Google",
+                    text: localizations.signInWithGoogle,
                     onPressed: () async {
                       navigator.pushNamed(RouteNames.loading, arguments: {
                         'onInit': () async {
@@ -178,7 +180,7 @@ class _LoginViewState extends State<LoginView> {
 
                   // Botón navegación a registro
                   MiButton(
-                    text: "Crear cuenta",
+                    text: localizations.createAccount,
                     onPressed: () {
                       navigator.pushReplacementNamed(RouteNames.signup);
                     },

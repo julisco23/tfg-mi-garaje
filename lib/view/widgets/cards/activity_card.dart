@@ -10,6 +10,7 @@ import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_confirm.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ActivityCard extends StatelessWidget {
   const ActivityCard({
@@ -26,6 +27,7 @@ class ActivityCard extends StatelessWidget {
     final ActivityProvider activityProvider = context.read<ActivityProvider>();
     final GarageProvider garageProvider = context.read<GarageProvider>();
     final AuthProvider authProvider = context.read<AuthProvider>();
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
 
     return InkWell(
       onTap: () {
@@ -35,8 +37,8 @@ class ActivityCard extends StatelessWidget {
       onLongPress: () async {
         final result = await ConfirmDialog.show(
             context,
-            'Eliminar ${activity.getType}',
-            '¿Estás seguro de que quieres eliminar la actividad?');
+            '${localizations.delete} ${activity.getType}',
+            localizations.confirmDeleteActivity);
         if (!result) return;
         try {
           await activityProvider.deleteActivity(
@@ -45,7 +47,7 @@ class ActivityCard extends StatelessWidget {
           ToastHelper.show(e.message);
           return;
         }
-        ToastHelper.show('${activity.getCustomType} eliminado');
+        ToastHelper.show(localizations.activityDeleted(activity.getCustomType));
       },
       child: Card(
         child: Padding(
@@ -102,10 +104,11 @@ class ActivityCard extends StatelessWidget {
               ),
 
               // Precio de la actividad
-              Text(
-                activity.isCost ? '${activity.getCost}€' : '',
-                style: Theme.of(context).textTheme.labelMedium,
-              ),
+              if (activity.isCost)
+                Text(
+                  '${activity.getCost}€',
+                  style: Theme.of(context).textTheme.labelMedium,
+                ),
               SizedBox(width: AppDimensions.screenWidth(context) * 0.02),
             ],
           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mi_garaje/shared/utils/validator.dart';
 import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class EditTypeDialog extends StatelessWidget {
   final String initialName;
@@ -23,6 +24,7 @@ class EditTypeDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
     TextEditingController controller = TextEditingController(text: initialName);
 
     final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -32,7 +34,7 @@ class EditTypeDialog extends StatelessWidget {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text("Cambiar nombre", style: Theme.of(context).textTheme.titleLarge),
+          Text(localizations.changeName, style: Theme.of(context).textTheme.titleLarge),
           IconButton(
             icon: Icon(Icons.close, color: Theme.of(context).primaryColor),
             onPressed: () => Navigator.pop(context),
@@ -45,8 +47,8 @@ class EditTypeDialog extends StatelessWidget {
           key: formKey,
           child: MiTextFormField(
             controller: controller,
-            labelText: "Editar tipo",
-            hintText: "Nuevo tipo",
+            labelText: localizations.editType,
+            hintText: localizations.newType,
             validator: Validator.validateNameType,
           ),
         ),
@@ -56,12 +58,12 @@ class EditTypeDialog extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             TextButton(
-              child: Text("Cancelar",
+              child: Text(localizations.cancel,
                   style: TextStyle(color: Theme.of(context).primaryColor)),
               onPressed: () => Navigator.pop(context),
             ),
             TextButton(
-              child: Text("Aceptar",
+              child: Text(localizations.confirm,
                   style: TextStyle(color: Theme.of(context).primaryColor)),
               onPressed: () {
                 if (!formKey.currentState!.validate()) return;

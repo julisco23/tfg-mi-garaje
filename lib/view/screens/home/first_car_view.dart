@@ -4,6 +4,7 @@ import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_code_family.dart';
 import 'package:mi_garaje/view/widgets/utils/elevated_button_utils.dart';
 import 'package:mi_garaje/view/widgets/dialogs/garage_tab/dialog_add_vehicle.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class FirstCar extends StatefulWidget {
   final Function(Vehicle?) onVehicleChanged;
@@ -16,6 +17,8 @@ class FirstCar extends StatefulWidget {
 class _FirstCarState extends State<FirstCar> {
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return Scaffold(
       body: Center(
         child: Padding(
@@ -23,26 +26,26 @@ class _FirstCarState extends State<FirstCar> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                'Necesitas añadir un coche para continuar',
+              Text(
+                localizations.needaddVehicle,
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: AppDimensions.screenHeight(context) * 0.05),
               MiButton(
-                text: 'Añadir coche',
+                text: localizations.addVehicle,
                 onPressed: () async {
                   await DialogAddVehicle.show(context,
                       onVehicleChanged: widget.onVehicleChanged);
                 },
               ),
               SizedBox(height: AppDimensions.screenHeight(context) * 0.1),
-              const Text(
-                'O unirse a una familia',
+              Text(
+                localizations.orJoinFamily,
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: AppDimensions.screenHeight(context) * 0.05),
               MiButton(
-                text: 'Unirse a una familia',
+                text: localizations.joinFamily,
                 onPressed: () async {
                   bool isFamily = await DialogFamilyCode.show(context);
                   if (!isFamily) return;

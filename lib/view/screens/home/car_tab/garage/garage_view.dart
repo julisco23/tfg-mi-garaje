@@ -8,6 +8,7 @@ import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_confirm.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class GarageView extends StatefulWidget {
   const GarageView({super.key});
@@ -20,6 +21,7 @@ class _GarageViewState extends State<GarageView> {
   @override
   Widget build(BuildContext context) {
     final AuthProvider authProvider = context.read<AuthProvider>();
+    final localizations = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
@@ -32,12 +34,10 @@ class _GarageViewState extends State<GarageView> {
           ),
         ],
         scrolledUnderElevation: 0,
-        title: const Text('Garaje'),
+        title: Text(localizations.garage),
       ),
       body: Consumer<GarageProvider>(builder: (context, garageProvider, child) {
         final vehicles = garageProvider.vehicles;
-
-        print('****Vehicles: ${vehicles}');
 
         return RefreshIndicator(
           onRefresh: () async {
@@ -56,20 +56,20 @@ class _GarageViewState extends State<GarageView> {
                 direction: DismissDirection.endToStart,
                 confirmDismiss: (direction) async {
                   if (vehicles.length == 1) {
-                    ToastHelper.show('No puedes eliminar el último vehículo');
+                    ToastHelper.show(localizations.cannotDeleteLastVehicle);
                     return false;
                   }
                   return await ConfirmDialog.show(
                     context,
-                    'Eliminar vehículo',
-                    '¿Estás seguro de que quieres eliminar este vehículo y todas sus actividades?',
+                    localizations.deleteVehicle,
+                    localizations.confirmDeleteVehicle,
                   );
                 },
                 onDismissed: (direction) async {
                   try {
                     await garageProvider.deleteVehicle(
                         authProvider.id, authProvider.type, vehicle);
-                    ToastHelper.show('${vehicle.getVehicleType()} eliminado');
+                    ToastHelper.show('${vehicle.getVehicleType()} ${localizations.deleted}');
                   } on GarageException catch (e) {
                     ToastHelper.show(e.message);
                   }

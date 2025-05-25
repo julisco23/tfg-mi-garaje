@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mi_garaje/shared/utils/monthly_total_spending.dart';
 import 'package:intl/intl.dart';
 import 'package:mi_garaje/shared/utils/statics.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MonthlyTotalSpendingChart extends StatefulWidget {
   final List<MonthlyTotalSpending> data;
@@ -52,6 +53,7 @@ class _MonthlyTotalSpendingChartState extends State<MonthlyTotalSpendingChart> {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
     final List<MonthlyTotalSpending> yearData =
         Statics.generateMonthlyDataForYear(widget.data, selectedYear);
 
@@ -78,7 +80,7 @@ class _MonthlyTotalSpendingChartState extends State<MonthlyTotalSpendingChart> {
                 child: Row(
                   children: [
                     Text(
-                      "Gasto en:",
+                      localizations.spentOn,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
