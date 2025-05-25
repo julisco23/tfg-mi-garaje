@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mi_garaje/data/models/activity.dart';
-import 'package:mi_garaje/data/models/refuel.dart';
+import 'package:mi_garaje/data/models/fuel.dart';
 import 'package:mi_garaje/data/provider/activity_provider.dart';
 import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:mi_garaje/data/provider/image_cache_provider.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/exceptions/garage_exception.dart';
+import 'package:mi_garaje/utils/app_localizations_extensions.dart';
 import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_add_activity.dart';
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_confirm.dart';
 import 'package:mi_garaje/view/widgets/utils/elevated_button_utils.dart';
@@ -45,7 +46,7 @@ class _ActivityViewState extends State<ActivityView> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(activity.getType),
+        title: Text(localizations.getSubType(activity.getType)),
         actions: [
           IconButton(
             icon: const Icon(Icons.delete),
@@ -93,16 +94,15 @@ class _ActivityViewState extends State<ActivityView> {
                     ),
                   ],
 
-                  if (activity is Refuel) ...[
+                  if (activity is Fuel) ...[
                     ListTile(
                       title: Text(localizations.pricePerLiter),
-                      subtitle:
-                          Text('${(activity as Refuel).getPrecioLitros} €'),
+                      subtitle: Text('${(activity as Fuel).getPrecioLitros} €'),
                     ),
                     ListTile(
                       title: Text(localizations.liters),
                       subtitle: Text(
-                          '${(activity as Refuel).getLiters.toStringAsFixed(3)} L'),
+                          '${(activity as Fuel).getLiters.toStringAsFixed(3)} L'),
                     ),
                   ],
 

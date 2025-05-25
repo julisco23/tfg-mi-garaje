@@ -248,8 +248,8 @@ class SettingsView extends StatelessWidget {
                 icon: Icons.local_gas_station_rounded,
                 title: localizations.fuelTypes,
                 onTap: () {
-                  navigator.pushNamed(RouteNames.types,
-                      arguments: {"type": "Refuel"});
+                  navigator
+                      .pushNamed(RouteNames.types, arguments: {"type": "Fuel"});
                 }),
             SettingCard(
                 icon: Icons.build_rounded,

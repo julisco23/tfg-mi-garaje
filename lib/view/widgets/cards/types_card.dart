@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class TypesCard extends StatefulWidget {
-  final String initialTitle;
+  final String title;
   final IconData icon;
   final bool contains;
   final VoidCallback? onPressed;
@@ -9,7 +9,7 @@ class TypesCard extends StatefulWidget {
 
   const TypesCard({
     super.key,
-    required this.initialTitle,
+    required this.title,
     required this.icon,
     this.contains = false,
     required this.onPressed,
@@ -26,7 +26,7 @@ class _TypesCardState extends State<TypesCard> {
   @override
   void initState() {
     super.initState();
-    title = widget.initialTitle;
+    title = widget.title;
   }
 
   @override

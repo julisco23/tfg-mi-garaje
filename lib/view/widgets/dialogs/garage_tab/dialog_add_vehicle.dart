@@ -8,6 +8,7 @@ import 'package:mi_garaje/data/provider/global_types_view_model.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/utils/validator.dart';
 import 'package:mi_garaje/shared/exceptions/garage_exception.dart';
+import 'package:mi_garaje/utils/app_localizations_extensions.dart';
 import 'package:mi_garaje/view/widgets/utils/elevated_button_utils.dart';
 import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
@@ -119,7 +120,7 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
                   MiTextFormField(
                     controller: nameController,
                     labelText: localizations.nameOptional,
-                    hintText: 'Mi coche',
+                    hintText: localizations.myCar,
                   ),
                   SizedBox(height: AppDimensions.screenHeight(context) * 0.03),
 
@@ -161,9 +162,10 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
                                 ConnectionState.waiting)
                               ...snapshot.data!.map<DropdownMenuItem<String>>(
                                 (String tipo) {
+                                  print('Tipo de vehículo: $tipo');
                                   return DropdownMenuItem<String>(
                                     value: tipo,
-                                    child: Text(tipo,
+                                    child: Text(localizations.getSubType(tipo),
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodyMedium),
@@ -294,7 +296,9 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
                           style: TextButton.styleFrom(
                               padding: EdgeInsets.symmetric(vertical: 12)),
                           child: Text(
-                              widget.vehicle == null ? localizations.add : localizations.update,
+                              widget.vehicle == null
+                                  ? localizations.add
+                                  : localizations.update,
                               style: TextStyle(
                                   color: Theme.of(context).primaryColor)),
                           onPressed: () async {

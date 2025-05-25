@@ -7,6 +7,7 @@ import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/exceptions/garage_exception.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
+import 'package:mi_garaje/utils/app_localizations_extensions.dart';
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_confirm.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:provider/provider.dart';
@@ -64,7 +65,7 @@ class ActivityCard extends StatelessWidget {
                   builder: (context) {
                     IconData? icon;
                     switch (activity.activityType) {
-                      case ActivityType.refuel:
+                      case ActivityType.fuel:
                         icon = Icons.local_gas_station_rounded;
                         break;
                       case ActivityType.repair:
@@ -85,14 +86,14 @@ class ActivityCard extends StatelessWidget {
                   },
                 ),
               ),
-              SizedBox(width: AppDimensions.screenWidth(context) * 0.05),
+              SizedBox(width: AppDimensions.screenWidth(context) * 0.04),
 
               // Información de la actividad
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(activity.getType),
+                    Text(localizations.getSubType(activity.getType)),
                     SizedBox(
                         height: AppDimensions.screenHeight(context) * 0.005),
                     Text(

@@ -1,8 +1,7 @@
 {
-    "tipos_repostaje": ["Diesel", "Gasolina", "Eléctrico", "Híbrido"],
-    "tipos_mantenimiento": ["Cambio de aceite", "Frenos", "Neumáticos", "Batería", "Revisión general"],
-    "tipos_documentos": ["Seguro", "ITV", "Permiso de circulación", "Multa"],
-    "tipos_vehiculo": ["Coche", "Moto", "Camión", "Autobús", "Bicicleta", "Patinete eléctrico"],
-    "tipos_actividad": ["Refuel", "Repair", "Record"]
+  "fuel_types": ["Diesel", "Gasoline", "Electric", "Hybrid"],
+  "repair_types": ["Oil change", "Brakes", "Tires", "Battery", "General check-up"],
+  "record_types": ["Insurance", "MOT", "Circulation permit", "Fine"],
+  "vehicle_types": ["Car", "Motorcycle", "Truck", "Bus", "Bicycle", "Electric scooter"],
+  "activity_types": ["Fuel", "Repair", "Record"]
 }
-  

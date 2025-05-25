@@ -9,6 +9,7 @@ import 'package:mi_garaje/view/screens/splash_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:mi_garaje/view/screens/home/first_car_view.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -68,6 +69,8 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     if (_isLoading) {
       return SplashScreen();
     }
@@ -91,24 +94,24 @@ class _HomeViewState extends State<HomeView> {
             _selectedIndex = indexTab;
           });
         },
-        items: const [
+        items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.work_history_outlined),
-            label: 'HistoryTab',
+            label: localizations.history,
             activeIcon: Icon(Icons.work_history_rounded),
-            tooltip: "Historial",
+            tooltip: localizations.history,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
-            label: 'HomeTab',
+            label: localizations.home,
             activeIcon: Icon(Icons.home_rounded),
-            tooltip: "Inicio",
+            tooltip: localizations.home,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),
-            label: 'ProfileTab',
+            label: localizations.profile,
             activeIcon: Icon(Icons.person_rounded),
-            tooltip: "Perfil",
+            tooltip: localizations.profile,
           ),
         ],
       ),

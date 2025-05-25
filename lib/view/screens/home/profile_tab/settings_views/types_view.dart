@@ -5,6 +5,7 @@ import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:mi_garaje/data/provider/tab_update_notifier.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/utils/validator.dart';
+import 'package:mi_garaje/utils/app_localizations_extensions.dart';
 import 'package:mi_garaje/view/widgets/cards/types_card.dart';
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_confirm.dart';
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_name_type.dart';
@@ -12,6 +13,7 @@ import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
 import 'package:mi_garaje/data/provider/global_types_view_model.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TypesView extends StatefulWidget {
   final String type;
@@ -64,6 +66,7 @@ class _TypesViewState extends State<TypesView> {
     final TabState tabState = context.read<TabState>();
     final ActivityProvider activityProvider = context.read<ActivityProvider>();
     final GarageProvider garageProvider = context.watch<GarageProvider>();
+    final localizations = AppLocalizations.of(context)!;
 
     // Función para agregar nuevos tipos
     Future<void> addType() async {
@@ -131,7 +134,8 @@ class _TypesViewState extends State<TypesView> {
 
     return Scaffold(
       appBar: AppBar(
-          title: Text('Tipos de ${widget.type}'),
+          title: Text(localizations.typesOfCustomType(
+              localizations.getSubType(widget.type, isSingular: true))),
           centerTitle: true,
           scrolledUnderElevation: 0),
       body: Padding(
@@ -144,8 +148,14 @@ class _TypesViewState extends State<TypesView> {
               key: formKey,
               child: MiTextFormField(
                 controller: controller,
-                labelText: 'Añadir ${widget.type.toLowerCase()}',
-                hintText: widget.type,
+                labelText: localizations.addCustomType(
+                    localizations.getSubType(widget.type, isSingular: true)),
+                hintText: localizations
+                        .getSubType(widget.type, isSingular: true)[0]
+                        .toUpperCase() +
+                    localizations
+                        .getSubType(widget.type, isSingular: true)
+                        .substring(1),
                 suffixIcon: IconButton(
                   icon: Icon(Icons.add),
                   onPressed: () async {
@@ -180,7 +190,11 @@ class _TypesViewState extends State<TypesView> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             // Título 'Tipos' dentro del StreamBuilder
-                            _buildSectionTitle(context, 'Tipos'),
+                            _buildSectionTitle(
+                                context,
+                                localizations.typesOfCustomType(
+                                    localizations.getSubType(widget.type,
+                                        isSingular: true))),
                             SizedBox(
                                 height:
                                     AppDimensions.screenHeight(context) * 0.01),
@@ -213,17 +227,27 @@ class _TypesViewState extends State<TypesView> {
                                     }
                                     return await ConfirmDialog.show(
                                       context,
-                                      'Eliminar $typeItem',
+                                      localizations.deleteType(
+                                          localizations.getSubType(typeItem,
+                                              isSingular: true)),
                                       isVehicle
-                                          ? '¿Estás seguro de que quieres eliminar $typeItem y todos los vehículos asociados?'
-                                          : '¿Estás seguro de que quieres eliminar $typeItem y todas las actividades asociadas?',
+                                          ? localizations
+                                              .confirmDeleteTypeVehicle(
+                                                  localizations.getSubType(
+                                                      typeItem,
+                                                      isSingular: true))
+                                          : localizations
+                                              .confirmDeleteTypeActivity(
+                                                  localizations.getSubType(
+                                                      typeItem,
+                                                      isSingular: true)),
                                     );
                                   },
                                   onDismissed: (direction) {
                                     removeType(typeItem);
                                   },
                                   child: TypesCard(
-                                    initialTitle: typeItem,
+                                    title: localizations.getSubType(typeItem),
                                     icon: Icons.edit,
                                     contains: getTypesGlobal.contains(typeItem),
                                     onNameChanged: (newName) =>
@@ -268,6 +292,8 @@ class _TypesViewState extends State<TypesView> {
     return StreamBuilder<List<String>>(
       stream: removedtypesFuture,
       builder: (context, snapshot) {
+        final localizations = AppLocalizations.of(context)!;
+
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
         }
@@ -283,14 +309,14 @@ class _TypesViewState extends State<TypesView> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Título 'Eliminados' solo si hay tipos eliminados
-            _buildSectionTitle(context, 'Eliminados'),
+            _buildSectionTitle(context, localizations.deleteds),
             SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
 
             // Lista de tipos eliminados
             Column(
               children: removedTypes.map((removedItem) {
                 return TypesCard(
-                  initialTitle: removedItem,
+                  title: localizations.getSubType(removedItem),
                   icon: Icons.restore,
                   onPressed: () async {
                     await typeViewModel.reactivateType(authProvider.id,

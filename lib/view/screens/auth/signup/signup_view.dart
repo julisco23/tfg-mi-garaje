@@ -59,7 +59,7 @@ class _SignupViewState extends State<SignupView> {
                     MiTextFormField(
                       controller: nameController,
                       labelText: localizations.profileName,
-                      hintText: 'Mi Garaje',
+                      hintText: localizations.myGarage,
                       validator: (value) {
                         return Validator.validateName(value);
                       },

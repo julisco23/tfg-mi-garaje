@@ -4,17 +4,21 @@ class UserTypesService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // Metodo para obtener la lista de tipos añadidos y eliminados por el usuario
-  Future<Map<String, List<String>>> getUserData(String ownerId, String ownerType, String typeName) async {
+  Future<Map<String, List<String>>> getUserData(
+      String ownerId, String ownerType, String typeName) async {
     try {
-      DocumentSnapshot userSnapshot = await _firestore.collection(ownerType).doc(ownerId).get();
+      DocumentSnapshot userSnapshot =
+          await _firestore.collection(ownerType).doc(ownerId).get();
       var userData = userSnapshot.data() as Map<String, dynamic>;
 
-      List<String> addedRefuelTypes = List<String>.from(userData["added$typeName"] ?? []);
-      List<String> removedRefuelTypes = List<String>.from(userData["removed$typeName"] ?? []);
+      List<String> addedFuelTypes =
+          List<String>.from(userData["added$typeName"] ?? []);
+      List<String> removedFuelTypes =
+          List<String>.from(userData["removed$typeName"] ?? []);
 
       return {
-        "added": addedRefuelTypes,
-        "removed": removedRefuelTypes,
+        "added": addedFuelTypes,
+        "removed": removedFuelTypes,
       };
     } catch (e) {
       print("Error al obtener los datos del usuario: $e");
@@ -23,7 +27,8 @@ class UserTypesService {
   }
 
   // Metodo para añadir un type al usuario
-  Future<void> addType(String ownerId, String ownerType, String type, String typeName) async {
+  Future<void> addType(
+      String ownerId, String ownerType, String type, String typeName) async {
     try {
       await _firestore.collection(ownerType).doc(ownerId).update({
         "added$typeName": FieldValue.arrayUnion([type]),
@@ -34,7 +39,8 @@ class UserTypesService {
   }
 
   // Metodo para eliminar un type del usuario
-  Future<void> removeType(String ownerId, String ownerType, String type, String typeName, bool addOrRemove) async {
+  Future<void> removeType(String ownerId, String ownerType, String type,
+      String typeName, bool addOrRemove) async {
     try {
       if (addOrRemove) {
         await _firestore.collection(ownerType).doc(ownerId).update({
@@ -51,7 +57,8 @@ class UserTypesService {
   }
 
   // Metodo para reactivar un type del usuario
-  Future<void> reactivateType(String ownerId, String ownerType, String type, String typeName) async {
+  Future<void> reactivateType(
+      String ownerId, String ownerType, String type, String typeName) async {
     try {
       await _firestore.collection(ownerType).doc(ownerId).update({
         "removed$typeName": FieldValue.arrayRemove([type]),
@@ -75,7 +82,13 @@ class UserTypesService {
 
   // Método para transpasar los types de un usuario a una familia
   Future<void> transformTypesToFamily(String userId, String idFamily) async {
-    for (String typeName in ["Refuel", "Repair", "Record", "Vehicle", "Activity"]) {
+    for (String typeName in [
+      "Fuel",
+      "Repair",
+      "Record",
+      "Vehicle",
+      "Activity"
+    ]) {
       await getUserData(userId, "users", typeName).then((userData) {
         List<String> addedTypes = userData["added"] ?? [];
         if (addedTypes.isNotEmpty) {
@@ -97,7 +110,13 @@ class UserTypesService {
   }
 
   Future<void> deleteTypeFromUser(String userId) async {
-    for (String typeName in ["Refuel", "Repair", "Record", "Vehicle", "Activity"]) {
+    for (String typeName in [
+      "Fuel",
+      "Repair",
+      "Record",
+      "Vehicle",
+      "Activity"
+    ]) {
       _firestore.collection("users").doc(userId).update({
         "added$typeName": FieldValue.delete(),
         "removed$typeName": FieldValue.delete(),

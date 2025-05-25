@@ -16,7 +16,7 @@ class AppConstants {
   static const int tabHome = 1;
   static const int tabProfile = 2;
 
-  static const int refuel = 0;
+  static const int fuel = 0;
   static const int repair = 1;
   static const int record = 2;
 

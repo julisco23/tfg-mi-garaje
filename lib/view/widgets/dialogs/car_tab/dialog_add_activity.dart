@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mi_garaje/data/models/activity.dart';
 import 'package:mi_garaje/data/models/custom.dart';
-import 'package:mi_garaje/data/models/refuel.dart';
+import 'package:mi_garaje/data/models/fuel.dart';
 import 'package:mi_garaje/data/models/record.dart';
 import 'package:mi_garaje/data/models/repair.dart';
 import 'package:mi_garaje/data/provider/activity_provider.dart';
@@ -14,6 +14,7 @@ import 'package:mi_garaje/data/provider/global_types_view_model.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/utils/validator.dart';
 import 'package:mi_garaje/shared/exceptions/garage_exception.dart';
+import 'package:mi_garaje/utils/app_localizations_extensions.dart';
 import 'package:mi_garaje/view/widgets/utils/date_form_field.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
@@ -88,9 +89,9 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
       selectedDate = widget.activity!.getDate;
       selectedType = widget.activity!.getType;
 
-      if (widget.activity is Refuel) {
+      if (widget.activity is Fuel) {
         costLiterController.text =
-            (widget.activity as Refuel).costLiter.toString();
+            (widget.activity as Fuel).costLiter.toString();
       } else {
         detailsController.text = widget.activity!.getDetails!;
         if (widget.activity!.isPhoto) {
@@ -103,7 +104,7 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
       }
     } else {
       customType = widget.customType!;
-      if (["Refuel", "Repair", "Record"].contains(widget.customType)) {
+      if (["Fuel", "Repair", "Record"].contains(widget.customType)) {
         _typesFuture = Provider.of<GlobalTypesViewModel>(context, listen: false)
             .getTypes(authProvider.id, authProvider.type, customType);
       } else {
@@ -151,9 +152,12 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
                   // Título
                   Text(
                     widget.activity == null
-                        ? localizations.addCustomType(customType.toLowerCase())
-                        : localizations
-                            .editCustomType(customType.toLowerCase()),
+                        ? localizations.addCustomType(localizations.getSubType(
+                            customType.toLowerCase(),
+                            isSingular: true))
+                        : localizations.editCustomType(localizations.getSubType(
+                            customType.toLowerCase(),
+                            isSingular: true)),
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   SizedBox(height: AppDimensions.screenHeight(context) * 0.05),
@@ -179,8 +183,10 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
                             decoration: InputDecoration(
                               floatingLabelStyle: TextStyle(
                                   color: Theme.of(context).primaryColor),
-                              labelText: localizations
-                                  .typeOfCustomType(customType.toLowerCase()),
+                              labelText: localizations.typeOfCustomType(
+                                  localizations.getSubType(
+                                      customType.toLowerCase(),
+                                      isSingular: true)),
                               border: OutlineInputBorder(
                                 borderSide: BorderSide.none,
                                 borderRadius: BorderRadius.circular(14),
@@ -200,8 +206,9 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
                               DropdownMenuItem<String>(
                                 value: null,
                                 child: Text(
-                                    localizations.typeOfCustomType(
-                                        customType.toLowerCase()),
+                                    localizations.typeOfCustomType(localizations
+                                        .getSubType(customType.toLowerCase(),
+                                            isSingular: true)),
                                     style:
                                         Theme.of(context).textTheme.bodyMedium),
                               ),
@@ -211,7 +218,8 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
                                   (String tipo) {
                                     return DropdownMenuItem<String>(
                                       value: tipo,
-                                      child: Text(tipo,
+                                      child: Text(
+                                          localizations.getSubType(tipo),
                                           style: Theme.of(context)
                                               .textTheme
                                               .bodyMedium),
@@ -259,8 +267,8 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
                   SizedBox(height: AppDimensions.screenHeight(context) * 0.03),
 
                   // Campo "Precio por Litro"
-                  if (widget.customType == "Refuel" ||
-                      widget.activity is Refuel) ...[
+                  if (widget.customType == "Fuel" ||
+                      widget.activity is Fuel) ...[
                     MiTextFormField(
                       controller: costLiterController,
                       labelText: localizations.pricePerLiterE,
@@ -375,9 +383,9 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
                               Activity newActivity;
 
                               switch (customType) {
-                                case 'Refuel':
-                                  newActivity = Refuel(
-                                    refuelType: selectedType!,
+                                case 'Fuel':
+                                  newActivity = Fuel(
+                                    fuelType: selectedType!,
                                     date: selectedDate!,
                                     cost: num.parse(costController.text),
                                     costLiter:

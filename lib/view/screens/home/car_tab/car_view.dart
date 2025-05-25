@@ -7,6 +7,7 @@ import 'package:mi_garaje/data/provider/global_types_view_model.dart';
 import 'package:mi_garaje/data/provider/image_cache_provider.dart';
 import 'package:mi_garaje/data/provider/tab_update_notifier.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
+import 'package:mi_garaje/utils/app_localizations_extensions.dart';
 import 'package:mi_garaje/view/widgets/cards/activity_card.dart';
 import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_add_activity.dart';
 import 'package:provider/provider.dart';
@@ -26,23 +27,37 @@ class _CarTabViewState extends State<CarTabView>
   late List<Tab> tabs;
   late List<Widget> tabContents;
   late TabState _tabState;
+  bool _initialized = false;
 
   @override
   void initState() {
     super.initState();
-    _tabState = Provider.of<TabState>(context, listen: false);
+  }
 
-    activityTypes =
-        Provider.of<GlobalTypesViewModel>(context, listen: false).getTabsList();
-    _tabState.inicializar(activityTypes);
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_initialized) {
+      _tabState = Provider.of<TabState>(context, listen: false);
 
-    tabs = _tabState.activityTypes.map((type) => Tab(text: type)).toList();
-    tabContents =
-        _tabState.activityTypes.map((type) => _buildTabContent(type)).toList();
+      activityTypes = Provider.of<GlobalTypesViewModel>(context, listen: false)
+          .getTabsList();
+      _tabState.inicializar(activityTypes);
 
-    final tabIndex = _tabState.tabIndex;
-    _tabController =
-        TabController(length: tabs.length, vsync: this, initialIndex: tabIndex);
+      tabs = _tabState.activityTypes
+          .map((type) => Tab(text: AppLocalizations.of(context)!.getSubType(type)))
+          .toList();
+
+      tabContents = _tabState.activityTypes
+          .map((type) => _buildTabContent(type))
+          .toList();
+
+      final tabIndex = _tabState.tabIndex;
+      _tabController = TabController(
+          length: tabs.length, vsync: this, initialIndex: tabIndex);
+
+      _initialized = true;
+    }
   }
 
   @override
@@ -126,6 +141,8 @@ class _CarTabViewState extends State<CarTabView>
                 vehicle.getId, authProvider.id, authProvider.type);
           },
           child: ListView.builder(
+            padding:
+                const EdgeInsets.only(top: 10, left: 7, right: 7, bottom: 10),
             itemCount: activities.length,
             itemBuilder: (context, index) => ActivityCard(
               activity: activities[index],

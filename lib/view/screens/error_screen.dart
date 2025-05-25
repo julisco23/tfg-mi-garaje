@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ErrorScreen extends StatefulWidget {
   final void Function() onRetry;
@@ -21,8 +22,9 @@ class _ErrorScreenState extends State<ErrorScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Error')),
+      appBar: AppBar(title: Text(localizations.error)),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -39,7 +41,7 @@ class _ErrorScreenState extends State<ErrorScreen> {
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: _retry,
-              child: const Text('Reintentar'),
+              child: Text(localizations.retry),
             ),
           ],
         ),

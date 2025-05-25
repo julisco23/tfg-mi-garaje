@@ -12,11 +12,11 @@ class VehicleHistoryView extends StatelessWidget {
   const VehicleHistoryView({super.key, required this.vehicle});
 
   Map<String, List<Activity>> _groupActivitiesByMonth(
-      List<Activity> activities) {
+      List<Activity> activities, String local) {
     Map<String, List<Activity>> groupedActivities = {};
 
     for (var activity in activities) {
-      String monthYear = DateFormat('MMMM yyyy').format(activity.date);
+      String monthYear = DateFormat('MMMM yyyy', local).format(activity.date);
 
       if (groupedActivities.containsKey(monthYear)) {
         groupedActivities[monthYear]!.add(activity);
@@ -37,13 +37,14 @@ class VehicleHistoryView extends StatelessWidget {
     return Consumer<ActivityProvider>(
       builder: (context, activityProvider, _) {
         List<Activity> activities = activityProvider.activities;
+        final local = Localizations.localeOf(context).languageCode;
 
-        final groupedActivities = _groupActivitiesByMonth(activities);
+        final groupedActivities = _groupActivitiesByMonth(activities, local);
 
         final List<String> keys = groupedActivities.keys.toList();
         keys.sort((a, b) {
-          DateTime dateA = DateFormat('MMMM yyyy').parse(a);
-          DateTime dateB = DateFormat('MMMM yyyy').parse(b);
+          DateTime dateA = DateFormat('MMMM yyyy', local).parse(a);
+          DateTime dateB = DateFormat('MMMM yyyy', local).parse(b);
           return dateB.compareTo(dateA);
         });
 
@@ -97,7 +98,7 @@ class VehicleHistoryView extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        monthYear,
+                        monthYear[0].toUpperCase() + monthYear.substring(1),
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,

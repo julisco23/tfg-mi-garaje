@@ -21,23 +21,37 @@ class LanguageSelectorDialog extends StatelessWidget {
     final AppLocalizations localizations = AppLocalizations.of(context)!;
 
     return AlertDialog(
-      title: Text(localizations.selectLanguage),
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            localizations.selectLanguage,
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          IconButton(
+            icon: Icon(Icons.close, color: Theme.of(context).primaryColor),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           ListTile(
             title: Text(localizations.spanish),
             onTap: () {
-              localeNotifier.changeLocale(const Locale('es'));
               Navigator.pop(context);
+              localeNotifier.changeLocale(const Locale('es'));
               ToastHelper.show("Idioma cambiado a Español.");
             },
           ),
           ListTile(
             title: Text(localizations.english),
             onTap: () {
-              localeNotifier.changeLocale(const Locale('en'));
               Navigator.pop(context);
+              localeNotifier.changeLocale(const Locale('en'));
               ToastHelper.show("Language changed to English.");
             },
           ),

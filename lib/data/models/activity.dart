@@ -1,18 +1,18 @@
 import 'package:mi_garaje/data/models/custom.dart';
 import 'package:mi_garaje/data/models/record.dart';
-import 'package:mi_garaje/data/models/refuel.dart';
+import 'package:mi_garaje/data/models/fuel.dart';
 import 'package:mi_garaje/data/models/repair.dart';
 
-enum ActivityType { 
-  refuel, 
-  repair, 
+enum ActivityType {
+  fuel,
+  repair,
   record,
   custom;
 
   String get getName {
     switch (this) {
-      case ActivityType.refuel:
-        return "Refuel";
+      case ActivityType.fuel:
+        return "Fuel";
       case ActivityType.repair:
         return "Repair";
       case ActivityType.record:
@@ -52,7 +52,7 @@ abstract class Activity {
 
   bool get isPhoto => getPhoto != null;
   String? get getPhoto;
-  
+
   Map<String, dynamic> toMap();
 
   static Activity fromMap(Map<String, dynamic> map) {
@@ -65,15 +65,14 @@ abstract class Activity {
     switch (tipo) {
       case ActivityType.record:
         return Record.fromMap(map);
-      case ActivityType.refuel:
-        return Refuel.fromMap(map);
+      case ActivityType.fuel:
+        return Fuel.fromMap(map);
       case ActivityType.repair:
         return Repair.fromMap(map);
       case ActivityType.custom:
         return CustomActivity.fromMap(map);
     }
   }
-
 
   @override
   String toString() {
