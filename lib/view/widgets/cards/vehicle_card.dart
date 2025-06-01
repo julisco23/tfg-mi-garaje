@@ -1,26 +1,28 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mi_garaje/data/models/vehicle.dart';
 import 'package:mi_garaje/data/provider/activity_provider.dart';
 import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
-import 'package:mi_garaje/data/provider/image_cache_provider.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/utils/app_localizations_extensions.dart';
 import 'package:mi_garaje/view/widgets/dialogs/garage_tab/dialog_add_vehicle.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class VehicleCard extends StatefulWidget {
+class VehicleCard extends ConsumerStatefulWidget {
   const VehicleCard({super.key, required this.vehicle, this.profile = false});
 
   final Vehicle vehicle;
   final bool profile;
 
   @override
-  State<VehicleCard> createState() => _VehicleCardState();
+  ConsumerState<VehicleCard> createState() => _VehicleCardState();
 }
 
-class _VehicleCardState extends State<VehicleCard> {
+class _VehicleCardState extends ConsumerState<VehicleCard> {
   late Vehicle vehicle;
 
   @override
@@ -64,8 +66,8 @@ class _VehicleCardState extends State<VehicleCard> {
             children: [
               vehicle.photo != null
                   ? CircleAvatar(
-                      backgroundImage: Provider.of<ImageCacheProvider>(context)
-                          .getImage("vehicle", vehicle.id!, vehicle.photo!))
+                      backgroundImage:
+                          MemoryImage(base64Decode(vehicle.getPhoto()!)))
                   : CircleAvatar(
                       backgroundColor: Theme.of(context).primaryColor,
                       child: Text(

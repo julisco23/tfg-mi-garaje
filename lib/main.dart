@@ -10,7 +10,6 @@ import 'package:mi_garaje/firebase_options.dart';
 import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:mi_garaje/data/provider/global_types_view_model.dart';
-import 'package:mi_garaje/data/provider/image_cache_provider.dart';
 import 'package:mi_garaje/data/provider/tab_update_notifier.dart';
 import 'package:mi_garaje/shared/routes/app_routes.dart';
 import 'package:mi_garaje/shared/themes/app_themes.dart';
@@ -43,8 +42,6 @@ class MyApp extends ConsumerWidget {
         provider.ChangeNotifierProvider(create: (_) => ActivityProvider()),
         provider.ChangeNotifierProvider(create: (_) => GlobalTypesViewModel()),
         provider.ChangeNotifierProvider(create: (_) => TabState()),
-        provider.Provider<ImageCacheProvider>(
-            create: (_) => ImageCacheProvider()),
       ],
       child: localeAsync.when(
         data: (locale) => themeAsync.when(

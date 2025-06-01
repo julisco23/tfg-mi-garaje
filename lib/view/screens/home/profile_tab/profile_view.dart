@@ -1,21 +1,23 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mi_garaje/data/models/user.dart';
-import 'package:mi_garaje/data/provider/image_cache_provider.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/view/widgets/cards/vehicle_card.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
-import 'package:provider/provider.dart';
+import 'package:provider/provider.dart' as provider;
 import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class Perfil extends StatelessWidget {
+class Perfil extends ConsumerWidget {
   const Perfil({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final AuthProvider authProvider = context.watch<AuthProvider>();
     final GarageProvider garageProvider = context.watch<GarageProvider>();
     final localizations = AppLocalizations.of(context)!;
@@ -78,9 +80,10 @@ class Perfil extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Image(
-                                image: Provider.of<ImageCacheProvider>(context)
-                                    .getImage("user", user.id!, user.photoURL!,
-                                        isNetwork: !user.hasPhotoChanged)),
+                                image: !user.hasPhotoChanged
+                                    ? NetworkImage(user.photoURL!)
+                                    : MemoryImage(
+                                        base64Decode(user.photoURL!))),
                           ],
                         ),
                       );
@@ -91,9 +94,9 @@ class Perfil extends StatelessWidget {
           child: CircleAvatar(
               radius: 50,
               backgroundImage: user.isPhoto
-                  ? Provider.of<ImageCacheProvider>(context).getImage(
-                      "user", user.id!, user.photoURL!,
-                      isNetwork: !user.hasPhotoChanged)
+                  ? !user.hasPhotoChanged
+                      ? MemoryImage(base64Decode(user.photoURL!))
+                      : NetworkImage(user.photoURL!)
                   : null,
               backgroundColor: Theme.of(context).primaryColor,
               child: user.isPhoto
@@ -114,7 +117,7 @@ class Perfil extends StatelessWidget {
   }
 
   Widget _buildVehicleList(AppLocalizations localizations) {
-    return Consumer<GarageProvider>(
+    return provider.Consumer<GarageProvider>(
       builder: (context, garageProvider, child) {
         final vehicles = garageProvider.vehicles;
 
@@ -225,9 +228,8 @@ class Perfil extends StatelessWidget {
                             radius: 35,
                             backgroundImage: member.isPhoto
                                 ? member.hasPhotoChanged
-                                    ? Provider.of<ImageCacheProvider>(context)
-                                        .getImage("user", member.id!,
-                                            member.photoURL!)
+                                    ? MemoryImage(
+                                        base64Decode(member.photoURL!))
                                     : NetworkImage(member.photoURL!)
                                 : null,
                             backgroundColor: Theme.of(context).primaryColor,

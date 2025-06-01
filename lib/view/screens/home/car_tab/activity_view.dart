@@ -1,10 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:mi_garaje/data/models/activity.dart';
 import 'package:mi_garaje/data/models/fuel.dart';
 import 'package:mi_garaje/data/provider/activity_provider.dart';
 import 'package:mi_garaje/data/provider/auth_provider.dart';
-import 'package:mi_garaje/data/provider/image_cache_provider.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/exceptions/garage_exception.dart';
 import 'package:mi_garaje/utils/app_localizations_extensions.dart';
@@ -16,16 +18,16 @@ import 'package:provider/provider.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class ActivityView extends StatefulWidget {
+class ActivityView extends ConsumerStatefulWidget {
   final Activity activity;
 
   const ActivityView({super.key, required this.activity});
 
   @override
-  State<ActivityView> createState() => _ActivityViewState();
+  ConsumerState<ActivityView> createState() => _ActivityViewState();
 }
 
-class _ActivityViewState extends State<ActivityView> {
+class _ActivityViewState extends ConsumerState<ActivityView> {
   late Activity activity;
 
   @override
@@ -39,8 +41,6 @@ class _ActivityViewState extends State<ActivityView> {
     final ActivityProvider activityProvider = context.read<ActivityProvider>();
     final AuthProvider authProvider = context.read<AuthProvider>();
     final GarageProvider garageProvider = context.read<GarageProvider>();
-    final ImageCacheProvider imageCacheProvider =
-        context.read<ImageCacheProvider>();
     final NavigatorState navigator = Navigator.of(context);
     final AppLocalizations localizations = AppLocalizations.of(context)!;
 
@@ -130,10 +130,8 @@ class _ActivityViewState extends State<ActivityView> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Image(
-                                      image: imageCacheProvider.getImage(
-                                          "activity",
-                                          activity.getDate.toIso8601String(),
-                                          activity.getPhoto!)),
+                                      image: MemoryImage(
+                                          base64Decode(activity.getPhoto!))),
                                 ],
                               ),
                             );
@@ -144,10 +142,8 @@ class _ActivityViewState extends State<ActivityView> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(10),
                           child: Image(
-                              image: imageCacheProvider.getImage(
-                                  "activity",
-                                  activity.getDate.toIso8601String(),
-                                  activity.getPhoto!)),
+                              image: MemoryImage(
+                                  base64Decode(activity.getPhoto!))),
                         ),
                       ),
                     ),

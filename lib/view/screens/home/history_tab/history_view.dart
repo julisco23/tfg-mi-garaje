@@ -1,20 +1,22 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
-import 'package:mi_garaje/data/provider/image_cache_provider.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/view/screens/home/history_tab/statistics_view.dart';
 import 'package:mi_garaje/view/screens/home/history_tab/vehicle_history_view.dart';
-import 'package:provider/provider.dart';
+import 'package:provider/provider.dart' as provider;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class HistoryView extends StatefulWidget {
+class HistoryView extends ConsumerStatefulWidget {
   const HistoryView({super.key});
 
   @override
-  State<HistoryView> createState() => _HistoryViewState();
+  ConsumerState<HistoryView> createState() => _HistoryViewState();
 }
 
-class _HistoryViewState extends State<HistoryView>
+class _HistoryViewState extends ConsumerState<HistoryView>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
@@ -34,7 +36,7 @@ class _HistoryViewState extends State<HistoryView>
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
 
-    return Consumer<GarageProvider>(
+    return provider.Consumer<GarageProvider>(
       builder: (context, garageProvider, _) {
         final vehicle = garageProvider.selectedVehicle!;
 
@@ -46,9 +48,8 @@ class _HistoryViewState extends State<HistoryView>
                 if (vehicle.photo != null)
                   CircleAvatar(
                     radius: 20,
-                    backgroundImage: context
-                        .read<ImageCacheProvider>()
-                        .getImage("vehicle", vehicle.id!, vehicle.photo!),
+                    backgroundImage:
+                        MemoryImage(base64Decode(vehicle.getPhoto()!)),
                   ),
                 const SizedBox(width: 10),
                 Text(vehicle.getNameTittle()),

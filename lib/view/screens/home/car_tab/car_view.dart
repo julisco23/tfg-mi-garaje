@@ -1,26 +1,28 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mi_garaje/data/models/activity.dart';
 import 'package:mi_garaje/data/provider/activity_provider.dart';
 import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:mi_garaje/data/provider/global_types_view_model.dart';
-import 'package:mi_garaje/data/provider/image_cache_provider.dart';
 import 'package:mi_garaje/data/provider/tab_update_notifier.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/utils/app_localizations_extensions.dart';
 import 'package:mi_garaje/view/widgets/cards/activity_card.dart';
 import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_add_activity.dart';
-import 'package:provider/provider.dart';
+import 'package:provider/provider.dart' as provider;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class CarTabView extends StatefulWidget {
+class CarTabView extends ConsumerStatefulWidget {
   const CarTabView({super.key});
 
   @override
-  State<CarTabView> createState() => _CarTabViewState();
+  ConsumerState<CarTabView> createState() => _CarTabViewState();
 }
 
-class _CarTabViewState extends State<CarTabView>
+class _CarTabViewState extends ConsumerState<CarTabView>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late List<String> activityTypes;
@@ -38,14 +40,16 @@ class _CarTabViewState extends State<CarTabView>
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_initialized) {
-      _tabState = Provider.of<TabState>(context, listen: false);
+      _tabState = provider.Provider.of<TabState>(context, listen: false);
 
-      activityTypes = Provider.of<GlobalTypesViewModel>(context, listen: false)
-          .getTabsList();
+      activityTypes =
+          provider.Provider.of<GlobalTypesViewModel>(context, listen: false)
+              .getTabsList();
       _tabState.inicializar(activityTypes);
 
       tabs = _tabState.activityTypes
-          .map((type) => Tab(text: AppLocalizations.of(context)!.getSubType(type)))
+          .map((type) =>
+              Tab(text: AppLocalizations.of(context)!.getSubType(type)))
           .toList();
 
       tabContents = _tabState.activityTypes
@@ -64,7 +68,7 @@ class _CarTabViewState extends State<CarTabView>
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
 
-    return Consumer<GarageProvider>(
+    return provider.Consumer<GarageProvider>(
       builder: (context, garageProvider, _) {
         final vehicle = garageProvider.selectedVehicle!;
 
@@ -76,9 +80,9 @@ class _CarTabViewState extends State<CarTabView>
                 if (vehicle.photo != null)
                   CircleAvatar(
                     radius: 20,
-                    backgroundImage: context
-                        .read<ImageCacheProvider>()
-                        .getImage("vehicle", vehicle.id!, vehicle.photo!),
+                    backgroundImage: MemoryImage(
+                      base64Decode(vehicle.getPhoto()!),
+                    ),
                   ),
                 const SizedBox(width: 10),
                 Text(vehicle.getNameTittle()),
@@ -130,7 +134,7 @@ class _CarTabViewState extends State<CarTabView>
     final AuthProvider authProvider = context.read<AuthProvider>();
     final vehicle = context.read<GarageProvider>().selectedVehicle!;
 
-    return Consumer<ActivityProvider>(
+    return provider.Consumer<ActivityProvider>(
       builder: (context, activityProvider, _) {
         List<Activity> activities =
             activityProvider.getActivities(activityType);
