@@ -1,50 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ThemeNotifier extends ChangeNotifier {
-  ThemeMode _themeMode = ThemeMode.system;
+class ThemeNotifier extends AsyncNotifier<ThemeMode> {
+  late SharedPreferences _prefs;
 
-  ThemeMode get themeMode => _themeMode;
+  @override
+  Future<ThemeMode> build() async {
+    _prefs = await SharedPreferences.getInstance();
 
-  bool get isDarkMode {
-    if (_themeMode == ThemeMode.system) {
-      return WidgetsBinding.instance.platformDispatcher.platformBrightness ==
-          Brightness.dark;
-    }
-    return _themeMode == ThemeMode.dark;
+    return switch (_prefs.getString('themeMode')) {
+      'light' => ThemeMode.light,
+      'dark' => ThemeMode.dark,
+      _ => ThemeMode.system,
+    };
   }
 
-  ThemeNotifier() {
-    _loadThemeFromPrefs();
+  Future<void> setMode(ThemeMode mode) async {
+    state = AsyncValue.data(mode);
+    await _prefs.setString('themeMode', mode.name);
   }
 
-  void toggleTheme(bool isOn) {
-    _themeMode = isOn ? ThemeMode.dark : ThemeMode.light;
-    _saveThemeToPrefs();
-    notifyListeners();
+  Future<void> setSystemMode() async {
+    await setMode(ThemeMode.system);
   }
 
-  Future<void> _loadThemeFromPrefs() async {
-    final prefs = await SharedPreferences.getInstance();
-    final themeString = prefs.getString('themeMode') ?? 'system';
-
-    switch (themeString) {
-      case 'light':
-        _themeMode = ThemeMode.light;
-        break;
-      case 'dark':
-        _themeMode = ThemeMode.dark;
-        break;
-      default:
-        _themeMode = ThemeMode.system;
-    }
-
-    notifyListeners();
+  Future<void> setLightMode() async {
+    await setMode(ThemeMode.light);
   }
 
-  Future<void> _saveThemeToPrefs() async {
-    final prefs = await SharedPreferences.getInstance();
-    final themeString = _themeMode.toString().split('.').last;
-    await prefs.setString('themeMode', themeString);
+  Future<void> setDarkMode() async {
+    await setMode(ThemeMode.dark);
   }
 }
+
+final themeProvider =
+    AsyncNotifierProvider<ThemeNotifier, ThemeMode>(() => ThemeNotifier());

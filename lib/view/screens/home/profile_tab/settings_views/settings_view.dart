@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mi_garaje/data/models/activity.dart';
 import 'package:mi_garaje/data/provider/activity_provider.dart';
 import 'package:mi_garaje/data/provider/global_types_view_model.dart';
@@ -12,19 +13,19 @@ import 'package:mi_garaje/view/widgets/dialogs/auth/dialog_edit_profile.dart';
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_code_family.dart';
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_confirm.dart';
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/language_selector_dialog.dart';
+import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/theme_selector_dialog.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:mi_garaje/data/provider/theme_notifier.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class SettingsView extends StatelessWidget {
+class SettingsView extends ConsumerWidget {
   final GarageProvider garageViewModel;
   const SettingsView({super.key, required this.garageViewModel});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final AuthProvider authViewModel = context.read<AuthProvider>();
     final GlobalTypesViewModel globalTypesProvider =
         context.read<GlobalTypesViewModel>();
@@ -288,20 +289,7 @@ class SettingsView extends StatelessWidget {
               icon: Icons.color_lens,
               title: localizations.changeTheme,
               onTap: () async {
-                final themeNotifier =
-                    Provider.of<ThemeNotifier>(context, listen: false);
-                final isDarkMode = themeNotifier.isDarkMode;
-                bool confirm = await ConfirmDialog.show(
-                  context,
-                  localizations.changeTheme,
-                  localizations
-                      .confirmChangeTheme(isDarkMode ? "claro" : "oscuro"),
-                );
-                if (!confirm) return;
-
-                themeNotifier.toggleTheme(!isDarkMode);
-                ToastHelper.show(localizations
-                    .themeChangedTo(isDarkMode ? "claro" : "oscuro"));
+                await ThemeSelectorDialog.show(context);
               },
             ),
             SettingCard(

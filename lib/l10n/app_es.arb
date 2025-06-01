@@ -176,5 +176,11 @@
   "bicycle": "bicicleta",
   "electricScooter": "patinete eléctrico",
   "activity": "Actividad",
-  "activity2": "actividad"
+  "activity2": "actividad",
+  "lightMode": "Modo claro",
+  "darkMode": "Modo oscuro",
+  "systemMode": "Modo sistema",
+  "dark": "oscuro",
+  "ligth": "claro",
+  "system": "sistema"
 }

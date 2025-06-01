@@ -177,5 +177,11 @@
   "bicycle": "bicycle",
   "electricScooter": "electric scooter",
   "activity": "Activity",
-  "activity2": "activity"
+  "activity2": "activity",
+  "lightMode": "Light mode",
+  "darkMode": "Dark mode",
+  "systemMode": "System mode",
+  "dark": "dark",
+  "ligth": "ligth",
+  "system": "system"
 }

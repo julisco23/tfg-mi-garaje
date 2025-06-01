@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ErrorScreen extends StatefulWidget {
-  final void Function() onRetry;
+  final void Function()? onRetry;
   final String errorMessage;
 
   const ErrorScreen({
     super.key,
     required this.errorMessage,
-    required this.onRetry,
+    this.onRetry,
   });
 
   @override
@@ -17,7 +17,9 @@ class ErrorScreen extends StatefulWidget {
 
 class _ErrorScreenState extends State<ErrorScreen> {
   void _retry() {
-    widget.onRetry();
+    if (widget.onRetry != null) {
+      widget.onRetry!();
+    }
   }
 
   @override
