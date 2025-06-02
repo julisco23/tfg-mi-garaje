@@ -1,27 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mi_garaje/data/models/vehicle.dart';
-import 'package:mi_garaje/data/provider/auth_provider.dart';
 import 'package:mi_garaje/shared/exceptions/garage_exception.dart';
 import 'package:mi_garaje/view/widgets/cards/vehicle_card.dart';
 import 'package:mi_garaje/view/widgets/dialogs/garage_tab/dialog_add_vehicle.dart';
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_confirm.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
-import 'package:provider/provider.dart';
-import 'package:mi_garaje/data/provider/garage_provider.dart';
+import 'package:mi_garaje/data/provider/garage_notifier.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class GarageView extends StatefulWidget {
+class GarageView extends ConsumerWidget {
   const GarageView({super.key});
 
   @override
-  State<GarageView> createState() => _GarageViewState();
-}
-
-class _GarageViewState extends State<GarageView> {
-  @override
-  Widget build(BuildContext context) {
-    final AuthProvider authProvider = context.read<AuthProvider>();
+  Widget build(BuildContext context, WidgetRef ref) {
     final localizations = AppLocalizations.of(context)!;
+    final garageState = ref.watch(garageProvider);
+
+    final vehicles = garageState.value!.vehicles;
 
     return Scaffold(
       appBar: AppBar(
@@ -36,63 +32,59 @@ class _GarageViewState extends State<GarageView> {
         scrolledUnderElevation: 0,
         title: Text(localizations.garage),
       ),
-      body: Consumer<GarageProvider>(builder: (context, garageProvider, child) {
-        final vehicles = garageProvider.vehicles;
+      body: RefreshIndicator(
+        onRefresh: () async {
+          ref.invalidate(garageProvider);
+        },
+        child: ListView.builder(
+          padding:
+              const EdgeInsets.only(top: 10, left: 7, right: 7, bottom: 10),
+          itemCount: vehicles.length,
+          itemBuilder: (context, index) {
+            final Vehicle vehicle = vehicles[index];
 
-        return RefreshIndicator(
-          onRefresh: () async {
-            await garageProvider.refreshGarage(
-                authProvider.id, authProvider.type);
+            return Dismissible(
+              key: ValueKey(vehicle.hashCode),
+              direction: DismissDirection.endToStart,
+              confirmDismiss: (direction) async {
+                if (vehicles.length == 1) {
+                  ToastHelper.show(localizations.cannotDeleteLastVehicle);
+                  return false;
+                }
+                return await ConfirmDialog.show(
+                  context,
+                  localizations.deleteVehicle,
+                  localizations.confirmDeleteVehicle,
+                );
+              },
+              onDismissed: (direction) async {
+                try {
+                  await ref
+                      .read(garageProvider.notifier)
+                      .deleteVehicle(vehicle);
+                  ToastHelper.show(
+                      '${vehicle.getVehicleType()} ${localizations.deleted}');
+                } on GarageException catch (e) {
+                  ToastHelper.show(e.message);
+                }
+              },
+              background: Container(
+                color: Colors.red,
+                margin: const EdgeInsets.all(7),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Center(child: Icon(Icons.delete)),
+                ),
+              ),
+              child: Column(
+                children: [
+                  VehicleCard(vehicle: vehicle),
+                ],
+              ),
+            );
           },
-          child: ListView.builder(
-            padding:
-                const EdgeInsets.only(top: 10, left: 7, right: 7, bottom: 10),
-            itemCount: vehicles.length,
-            itemBuilder: (context, index) {
-              final Vehicle vehicle = vehicles[index];
-
-              return Dismissible(
-                key: ValueKey(vehicle.hashCode),
-                direction: DismissDirection.endToStart,
-                confirmDismiss: (direction) async {
-                  if (vehicles.length == 1) {
-                    ToastHelper.show(localizations.cannotDeleteLastVehicle);
-                    return false;
-                  }
-                  return await ConfirmDialog.show(
-                    context,
-                    localizations.deleteVehicle,
-                    localizations.confirmDeleteVehicle,
-                  );
-                },
-                onDismissed: (direction) async {
-                  try {
-                    await garageProvider.deleteVehicle(
-                        authProvider.id, authProvider.type, vehicle);
-                    ToastHelper.show('${vehicle.getVehicleType()} ${localizations.deleted}');
-                  } on GarageException catch (e) {
-                    ToastHelper.show(e.message);
-                  }
-                },
-                background: Container(
-                  color: Colors.red,
-                  margin: const EdgeInsets.only(
-                      top: 7, left: 7, right: 7, bottom: 7),
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Center(child: Icon(Icons.delete)),
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    VehicleCard(vehicle: vehicle),
-                  ],
-                ),
-              );
-            },
-          ),
-        );
-      }),
+        ),
+      ),
     );
   }
 }

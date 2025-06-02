@@ -1,23 +1,24 @@
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/utils/validator.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
-import 'package:mi_garaje/data/provider/auth_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:mi_garaje/data/provider/auth_notifier.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class DialogEditProfile extends StatefulWidget {
+class DialogEditProfile extends ConsumerStatefulWidget {
   final bool isFamily;
 
   const DialogEditProfile({super.key, required this.isFamily});
 
   @override
-  State<DialogEditProfile> createState() => _DialogEditProfileState();
+  ConsumerState<DialogEditProfile> createState() => _DialogEditProfileState();
 
   static Future<void> show(BuildContext context, {bool isFamily = false}) {
     return showDialog<void>(
@@ -29,7 +30,7 @@ class DialogEditProfile extends StatefulWidget {
   }
 }
 
-class _DialogEditProfileState extends State<DialogEditProfile> {
+class _DialogEditProfileState extends ConsumerState<DialogEditProfile> {
   late TextEditingController nameController;
   final GlobalKey<FormState> profileFormKey = GlobalKey<FormState>();
 
@@ -40,17 +41,20 @@ class _DialogEditProfileState extends State<DialogEditProfile> {
 
   @override
   void initState() {
-    final AuthProvider authProvider = context.read<AuthProvider>();
     super.initState();
+
+    final authState = ref.read(authProvider);
     if (widget.isFamily) {
-      nameController = TextEditingController(text: authProvider.family!.name);
+      nameController =
+          TextEditingController(text: authState.valueOrNull!.family!.name);
       accountType = "familia";
     } else {
-      nameController = TextEditingController(text: authProvider.user!.name);
-      if (authProvider.isPhotoURL) {
-        imageBase64 = authProvider.user!.photoURL!;
+      nameController =
+          TextEditingController(text: authState.valueOrNull!.user!.name);
+      if (authState.valueOrNull!.isPhotoURL) {
+        imageBase64 = authState.valueOrNull!.user!.photoURL!;
       }
-      isPhotoChanged = authProvider.user!.isPhotoChanged;
+      isPhotoChanged = authState.valueOrNull!.user!.hasPhotoChanged;
       accountType = "perfil";
     }
   }
@@ -78,7 +82,6 @@ class _DialogEditProfileState extends State<DialogEditProfile> {
 
   @override
   Widget build(BuildContext context) {
-    final AuthProvider authProvider = context.watch<AuthProvider>();
     final NavigatorState navigator = Navigator.of(context);
     final AppLocalizations localizations = AppLocalizations.of(context)!;
 
@@ -138,10 +141,15 @@ class _DialogEditProfileState extends State<DialogEditProfile> {
                                         child: Column(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            Image.memory(
-                                              base64Decode(imageBase64!),
-                                              fit: BoxFit.contain,
-                                            ),
+                                            !isPhotoChanged
+                                                ? Image.memory(
+                                                    base64Decode(imageBase64!),
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : CachedNetworkImage(
+                                                    imageUrl: imageBase64!,
+                                                    fit: BoxFit.cover,
+                                                  ),
                                           ],
                                         ),
                                       );
@@ -149,20 +157,25 @@ class _DialogEditProfileState extends State<DialogEditProfile> {
                                   );
                                 },
                                 child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: isPhotoChanged
-                                        ? Image.memory(
-                                            base64Decode(imageBase64!),
-                                            height: 50,
-                                            width: 50,
-                                            fit: BoxFit.cover,
-                                          )
-                                        : Image.network(
-                                            imageBase64!,
-                                            width: 50,
-                                            height: 50,
-                                            fit: BoxFit.cover,
-                                          )),
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: !isPhotoChanged
+                                      ? Image.memory(
+                                          base64Decode(imageBase64!),
+                                          height: 50,
+                                          width: 50,
+                                          fit: BoxFit.cover,
+                                        )
+                                      : CachedNetworkImage(
+                                          imageUrl: imageBase64!,
+                                          width: 50,
+                                          height: 50,
+                                          fit: BoxFit.cover,
+                                          placeholder: (context, url) =>
+                                              CircularProgressIndicator(),
+                                          errorWidget: (context, url, error) =>
+                                              Icon(Icons.error),
+                                        ),
+                                ),
                               ),
                               SizedBox(
                                   width: AppDimensions.screenHeight(context) *
@@ -209,15 +222,19 @@ class _DialogEditProfileState extends State<DialogEditProfile> {
                     'onInit': () async {
                       String? response;
                       if (widget.isFamily) {
-                        response = await authProvider.actualizarFamilia(
-                            nameController.text[0].toUpperCase() +
-                                nameController.text.substring(1).trim());
+                        response = await ref
+                            .read(authProvider.notifier)
+                            .actualizarFamilia(
+                                nameController.text[0].toUpperCase() +
+                                    nameController.text.substring(1).trim());
                       } else {
-                        response = await authProvider.actualizarProfile(
-                            nameController.text[0].toUpperCase() +
-                                nameController.text.substring(1).trim(),
-                            imageBase64,
-                            isPhotoChanged);
+                        response = await ref
+                            .read(authProvider.notifier)
+                            .actualizarProfile(
+                                nameController.text[0].toUpperCase() +
+                                    nameController.text.substring(1).trim(),
+                                imageBase64,
+                                isPhotoChanged);
                       }
                       if (response != null) {
                         ToastHelper.show(response);

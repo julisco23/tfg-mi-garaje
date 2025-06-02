@@ -41,8 +41,7 @@ class AppRoutes {
         ));
 
       case RouteNames.settings:
-        return _slideTransition(
-            SettingsView(garageViewModel: args['garageViewModel']));
+        return _slideTransition(SettingsView());
 
       case RouteNames.types:
         return _slideTransition(TypesView(type: args['type']));

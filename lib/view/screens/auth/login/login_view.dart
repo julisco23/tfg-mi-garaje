@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/utils/validator.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
-import 'package:mi_garaje/data/provider/auth_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:mi_garaje/data/provider/auth_notifier.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/view/widgets/utils/elevated_button_utils.dart';
 import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class LoginView extends StatefulWidget {
+class LoginView extends ConsumerStatefulWidget {
   const LoginView({super.key});
 
   @override
-  State<LoginView> createState() => _LoginViewState();
+  ConsumerState<LoginView> createState() => _LoginViewState();
 }
 
-class _LoginViewState extends State<LoginView> {
+class _LoginViewState extends ConsumerState<LoginView> {
   bool obscureText = true;
 
   final TextEditingController emailController = TextEditingController();
@@ -26,7 +26,6 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    final AuthProvider loginViewModel = context.read<AuthProvider>();
     final NavigatorState navigator = Navigator.of(context);
     final localizations = AppLocalizations.of(context)!;
 
@@ -70,8 +69,9 @@ class _LoginViewState extends State<LoginView> {
                         onPressed: () async {
                           navigator.pushNamed(RouteNames.loading, arguments: {
                             'onInit': () async {
-                              String? response = await loginViewModel.signin(
-                                  "juli@gmail.com", "jjjjjj");
+                              String? response = await ref
+                                  .read(authProvider.notifier)
+                                  .signin("juli@gmail.com", "jjjjjj");
                               if (response != null) {
                                 ToastHelper.show(response);
                                 navigator.pop();
@@ -129,8 +129,10 @@ class _LoginViewState extends State<LoginView> {
                       if (loginFormKey.currentState!.validate()) {
                         navigator.pushNamed(RouteNames.loading, arguments: {
                           'onInit': () async {
-                            String? response = await loginViewModel.signin(
-                                emailController.text, passwordController.text);
+                            String? response = await ref
+                                .read(authProvider.notifier)
+                                .signin(emailController.text,
+                                    passwordController.text);
                             if (response != null) {
                               ToastHelper.show(response);
                               navigator.pop();
@@ -162,8 +164,9 @@ class _LoginViewState extends State<LoginView> {
                     onPressed: () async {
                       navigator.pushNamed(RouteNames.loading, arguments: {
                         'onInit': () async {
-                          String? response =
-                              await loginViewModel.signInWithGoogle();
+                          String? response = await ref
+                              .read(authProvider.notifier)
+                              .signInWithGoogle();
 
                           if (response != null) {
                             ToastHelper.show(response);

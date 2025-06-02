@@ -1,24 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mi_garaje/data/models/activity.dart';
 import 'package:mi_garaje/data/models/vehicle.dart';
-import 'package:mi_garaje/data/provider/activity_provider.dart';
-import 'package:mi_garaje/data/provider/auth_provider.dart';
-import 'package:mi_garaje/data/provider/garage_provider.dart';
+import 'package:mi_garaje/data/provider/activity_notifier.dart';
+import 'package:mi_garaje/data/provider/garage_notifier.dart';
 import 'package:mi_garaje/shared/utils/statics.dart';
 import 'package:mi_garaje/view/widgets/chart/monthly_total_spending_chart.dart';
 import 'package:mi_garaje/view/widgets/chart/pie_chart_widget.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class StatisticsView extends StatefulWidget {
-  final GarageProvider garageProvider;
-  const StatisticsView({super.key, required this.garageProvider});
+class StatisticsView extends ConsumerStatefulWidget {
+  const StatisticsView({super.key});
 
   @override
-  State<StatisticsView> createState() => _StatisticsViewState();
+  ConsumerState<StatisticsView> createState() => _StatisticsViewState();
 }
 
-class _StatisticsViewState extends State<StatisticsView> {
+class _StatisticsViewState extends ConsumerState<StatisticsView> {
   List<Vehicle> vehicles = [];
   Map<String, List<Activity>> vehicleActivities = {};
   Vehicle? selectedVehicle;
@@ -26,29 +24,23 @@ class _StatisticsViewState extends State<StatisticsView> {
   String? selectedActivityType;
   String? selectedSubType;
 
-  late ActivityProvider activityProvider;
-  late AuthProvider authProvider;
   late Map<String, dynamic> stats;
 
   @override
   void initState() {
     super.initState();
-    activityProvider = Provider.of<ActivityProvider>(context, listen: false);
-    authProvider = Provider.of<AuthProvider>(context, listen: false);
-    _loadVehicles();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadVehicles());
   }
 
   void _loadVehicles() async {
-    final vehicles = widget.garageProvider.vehicles;
+    final vehicles = ref.read(garageProvider).value!.vehicles;
 
     final Map<String, List<Activity>> activitiesMap = {};
 
     for (var vehicle in vehicles) {
-      final acts = await activityProvider.getActivitiesByVehicle(
-        vehicle.id!,
-        authProvider.id,
-        authProvider.type,
-      );
+      final acts = await ref
+          .read(activityProvider.notifier)
+          .getActivitiesByVehicle(vehicle.id!);
       activitiesMap[vehicle.id!] = acts;
     }
 

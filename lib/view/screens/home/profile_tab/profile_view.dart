@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,10 +8,9 @@ import 'package:mi_garaje/data/models/user.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/view/widgets/cards/vehicle_card.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
-import 'package:provider/provider.dart' as provider;
 import 'package:mi_garaje/shared/routes/route_names.dart';
-import 'package:mi_garaje/data/provider/auth_provider.dart';
-import 'package:mi_garaje/data/provider/garage_provider.dart';
+import 'package:mi_garaje/data/provider/auth_notifier.dart';
+import 'package:mi_garaje/data/provider/garage_notifier.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class Perfil extends ConsumerWidget {
@@ -18,9 +18,8 @@ class Perfil extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final AuthProvider authProvider = context.watch<AuthProvider>();
-    final GarageProvider garageProvider = context.watch<GarageProvider>();
     final localizations = AppLocalizations.of(context)!;
+    final authState = ref.watch(authProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -38,8 +37,7 @@ class Perfil extends ConsumerWidget {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          await garageProvider.refreshGarage(
-              authProvider.id, authProvider.type);
+          ref.invalidate(garageProvider);
         },
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -48,13 +46,13 @@ class Perfil extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                _buildProfileHeader(context, authProvider),
+                _buildProfileHeader(context, authState),
                 SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
-                if (authProvider.isFamily) ...[
-                  _buildFamilyList(context, authProvider, localizations),
+                if (authState.valueOrNull!.isFamily) ...[
+                  _buildFamilyList(context, authState, localizations),
                   SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
                 ],
-                _buildVehicleList(localizations),
+                _buildVehicleList(localizations, ref, context),
               ],
             ),
           ),
@@ -63,8 +61,9 @@ class Perfil extends ConsumerWidget {
     );
   }
 
-  Widget _buildProfileHeader(BuildContext context, AuthProvider authProvider) {
-    final User user = authProvider.user!;
+  Widget _buildProfileHeader(
+      BuildContext context, AsyncValue<AuthState> authState) {
+    final User user = authState.valueOrNull!.user!;
 
     return Column(
       children: [
@@ -79,11 +78,18 @@ class Perfil extends ConsumerWidget {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Image(
-                                image: !user.hasPhotoChanged
-                                    ? NetworkImage(user.photoURL!)
-                                    : MemoryImage(
-                                        base64Decode(user.photoURL!))),
+                            !user.hasPhotoChanged
+                                ? CachedNetworkImage(
+                                    imageUrl: user.photoURL!,
+                                    placeholder: (context, url) =>
+                                        CircularProgressIndicator(),
+                                    errorWidget: (context, url, error) =>
+                                        Icon(Icons.error),
+                                  )
+                                : Image(
+                                    image: MemoryImage(
+                                        base64Decode(user.photoURL!)),
+                                  )
                           ],
                         ),
                       );
@@ -93,10 +99,12 @@ class Perfil extends ConsumerWidget {
           },
           child: CircleAvatar(
               radius: 50,
-              backgroundImage: user.isPhoto
-                  ? !user.hasPhotoChanged
+              backgroundImage: (user.isPhoto)
+                  ? (!user.hasPhotoChanged
                       ? MemoryImage(base64Decode(user.photoURL!))
-                      : NetworkImage(user.photoURL!)
+                          as ImageProvider
+                      : CachedNetworkImageProvider(user.photoURL!)
+                          as ImageProvider)
                   : null,
               backgroundColor: Theme.of(context).primaryColor,
               child: user.isPhoto
@@ -109,55 +117,53 @@ class Perfil extends ConsumerWidget {
         ),
         SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
         Text(
-          authProvider.user!.displayName,
+          user.displayName,
           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
       ],
     );
   }
 
-  Widget _buildVehicleList(AppLocalizations localizations) {
-    return provider.Consumer<GarageProvider>(
-      builder: (context, garageProvider, child) {
-        final vehicles = garageProvider.vehicles;
+  Widget _buildVehicleList(
+      AppLocalizations localizations, WidgetRef ref, BuildContext context) {
+    final vehicles = ref.watch(garageProvider).value!.vehicles;
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              localizations.myVehicles,
-              style: TextStyle(
-                color: Theme.of(context).primaryColor,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: vehicles.length,
-              itemBuilder: (context, index) {
-                final vehicle = vehicles[index];
-                return VehicleCard(
-                  key: ValueKey(vehicle.hashCode),
-                  vehicle: vehicle,
-                  profile: true,
-                );
-              },
-            ),
-          ],
-        );
-      },
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          localizations.myVehicles,
+          style: TextStyle(
+            color: Theme.of(context).primaryColor,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: vehicles.length,
+          itemBuilder: (context, index) {
+            final vehicle = vehicles[index];
+            return VehicleCard(
+              key: ValueKey(vehicle.hashCode),
+              vehicle: vehicle,
+              profile: true,
+            );
+          },
+        ),
+      ],
     );
   }
 
-  Widget _buildFamilyList(BuildContext context, AuthProvider authProvider,
+  Widget _buildFamilyList(BuildContext context, AsyncValue<AuthState> authState,
       AppLocalizations localizations) {
-    if (authProvider.family == null) {
+    if (!authState.value!.isFamily) {
       return CircularProgressIndicator();
     }
-    final members = authProvider.family!.members;
+
+    final family = authState.value!.family!;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -174,14 +180,13 @@ class Perfil extends ConsumerWidget {
         Row(
           children: [
             Text(
-              authProvider.family!.name,
+              family.name,
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             SizedBox(width: AppDimensions.screenWidth(context) * 0.015),
             InkWell(
               onTap: () {
-                Clipboard.setData(
-                    ClipboardData(text: authProvider.family!.code));
+                Clipboard.setData(ClipboardData(text: family.code));
                 ToastHelper.show("Código de familia copiado al portapapeles");
               },
               borderRadius: BorderRadius.circular(10),
@@ -194,7 +199,7 @@ class Perfil extends ConsumerWidget {
                 child: Row(
                   children: [
                     Text(
-                      "${localizations.code} ${authProvider.family!.code}",
+                      "${localizations.code} ${family.code}",
                       style: TextStyle(color: Theme.of(context).primaryColor),
                     ),
                   ],
@@ -208,9 +213,9 @@ class Perfil extends ConsumerWidget {
           height: 140,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            itemCount: members?.length ?? 0,
+            itemCount: family.members?.length ?? 0,
             itemBuilder: (context, index) {
-              final member = members![index];
+              final member = family.members![index];
 
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 1.0),
@@ -226,11 +231,13 @@ class Perfil extends ConsumerWidget {
                       children: [
                         CircleAvatar(
                             radius: 35,
-                            backgroundImage: member.isPhoto
-                                ? member.hasPhotoChanged
+                            backgroundImage: (member.isPhoto)
+                                ? (!member.hasPhotoChanged
                                     ? MemoryImage(
-                                        base64Decode(member.photoURL!))
-                                    : NetworkImage(member.photoURL!)
+                                            base64Decode(member.photoURL!))
+                                        as ImageProvider
+                                    : CachedNetworkImageProvider(
+                                        member.photoURL!) as ImageProvider)
                                 : null,
                             backgroundColor: Theme.of(context).primaryColor,
                             child: member.isPhoto

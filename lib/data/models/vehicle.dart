@@ -52,7 +52,9 @@ class Vehicle {
   }
 
   String getInitial() {
-    return name != null && name!.isNotEmpty ? name!.substring(0, 1).toUpperCase() : brand.substring(0, 1).toUpperCase();
+    return name != null && name!.isNotEmpty
+        ? name!.substring(0, 1).toUpperCase()
+        : brand.substring(0, 1).toUpperCase();
   }
 
   String getNameTittle() {
@@ -84,5 +86,25 @@ class Vehicle {
   @override
   String toString() {
     return 'Vehicle{id: $id, brand: $brand, vehicleType: $vehicleType}';
+  }
+
+  Vehicle copyWith({
+    String? id,
+    String? name,
+    String? brand,
+    String? model,
+    String? photo,
+    String? vehicleType,
+    DateTime? creationDate,
+  }) {
+    return Vehicle(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      brand: brand ?? this.brand,
+      model: model ?? this.model,
+      photo: photo ?? this.photo,
+      vehicleType: vehicleType ?? this.vehicleType,
+      creationDate: creationDate ?? this.creationDate,
+    );
   }
 }

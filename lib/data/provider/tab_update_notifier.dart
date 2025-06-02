@@ -1,31 +1,54 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class TabState with ChangeNotifier {
-  List<String> _activityTypes = [];
+class TabState {
+  final List<String> activityTypes;
+  final int tabIndex;
 
-  int tabIndex = 0;
+  TabState({
+    required this.activityTypes,
+    required this.tabIndex,
+  });
 
-  List<String> get activityTypes => _activityTypes;
-  bool get isScrollable => _activityTypes.length > 4;
+  bool get isScrollable => activityTypes.length > 4;
 
-  void inicializar(List<String> types) {
-    _activityTypes = types;
-  }
-
-  void newTab(String text) {
-    _activityTypes.add(text);
-    notifyListeners();
-  }
-
-  void removeTab(String text) {
-    _activityTypes.remove(text);
-    notifyListeners();
-  }
-
-  void editTab(String oldText, String newText) {
-    final index = _activityTypes.indexOf(oldText);
-    _activityTypes[index] = newText;
-    notifyListeners();
+  TabState copyWith({
+    List<String>? activityTypes,
+    int? tabIndex,
+  }) {
+    return TabState(
+      activityTypes: activityTypes ?? this.activityTypes,
+      tabIndex: tabIndex ?? this.tabIndex,
+    );
   }
 }
 
+class TabStateNotifier extends StateNotifier<TabState> {
+  TabStateNotifier() : super(TabState(activityTypes: [], tabIndex: 0));
+
+  void inicializar(List<String> types) {
+    state = state.copyWith(activityTypes: List.from(types));
+  }
+
+  void newTab(String text) {
+    final updated = List<String>.from(state.activityTypes)..add(text);
+    state = state.copyWith(activityTypes: updated);
+  }
+
+  void removeTab(String text) {
+    final updated = List<String>.from(state.activityTypes)..remove(text);
+    state = state.copyWith(activityTypes: updated);
+  }
+
+  void editTab(String oldText, String newText) {
+    final updated = List<String>.from(state.activityTypes);
+    final index = updated.indexOf(oldText);
+    if (index != -1) {
+      updated[index] = newText;
+      state = state.copyWith(activityTypes: updated);
+    }
+  }
+}
+
+final tabStateProvider = StateNotifierProvider<TabStateNotifier, TabState>(
+  (ref) => TabStateNotifier(),
+);

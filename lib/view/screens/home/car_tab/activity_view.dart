@@ -5,8 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:mi_garaje/data/models/activity.dart';
 import 'package:mi_garaje/data/models/fuel.dart';
-import 'package:mi_garaje/data/provider/activity_provider.dart';
-import 'package:mi_garaje/data/provider/auth_provider.dart';
+import 'package:mi_garaje/data/provider/activity_notifier.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/exceptions/garage_exception.dart';
 import 'package:mi_garaje/utils/app_localizations_extensions.dart';
@@ -14,8 +13,6 @@ import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_add_activity.dart'
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_confirm.dart';
 import 'package:mi_garaje/view/widgets/utils/elevated_button_utils.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
-import 'package:provider/provider.dart';
-import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ActivityView extends ConsumerStatefulWidget {
@@ -38,9 +35,6 @@ class _ActivityViewState extends ConsumerState<ActivityView> {
 
   @override
   Widget build(BuildContext context) {
-    final ActivityProvider activityProvider = context.read<ActivityProvider>();
-    final AuthProvider authProvider = context.read<AuthProvider>();
-    final GarageProvider garageProvider = context.read<GarageProvider>();
     final NavigatorState navigator = Navigator.of(context);
     final AppLocalizations localizations = AppLocalizations.of(context)!;
 
@@ -59,8 +53,9 @@ class _ActivityViewState extends ConsumerState<ActivityView> {
               if (!result) return;
 
               try {
-                await activityProvider.deleteActivity(garageProvider.id,
-                    authProvider.id, authProvider.type, activity);
+                await ref
+                    .read(activityProvider.notifier)
+                    .deleteActivity(activity);
               } on GarageException catch (e) {
                 ToastHelper.show(e.message);
                 return;

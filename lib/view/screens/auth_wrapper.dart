@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:mi_garaje/data/provider/auth_provider.dart';
-import 'package:mi_garaje/data/provider/global_types_view_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mi_garaje/data/provider/auth_notifier.dart';
 import 'package:mi_garaje/view/screens/auth/login/login_view.dart';
 import 'package:mi_garaje/view/screens/home/home_view.dart';
 import 'package:mi_garaje/view/screens/splash_screen.dart';
 
-class AuthWrapper extends StatefulWidget {
+class AuthWrapper extends ConsumerStatefulWidget {
   const AuthWrapper({super.key});
 
   @override
-  State<AuthWrapper> createState() => _AuthWrapperState();
+  ConsumerState<AuthWrapper> createState() => _AuthWrapperState();
 }
 
-class _AuthWrapperState extends State<AuthWrapper> {
+class _AuthWrapperState extends ConsumerState<AuthWrapper> {
   bool _isLoading = true;
   bool _isAuthenticated = false;
 
@@ -24,12 +23,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
   }
 
   Future<void> _initializeUser() async {
-    final AuthProvider authViewModel = context.read<AuthProvider>();
-    final GlobalTypesViewModel globalTypesViewModel =
-        context.read<GlobalTypesViewModel>();
-
-    bool isAuthenticated = await authViewModel.checkUser();
-    await globalTypesViewModel.loadGlobalTypes();
+    bool isAuthenticated = await ref.read(authProvider.notifier).checkUser();
 
     setState(() {
       _isAuthenticated = isAuthenticated;

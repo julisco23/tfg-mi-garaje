@@ -1,120 +1,75 @@
 import 'package:flutter/material.dart';
-import 'package:mi_garaje/data/provider/activity_provider.dart';
-import 'package:mi_garaje/data/provider/auth_provider.dart';
-import 'package:mi_garaje/data/provider/global_types_view_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mi_garaje/data/provider/garage_notifier.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
-import 'package:mi_garaje/shared/exceptions/garage_exception.dart';
 import 'package:mi_garaje/view/screens/error_screen.dart';
 import 'package:mi_garaje/view/screens/splash_screen.dart';
-import 'package:provider/provider.dart';
 import 'package:mi_garaje/view/screens/home/first_car_view.dart';
-import 'package:mi_garaje/data/provider/garage_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class HomeView extends StatefulWidget {
+class HomeView extends ConsumerStatefulWidget {
   const HomeView({super.key});
 
   @override
-  State<HomeView> createState() => _HomeViewState();
+  ConsumerState<HomeView> createState() => _HomeViewState();
 }
 
-class _HomeViewState extends State<HomeView> {
+class _HomeViewState extends ConsumerState<HomeView> {
   int _selectedIndex = AppConstants.tabHome;
-  bool _hasVehicles = false;
-  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _loadVehicles();
-  }
-
-  Future<void> _loadVehicles() async {
-    final GarageProvider garageViewModel = context.read<GarageProvider>();
-    final AuthProvider authProvider = context.read<AuthProvider>();
-    final ActivityProvider activityProvider = context.read<ActivityProvider>();
-    final GlobalTypesViewModel globalTypesViewModel =
-        context.read<GlobalTypesViewModel>();
-
-    try {
-      final result =
-          await garageViewModel.hasVehicles(authProvider.id, authProvider.type);
-      if (result) {
-        await activityProvider.loadActivities(
-            garageViewModel.id, authProvider.id, authProvider.type);
-      }
-
-      await globalTypesViewModel.initializeUser(
-          authProvider.id, authProvider.type);
-
-      setState(() {
-        _hasVehicles = result;
-        _isLoading = false;
-      });
-    } on GarageException catch (e) {
-      if (mounted) {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => ErrorScreen(
-              errorMessage: e.message,
-              onRetry: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ),
-        );
-      }
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+    final garageAsync = ref.watch(garageProvider);
 
-    if (_isLoading) {
-      return SplashScreen();
-    }
-
-    if (!_hasVehicles) {
-      return FirstCar(onVehicleChanged: (vehicle) {
-        setState(() {
-          _hasVehicles = true;
-        });
-      });
-    }
-
-    return Scaffold(
-      body: AppConstants
-          .widgetTabs[_selectedIndex](context.read<GarageProvider>()),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: _selectedIndex,
-        onTap: (indexTab) {
-          setState(() {
-            _selectedIndex = indexTab;
-          });
-        },
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.work_history_outlined),
-            label: localizations.history,
-            activeIcon: Icon(Icons.work_history_rounded),
-            tooltip: localizations.history,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            label: localizations.home,
-            activeIcon: Icon(Icons.home_rounded),
-            tooltip: localizations.home,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            label: localizations.profile,
-            activeIcon: Icon(Icons.person_rounded),
-            tooltip: localizations.profile,
-          ),
-        ],
+    return garageAsync.when(
+      loading: () => const SplashScreen(),
+      error: (err, st) => ErrorScreen(
+        errorMessage: err.toString(),
       ),
+      data: (garage) {
+        if (!garage.isVehicleSelected) {
+          return FirstCar(onVehicleChanged: (vehicle) {});
+        }
+
+        return Scaffold(
+          body: AppConstants.widgetTabs[_selectedIndex],
+          bottomNavigationBar: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            currentIndex: _selectedIndex,
+            onTap: (indexTab) {
+              setState(() {
+                _selectedIndex = indexTab;
+              });
+            },
+            items: [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.work_history_outlined),
+                label: localizations.history,
+                activeIcon: Icon(Icons.work_history_rounded),
+                tooltip: localizations.history,
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home_outlined),
+                label: localizations.home,
+                activeIcon: Icon(Icons.home_rounded),
+                tooltip: localizations.home,
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person_outline),
+                label: localizations.profile,
+                activeIcon: Icon(Icons.person_rounded),
+                tooltip: localizations.profile,
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

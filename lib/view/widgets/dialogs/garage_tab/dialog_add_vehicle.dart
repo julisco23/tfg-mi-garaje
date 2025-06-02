@@ -1,22 +1,21 @@
 import 'dart:typed_data';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mi_garaje/data/models/vehicle.dart';
-import 'package:mi_garaje/data/provider/auth_provider.dart';
-import 'package:mi_garaje/data/provider/global_types_view_model.dart';
+import 'package:mi_garaje/data/provider/global_types_notifier.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/utils/validator.dart';
 import 'package:mi_garaje/shared/exceptions/garage_exception.dart';
 import 'package:mi_garaje/utils/app_localizations_extensions.dart';
 import 'package:mi_garaje/view/widgets/utils/elevated_button_utils.dart';
 import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
-import 'package:mi_garaje/data/provider/garage_provider.dart';
+import 'package:mi_garaje/data/provider/garage_notifier.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class DialogAddVehicle extends StatefulWidget {
+class DialogAddVehicle extends ConsumerStatefulWidget {
   final Vehicle? vehicle;
   final Function(Vehicle?)? onVehicleChanged;
 
@@ -27,7 +26,7 @@ class DialogAddVehicle extends StatefulWidget {
   });
 
   @override
-  State<DialogAddVehicle> createState() => _DialogAddVehicleState();
+  ConsumerState<DialogAddVehicle> createState() => _DialogAddVehicleState();
 
   static Future<void> show(BuildContext context,
       {Vehicle? vehicle, Function(Vehicle?)? onVehicleChanged}) {
@@ -43,7 +42,7 @@ class DialogAddVehicle extends StatefulWidget {
   }
 }
 
-class _DialogAddVehicleState extends State<DialogAddVehicle> {
+class _DialogAddVehicleState extends ConsumerState<DialogAddVehicle> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController brandController = TextEditingController();
   final TextEditingController modelController = TextEditingController();
@@ -51,14 +50,10 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
   String? selectedVehicleType;
   Uint8List? imageBytes;
 
-  late Future<List<String>> _vehiclesTypes;
-
   @override
   void initState() {
     super.initState();
-    final AuthProvider authProvider = context.read<AuthProvider>();
-    final GlobalTypesViewModel globalTypesViewModel =
-        context.read<GlobalTypesViewModel>();
+
     if (widget.vehicle != null) {
       nameController.text = widget.vehicle!.name ?? '';
       brandController.text = widget.vehicle!.brand;
@@ -68,9 +63,6 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
         imageBytes = base64Decode(widget.vehicle!.photo!);
       }
     }
-
-    _vehiclesTypes = globalTypesViewModel.getTypes(
-        authProvider.id, authProvider.type, 'Vehicle');
   }
 
   Future<void> _pickImage() async {
@@ -88,8 +80,6 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
 
   @override
   Widget build(BuildContext context) {
-    final AuthProvider authProvider = context.read<AuthProvider>();
-    final GarageProvider garageProvider = context.read<GarageProvider>();
     final NavigatorState navigator = Navigator.of(context);
     final AppLocalizations localizations = AppLocalizations.of(context)!;
 
@@ -127,66 +117,86 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
                   // Selector de tipo de vehículo
                   SizedBox(
                     width: double.infinity,
-                    child: FutureBuilder<List<String>>(
-                      future: _vehiclesTypes,
-                      builder: (context, snapshot) {
-                        return DropdownButtonFormField<String>(
-                          value: selectedVehicleType,
-                          decoration: InputDecoration(
-                            floatingLabelStyle: TextStyle(
-                                color: Theme.of(context).primaryColor),
-                            labelText: localizations.vehicleType,
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            filled: true,
-                          ),
-                          onChanged: (newValue) {
-                            setState(() {
-                              selectedVehicleType = newValue;
-                            });
-                          },
-                          items: [
-                            DropdownMenuItem<String>(
-                              value: null,
-                              child: Text(localizations.vehicleType,
-                                  style:
-                                      Theme.of(context).textTheme.bodyMedium),
-                            ),
-                            if (snapshot.connectionState !=
-                                ConnectionState.waiting)
-                              ...snapshot.data!.map<DropdownMenuItem<String>>(
-                                (String tipo) {
-                                  print('Tipo de vehículo: $tipo');
-                                  return DropdownMenuItem<String>(
-                                    value: tipo,
-                                    child: Text(localizations.getSubType(tipo),
+                    child: ref.watch(globalTypesProvider).when(
+                          data: (_) {
+                            return FutureBuilder<List<String>>(
+                              future: ref
+                                  .read(globalTypesProvider.notifier)
+                                  .getTypes('Vehicle'),
+                              builder: (context, snapshot) {
+                                final isWaiting = snapshot.connectionState ==
+                                    ConnectionState.waiting;
+                                final types = snapshot.data ?? [];
+
+                                return DropdownButtonFormField<String>(
+                                  value: selectedVehicleType,
+                                  decoration: InputDecoration(
+                                    floatingLabelStyle: TextStyle(
+                                        color: Theme.of(context).primaryColor),
+                                    labelText: localizations.vehicleType,
+                                    border: OutlineInputBorder(
+                                      borderSide: BorderSide.none,
+                                      borderRadius: BorderRadius.circular(14),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide.none,
+                                      borderRadius: BorderRadius.circular(14),
+                                    ),
+                                    filled: true,
+                                  ),
+                                  onChanged: (newValue) {
+                                    setState(() {
+                                      selectedVehicleType = newValue;
+                                    });
+                                  },
+                                  items: [
+                                    DropdownMenuItem<String>(
+                                      value: null,
+                                      child: Text(
+                                        localizations.vehicleType,
                                         style: Theme.of(context)
                                             .textTheme
-                                            .bodyMedium),
-                                  );
-                                },
-                              ),
-                            if (snapshot.connectionState ==
-                                    ConnectionState.waiting &&
-                                selectedVehicleType != null)
-                              DropdownMenuItem<String>(
-                                value: selectedVehicleType,
-                                child: Text(selectedVehicleType!,
-                                    style:
-                                        Theme.of(context).textTheme.bodyMedium),
-                              ),
-                          ],
-                          validator: Validator.validateDropdown,
-                        );
-                      },
-                    ),
+                                            .bodyMedium,
+                                      ),
+                                    ),
+                                    if (!isWaiting)
+                                      ...types.map(
+                                        (tipo) => DropdownMenuItem<String>(
+                                          value: tipo,
+                                          child: Text(
+                                            localizations.getSubType(tipo),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium,
+                                          ),
+                                        ),
+                                      ),
+                                    if (isWaiting &&
+                                        selectedVehicleType != null)
+                                      DropdownMenuItem<String>(
+                                        value: selectedVehicleType,
+                                        child: Text(
+                                          selectedVehicleType!,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium,
+                                        ),
+                                      ),
+                                  ],
+                                  validator: Validator.validateDropdown,
+                                );
+                              },
+                            );
+                          },
+                          loading: () =>
+                              const Center(child: CircularProgressIndicator()),
+                          error: (err, stack) => Text(
+                            "error: $err",
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        ),
                   ),
+
                   SizedBox(height: AppDimensions.screenHeight(context) * 0.03),
 
                   // Campo de marca
@@ -323,10 +333,9 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
                               try {
                                 if (widget.vehicle == null) {
                                   // Añadir vehículo
-                                  await garageProvider.addVehicle(
-                                      authProvider.id,
-                                      authProvider.type,
-                                      vehicle);
+                                  await ref
+                                      .read(garageProvider.notifier)
+                                      .addVehicle(vehicle);
 
                                   if (widget.onVehicleChanged != null) {
                                     widget.onVehicleChanged!(null);
@@ -337,10 +346,9 @@ class _DialogAddVehicleState extends State<DialogAddVehicle> {
                                 } else {
                                   // Actualizar vehículo
                                   vehicle.id = widget.vehicle!.id;
-                                  await garageProvider.updateVehicle(
-                                      authProvider.id,
-                                      authProvider.type,
-                                      vehicle);
+                                  await ref
+                                      .read(garageProvider.notifier)
+                                      .updateVehicle(vehicle);
 
                                   widget.onVehicleChanged!(vehicle);
 

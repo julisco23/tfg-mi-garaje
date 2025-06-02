@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:mi_garaje/data/provider/activity_provider.dart';
-import 'package:mi_garaje/data/provider/auth_provider.dart';
-import 'package:mi_garaje/data/provider/garage_provider.dart';
-import 'package:mi_garaje/data/provider/global_types_view_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mi_garaje/data/provider/auth_notifier.dart';
 import 'package:mi_garaje/shared/utils/validator.dart';
 import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class DialogFamilyCode extends StatelessWidget {
+class DialogFamilyCode extends ConsumerWidget {
   const DialogFamilyCode({
     super.key,
   });
@@ -20,25 +17,20 @@ class DialogFamilyCode extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final TextEditingController controller = TextEditingController();
     final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-    final AuthProvider authProvider = context.read<AuthProvider>();
-    final ActivityProvider activityProvider = context.read<ActivityProvider>();
-    final GarageProvider garageViewModel = context.read<GarageProvider>();
-    final GlobalTypesViewModel globalTypesViewModel =
-        context.read<GlobalTypesViewModel>();
     final NavigatorState navigator = Navigator.of(context);
-    final AppLocalizations localizations =
-        AppLocalizations.of(context)!;
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
 
     return AlertDialog(
       insetPadding: EdgeInsets.all(10),
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(localizations.join, style: Theme.of(context).textTheme.titleLarge),
+          Text(localizations.join,
+              style: Theme.of(context).textTheme.titleLarge),
           IconButton(
             icon: Icon(Icons.close, color: Theme.of(context).primaryColor),
             onPressed: () {
@@ -74,13 +66,9 @@ class DialogFamilyCode extends StatelessWidget {
               onPressed: () async {
                 if (!formKey.currentState!.validate()) return;
 
-                await authProvider.unirseAFamilia(controller.text);
-                await garageViewModel.getVehicles(
-                    authProvider.id, authProvider.type);
-                await activityProvider.loadActivities(
-                    garageViewModel.id, authProvider.id, authProvider.type);
-                await globalTypesViewModel.initializeUser(
-                    authProvider.id, authProvider.type);
+                await ref
+                    .read(authProvider.notifier)
+                    .unirseAFamilia(controller.text);
 
                 navigator.pop(true);
               },

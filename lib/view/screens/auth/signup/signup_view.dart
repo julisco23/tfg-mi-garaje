@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/utils/validator.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
-import 'package:provider/provider.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/view/widgets/utils/elevated_button_utils.dart';
 import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
-import 'package:mi_garaje/data/provider/auth_provider.dart';
+import 'package:mi_garaje/data/provider/auth_notifier.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class SignupView extends StatefulWidget {
+class SignupView extends ConsumerStatefulWidget {
   const SignupView({super.key});
 
   @override
-  State<SignupView> createState() => _SignupViewState();
+  ConsumerState<SignupView> createState() => _SignupViewState();
 }
 
-class _SignupViewState extends State<SignupView> {
+class _SignupViewState extends ConsumerState<SignupView> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
@@ -27,7 +27,6 @@ class _SignupViewState extends State<SignupView> {
 
   @override
   Widget build(BuildContext context) {
-    final AuthProvider loginViewModel = Provider.of<AuthProvider>(context);
     final NavigatorState navigator = Navigator.of(context);
     final localizations = AppLocalizations.of(context)!;
 
@@ -109,12 +108,14 @@ class _SignupViewState extends State<SignupView> {
                         if (signupFormKey.currentState!.validate()) {
                           navigator.pushNamed(RouteNames.loading, arguments: {
                             'onInit': () async {
-                              String? response = await loginViewModel.signup(
-                                emailController.text,
-                                passwordController.text,
-                                nameController.text[0].toUpperCase() +
-                                    nameController.text.substring(1).trim(),
-                              );
+                              String? response = await ref
+                                  .read(authProvider.notifier)
+                                  .signup(
+                                    emailController.text,
+                                    passwordController.text,
+                                    nameController.text[0].toUpperCase() +
+                                        nameController.text.substring(1).trim(),
+                                  );
                               if (response != null) {
                                 ToastHelper.show(response);
                               } else {
@@ -135,8 +136,9 @@ class _SignupViewState extends State<SignupView> {
                       onPressed: () async {
                         navigator.pushNamed(RouteNames.loading, arguments: {
                           'onInit': () async {
-                            String? message =
-                                await loginViewModel.signInAnonymously();
+                            String? message = await ref
+                                .read(authProvider.notifier)
+                                .signInAnonymously();
 
                             if (message != null) {
                               ToastHelper.show(message);
@@ -157,8 +159,9 @@ class _SignupViewState extends State<SignupView> {
                       onPressed: () async {
                         navigator.pushNamed(RouteNames.loading, arguments: {
                           'onInit': () async {
-                            String? response =
-                                await loginViewModel.signupWithGoogle();
+                            String? response = await ref
+                                .read(authProvider.notifier)
+                                .signupWithGoogle();
 
                             if (response != null) {
                               ToastHelper.show(response);

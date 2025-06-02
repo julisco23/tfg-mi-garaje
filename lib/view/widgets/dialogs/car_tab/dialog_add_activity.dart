@@ -2,15 +2,15 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mi_garaje/data/models/activity.dart';
 import 'package:mi_garaje/data/models/custom.dart';
 import 'package:mi_garaje/data/models/fuel.dart';
 import 'package:mi_garaje/data/models/record.dart';
 import 'package:mi_garaje/data/models/repair.dart';
-import 'package:mi_garaje/data/provider/activity_provider.dart';
-import 'package:mi_garaje/data/provider/auth_provider.dart';
-import 'package:mi_garaje/data/provider/global_types_view_model.dart';
+import 'package:mi_garaje/data/provider/activity_notifier.dart';
+import 'package:mi_garaje/data/provider/global_types_notifier.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/utils/validator.dart';
 import 'package:mi_garaje/shared/exceptions/garage_exception.dart';
@@ -18,11 +18,9 @@ import 'package:mi_garaje/utils/app_localizations_extensions.dart';
 import 'package:mi_garaje/view/widgets/utils/date_form_field.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
-import 'package:mi_garaje/data/provider/garage_provider.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class DialogAddActivity extends StatefulWidget {
+class DialogAddActivity extends ConsumerStatefulWidget {
   final Activity? activity;
   final String? customType;
   final Function(Activity)? onActivityUpdated;
@@ -35,7 +33,7 @@ class DialogAddActivity extends StatefulWidget {
   });
 
   @override
-  State<DialogAddActivity> createState() => _DialogAddActivityState();
+  ConsumerState<DialogAddActivity> createState() => _DialogAddActivityState();
 
   static Future<void> show(BuildContext context,
       {Activity? activity,
@@ -54,7 +52,7 @@ class DialogAddActivity extends StatefulWidget {
   }
 }
 
-class _DialogAddActivityState extends State<DialogAddActivity> {
+class _DialogAddActivityState extends ConsumerState<DialogAddActivity> {
   final TextEditingController costController = TextEditingController();
   final TextEditingController detailsController = TextEditingController();
   final TextEditingController costLiterController = TextEditingController();
@@ -74,16 +72,14 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
   void initState() {
     super.initState();
 
-    final AuthProvider authProvider = context.read<AuthProvider>();
-
     if (widget.activity != null) {
       if (widget.activity is CustomActivity) {
         customType = widget.activity!.getType;
         isCustom = true;
       } else {
         customType = widget.activity!.getActivityType;
-        _typesFuture = Provider.of<GlobalTypesViewModel>(context, listen: false)
-            .getTypes(authProvider.id, authProvider.type, customType);
+        _typesFuture =
+            ref.read(globalTypesProvider.notifier).getTypes(customType);
       }
       costController.text = widget.activity!.getCost.toString();
       selectedDate = widget.activity!.getDate;
@@ -105,8 +101,8 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
     } else {
       customType = widget.customType!;
       if (["Fuel", "Repair", "Record"].contains(widget.customType)) {
-        _typesFuture = Provider.of<GlobalTypesViewModel>(context, listen: false)
-            .getTypes(authProvider.id, authProvider.type, customType);
+        _typesFuture =
+            ref.read(globalTypesProvider.notifier).getTypes(customType);
       } else {
         isCustom = true;
       }
@@ -128,9 +124,6 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
 
   @override
   Widget build(BuildContext context) {
-    final ActivityProvider activityProvider = context.read<ActivityProvider>();
-    final AuthProvider authProvider = context.read<AuthProvider>();
-    final GarageProvider garageProvider = context.read<GarageProvider>();
     final NavigatorState navigator = Navigator.of(context);
     final AppLocalizations localizations = AppLocalizations.of(context)!;
 
@@ -433,20 +426,16 @@ class _DialogAddActivityState extends State<DialogAddActivity> {
 
                               try {
                                 if (widget.activity == null) {
-                                  await activityProvider.addActivity(
-                                      garageProvider.id,
-                                      authProvider.id,
-                                      authProvider.type,
-                                      newActivity);
+                                  await ref
+                                      .read(activityProvider.notifier)
+                                      .addActivity(newActivity);
                                   ToastHelper.show('$customType añadida');
                                 } else {
                                   newActivity.idActivity =
                                       widget.activity!.idActivity;
-                                  await activityProvider.updateActivity(
-                                      garageProvider.id,
-                                      authProvider.id,
-                                      authProvider.type,
-                                      newActivity);
+                                  await ref
+                                      .read(activityProvider.notifier)
+                                      .updateActivity(newActivity);
                                   await widget.onActivityUpdated
                                       ?.call(newActivity);
                                   ToastHelper.show('$customType actualizada');

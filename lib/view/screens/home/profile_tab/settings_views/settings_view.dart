@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mi_garaje/data/models/activity.dart';
-import 'package:mi_garaje/data/provider/activity_provider.dart';
-import 'package:mi_garaje/data/provider/global_types_view_model.dart';
+import 'package:mi_garaje/data/provider/activity_notifier.dart';
+import 'package:mi_garaje/data/provider/global_types_notifier.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/shared/utils/mapper_csv.dart';
@@ -15,23 +15,22 @@ import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_confirm.dart';
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/language_selector_dialog.dart';
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/theme_selector_dialog.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
-import 'package:mi_garaje/data/provider/auth_provider.dart';
-import 'package:mi_garaje/data/provider/garage_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:mi_garaje/data/provider/auth_notifier.dart';
+import 'package:mi_garaje/data/provider/garage_notifier.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SettingsView extends ConsumerWidget {
-  final GarageProvider garageViewModel;
-  const SettingsView({super.key, required this.garageViewModel});
+  const SettingsView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final AuthProvider authViewModel = context.read<AuthProvider>();
-    final GlobalTypesViewModel globalTypesProvider =
-        context.read<GlobalTypesViewModel>();
-    final ActivityProvider activityProvider = context.read<ActivityProvider>();
     final NavigatorState navigator = Navigator.of(context);
     final localizations = AppLocalizations.of(context)!;
+
+    final authState = ref.watch(authProvider);
+    final user = authState.value?.user;
+
+    if (user == null) return const Center(child: CircularProgressIndicator());
 
     return Scaffold(
       appBar: AppBar(
@@ -47,12 +46,12 @@ class SettingsView extends ConsumerWidget {
             // SECCIÓN: CUENTA
             _buildSectionTitle(context, localizations.account),
             SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
-            authViewModel.user!.isAnonymous
+            user.isAnonymous
                 ? SettingCard(
                     icon: Icons.person_add_alt_1_rounded,
                     title: localizations.createAccount,
                     onTap: () async {
-                      await DialogCambioCuenta.show(context, authViewModel);
+                      await DialogCambioCuenta.show(context);
                     },
                   )
                 : SettingCard(
@@ -62,7 +61,7 @@ class SettingsView extends ConsumerWidget {
                       await DialogEditProfile.show(context);
                     },
                   ),
-            if (!authViewModel.user!.isGoogle)
+            if (!user.isGoogle)
               SettingCard(
                 imageUrl: 'assets/images/google.png',
                 title: localizations.continueWithGoogle,
@@ -76,16 +75,14 @@ class SettingsView extends ConsumerWidget {
 
                   navigator.pushNamed(RouteNames.loading, arguments: {
                     'onInit': () async {
-                      await authViewModel.linkWithGoogle();
+                      await ref.read(authProvider.notifier).linkWithGoogle();
                       navigator.pop();
-                      //TODO: arreglar
                       ToastHelper.show("Cuenta vinculada con Google.");
-                      //TODO: posible segundo pop
                     }
                   });
                 },
               ),
-            if (!authViewModel.user!.isAnonymous)
+            if (!user.isAnonymous)
               SettingCard(
                 icon: Icons.logout_rounded,
                 title: localizations.logout,
@@ -101,9 +98,8 @@ class SettingsView extends ConsumerWidget {
                     RouteNames.loading,
                     arguments: {
                       'onInit': () async {
-                        await authViewModel.signout();
-                        garageViewModel.cerrarSesion();
-                        activityProvider.clearActivities();
+                        await ref.read(authProvider.notifier).signout();
+                        ref.read(garageProvider.notifier).cerrarSesion();
 
                         navigator.pushNamedAndRemoveUntil(
                             RouteNames.login, (route) => false);
@@ -128,11 +124,8 @@ class SettingsView extends ConsumerWidget {
                   RouteNames.loading,
                   arguments: {
                     'onInit': () async {
-                      await garageViewModel.eliminarCuenta(authViewModel.id,
-                          authViewModel.type, authViewModel.user!.hasFamily);
-                      await authViewModel.eliminarCuenta();
-
-                      activityProvider.clearActivities();
+                      await ref.read(garageProvider.notifier).eliminarCuenta();
+                      await ref.read(authProvider.notifier).eliminarCuenta();
 
                       navigator.pushNamedAndRemoveUntil(
                           RouteNames.login, (route) => false);
@@ -148,7 +141,7 @@ class SettingsView extends ConsumerWidget {
             // SECCIÓN: FAMILIA
             _buildSectionTitle(context, localizations.family),
             SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
-            if (!authViewModel.user!.hasFamily) ...[
+            if (!user.hasFamily) ...[
               SettingCard(
                 icon: Icons.group_add_rounded,
                 title: localizations.createFamily,
@@ -162,13 +155,15 @@ class SettingsView extends ConsumerWidget {
 
                   navigator.pushNamed(RouteNames.loading, arguments: {
                     'onInit': () async {
-                      await authViewModel.convertirEnFamilia();
-                      await garageViewModel.convertToFamily(
-                          authViewModel.user!.id!,
-                          authViewModel.user!.idFamily!);
-                      await globalTypesProvider.convertToFamily(
-                          authViewModel.user!.id!,
-                          authViewModel.user!.idFamily!);
+                      await ref
+                          .read(authProvider.notifier)
+                          .convertirEnFamilia();
+                      await ref
+                          .read(garageProvider.notifier)
+                          .convertToFamily(user.idFamily!);
+                      await ref
+                          .read(globalTypesProvider.notifier)
+                          .convertToFamily();
 
                       navigator.pushNamedAndRemoveUntil(
                           RouteNames.home, (route) => false);
@@ -186,10 +181,10 @@ class SettingsView extends ConsumerWidget {
 
                   navigator.pushNamed(RouteNames.loading, arguments: {
                     'onInit': () async {
-                      await garageViewModel.joinFamily(authViewModel.user!.id!,
-                          authViewModel.user!.idFamily!);
-                      await globalTypesProvider
-                          .joinFamily(authViewModel.user!.id!);
+                      await ref
+                          .read(garageProvider.notifier)
+                          .joinFamily(user.idFamily!);
+                      await ref.read(globalTypesProvider.notifier).joinFamily();
 
                       navigator.pushNamedAndRemoveUntil(
                           RouteNames.home, (route) => false);
@@ -223,12 +218,9 @@ class SettingsView extends ConsumerWidget {
                     RouteNames.loading,
                     arguments: {
                       'onInit': () async {
-                        await authViewModel.salirDeFamilia();
-                        await garageViewModel.leaveFamily(authViewModel.id,
-                            authViewModel.type, authViewModel.isLastMember);
-                        await globalTypesProvider.initializeUser(
-                            authViewModel.id, authViewModel.type);
-                        activityProvider.clearActivities();
+                        await ref.read(authProvider.notifier).salirDeFamilia();
+                        await ref.read(garageProvider.notifier).leaveFamily();
+                        ref.read(activityProvider.notifier).clearActivities();
 
                         navigator.pushNamedAndRemoveUntil(
                             RouteNames.home, (route) => false);
@@ -314,16 +306,14 @@ class SettingsView extends ConsumerWidget {
                 );
                 if (!confirm) return;
 
-                final vehicles = garageViewModel.vehicles;
+                final vehicles = ref.read(garageProvider).value!.vehicles;
 
                 final Map<String, List<Activity>> activitiesMap = {};
 
                 for (var vehicle in vehicles) {
-                  final acts = await activityProvider.getActivitiesByVehicle(
-                    vehicle.id!,
-                    authViewModel.id,
-                    authViewModel.type,
-                  );
+                  final acts = await ref
+                      .read(activityProvider.notifier)
+                      .getActivitiesByVehicle(vehicle.id!);
                   activitiesMap[vehicle.id!] = acts;
                 }
                 try {
@@ -335,19 +325,6 @@ class SettingsView extends ConsumerWidget {
                 } on Exception catch (e) {
                   return ToastHelper.show(e.toString());
                 }
-              },
-            ),
-            SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
-
-            // SECCIÓN: NOTIFICACIONES
-            _buildSectionTitle(context, localizations.notifications),
-            SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
-            SettingCard(
-              icon: Icons.notifications_active_rounded,
-              title: localizations.toggleNotifications,
-              onTap: () {
-                //TODO: Implementar notificaciones
-                ToastHelper.show(localizations.functionalityNotAvailable);
               },
             ),
             SizedBox(height: AppDimensions.screenHeight(context) * 0.02),

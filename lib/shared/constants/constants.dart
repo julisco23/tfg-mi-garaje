@@ -2,7 +2,6 @@ import 'package:flutter/widgets.dart';
 import 'package:mi_garaje/view/screens/home/history_tab/history_view.dart';
 import 'package:mi_garaje/view/screens/home/car_tab/car_view.dart';
 import 'package:mi_garaje/view/screens/home/profile_tab/profile_view.dart';
-import 'package:mi_garaje/data/provider/garage_provider.dart';
 
 class AppDimensions {
   static double screenHeight(BuildContext context) =>
@@ -20,9 +19,9 @@ class AppConstants {
   static const int repair = 1;
   static const int record = 2;
 
-  static final List<Widget Function(GarageProvider)> widgetTabs = [
-    (viewModel) => HistoryView(),
-    (viewModel) => CarTabView(),
-    (viewModel) => Perfil(),
+  static final widgetTabs = [
+    HistoryView(),
+    CarTabView(),
+    Perfil(),
   ];
 }

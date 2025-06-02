@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/utils/validator.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
 import 'package:mi_garaje/view/widgets/utils/elevated_button_utils.dart';
-import 'package:mi_garaje/data/provider/auth_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:mi_garaje/data/provider/auth_notifier.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class DialogCambioCuenta extends StatefulWidget {
+class DialogCambioCuenta extends ConsumerStatefulWidget {
   const DialogCambioCuenta({super.key});
 
   @override
-  State<DialogCambioCuenta> createState() => _DialogCambioCuentaState();
+  ConsumerState<DialogCambioCuenta> createState() => _DialogCambioCuentaState();
 
-  static Future<void> show(
-      BuildContext context, AuthProvider authViewModel) async {
+  static Future<void> show(BuildContext context) async {
     await showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -26,7 +25,7 @@ class DialogCambioCuenta extends StatefulWidget {
   }
 }
 
-class _DialogCambioCuentaState extends State<DialogCambioCuenta> {
+class _DialogCambioCuentaState extends ConsumerState<DialogCambioCuenta> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
@@ -37,7 +36,6 @@ class _DialogCambioCuentaState extends State<DialogCambioCuenta> {
 
   @override
   Widget build(BuildContext context) {
-    final AuthProvider authProvider = context.read<AuthProvider>();
     final NavigatorState navigator = Navigator.of(context);
     final AppLocalizations localizations = AppLocalizations.of(context)!;
 
@@ -117,11 +115,13 @@ class _DialogCambioCuentaState extends State<DialogCambioCuenta> {
             if (profileFormKey.currentState!.validate()) {
               navigator.pushNamed(RouteNames.loading, arguments: {
                 'onInit': () async {
-                  String? response = await authProvider.crearCuenta(
-                      emailController.text,
-                      passwordController.text,
-                      nameController.text[0].toUpperCase() +
-                          nameController.text.substring(1).trim());
+                  String? response = await ref
+                      .read(authProvider.notifier)
+                      .crearCuenta(
+                          emailController.text,
+                          passwordController.text,
+                          nameController.text[0].toUpperCase() +
+                              nameController.text.substring(1).trim());
                   if (response != null) {
                     ToastHelper.show(response);
                   } else {

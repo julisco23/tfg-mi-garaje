@@ -3,13 +3,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mi_garaje/data/models/vehicle.dart';
-import 'package:mi_garaje/data/provider/activity_provider.dart';
-import 'package:mi_garaje/data/provider/auth_provider.dart';
-import 'package:mi_garaje/data/provider/garage_provider.dart';
+import 'package:mi_garaje/data/provider/garage_notifier.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/utils/app_localizations_extensions.dart';
 import 'package:mi_garaje/view/widgets/dialogs/garage_tab/dialog_add_vehicle.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class VehicleCard extends ConsumerStatefulWidget {
@@ -33,18 +30,15 @@ class _VehicleCardState extends ConsumerState<VehicleCard> {
 
   @override
   Widget build(BuildContext context) {
-    final AuthProvider authProvider = context.read<AuthProvider>();
-    final ActivityProvider activityProvider = context.read<ActivityProvider>();
-    final GarageProvider garageProvider = context.read<GarageProvider>();
     final NavigatorState navigator = Navigator.of(context);
     final AppLocalizations localizations = AppLocalizations.of(context)!;
 
     return InkWell(
       onTap: !widget.profile
           ? () async {
-              await garageProvider.setSelectedVehicle(vehicle);
-              await activityProvider.loadActivities(
-                  vehicle.id!, authProvider.id, authProvider.type);
+              await ref
+                  .read(garageProvider.notifier)
+                  .setSelectedVehicle(vehicle);
 
               navigator.pop();
             }
