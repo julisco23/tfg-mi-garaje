@@ -116,86 +116,20 @@ class _DialogAddVehicleState extends ConsumerState<DialogAddVehicle> {
 
                   // Selector de tipo de vehículo
                   SizedBox(
-                    width: double.infinity,
-                    child: ref.watch(globalTypesProvider).when(
-                          data: (_) {
-                            return FutureBuilder<List<String>>(
-                              future: ref
-                                  .read(globalTypesProvider.notifier)
-                                  .getTypes('Vehicle'),
-                              builder: (context, snapshot) {
-                                final isWaiting = snapshot.connectionState ==
-                                    ConnectionState.waiting;
-                                final types = snapshot.data ?? [];
-
-                                return DropdownButtonFormField<String>(
-                                  value: selectedVehicleType,
-                                  decoration: InputDecoration(
-                                    floatingLabelStyle: TextStyle(
-                                        color: Theme.of(context).primaryColor),
-                                    labelText: localizations.vehicleType,
-                                    border: OutlineInputBorder(
-                                      borderSide: BorderSide.none,
-                                      borderRadius: BorderRadius.circular(14),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide.none,
-                                      borderRadius: BorderRadius.circular(14),
-                                    ),
-                                    filled: true,
-                                  ),
-                                  onChanged: (newValue) {
-                                    setState(() {
-                                      selectedVehicleType = newValue;
-                                    });
-                                  },
-                                  items: [
-                                    DropdownMenuItem<String>(
-                                      value: null,
-                                      child: Text(
-                                        localizations.vehicleType,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium,
-                                      ),
-                                    ),
-                                    if (!isWaiting)
-                                      ...types.map(
-                                        (tipo) => DropdownMenuItem<String>(
-                                          value: tipo,
-                                          child: Text(
-                                            localizations.getSubType(tipo),
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyMedium,
-                                          ),
-                                        ),
-                                      ),
-                                    if (isWaiting &&
-                                        selectedVehicleType != null)
-                                      DropdownMenuItem<String>(
-                                        value: selectedVehicleType,
-                                        child: Text(
-                                          selectedVehicleType!,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium,
-                                        ),
-                                      ),
-                                  ],
-                                  validator: Validator.validateDropdown,
-                                );
-                              },
-                            );
-                          },
-                          loading: () =>
-                              const Center(child: CircularProgressIndicator()),
-                          error: (err, stack) => Text(
-                            "error: $err",
-                            style: TextStyle(color: Colors.red),
-                          ),
-                        ),
-                  ),
+                      width: double.infinity,
+                      child: ref.watch(globalTypesProvider).when(
+                        data: (state) {
+                          final types = state.globalTypes['Vehicle']!;
+                          return _buildDropdown(types, context);
+                        },
+                        loading: () {
+                          return _buildDropdown([], context, isLoading: true);
+                        },
+                        error: (error, _) {
+                          return Text("Error: $error",
+                              style: TextStyle(color: Colors.red));
+                        },
+                      )),
 
                   SizedBox(height: AppDimensions.screenHeight(context) * 0.03),
 
@@ -371,6 +305,55 @@ class _DialogAddVehicleState extends ConsumerState<DialogAddVehicle> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildDropdown(
+    List<String> types,
+    BuildContext context, {
+    bool isLoading = false,
+  }) {
+    final localizations = AppLocalizations.of(context)!;
+
+    return DropdownButtonFormField<String>(
+      value: selectedVehicleType,
+      decoration: InputDecoration(
+        floatingLabelStyle: TextStyle(color: Theme.of(context).primaryColor),
+        labelText: localizations.vehicleType,
+        border: OutlineInputBorder(
+          borderSide: BorderSide.none,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide.none,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        filled: true,
+      ),
+      onChanged: (newValue) {
+        setState(() {
+          selectedVehicleType = newValue;
+        });
+      },
+      items: [
+        DropdownMenuItem<String>(
+          value: null,
+          child: Text(
+            localizations.vehicleType,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        ),
+        ...types.map(
+          (type) => DropdownMenuItem<String>(
+            value: type,
+            child: Text(
+              localizations.getSubType(type),
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+        ),
+      ],
+      validator: Validator.validateDropdown,
     );
   }
 }

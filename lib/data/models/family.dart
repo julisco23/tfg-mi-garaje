@@ -3,7 +3,6 @@ import 'user.dart';
 
 class Family {
   String? id;
-  String name;
   String? photoURL;
   DateTime? creationDate;
   String code;
@@ -12,7 +11,6 @@ class Family {
 
   Family({
     this.id,
-    required this.name,
     required this.code,
     this.photoURL,
     this.creationDate,
@@ -39,7 +37,6 @@ class Family {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'name': name,
       'photoURL': photoURL,
       'creationDate': creationDate!.toIso8601String(),
       'members': members?.map((user) => user.id).toList(),
@@ -51,7 +48,6 @@ class Family {
   factory Family.fromMap(Map<String, dynamic> map) {
     return Family(
       id: map['id'],
-      name: map['name'],
       photoURL: map['photoURL'],
       creationDate: DateTime.parse(map['creationDate']),
       code: map['code'],

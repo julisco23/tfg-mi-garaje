@@ -14,9 +14,9 @@ class UserMapper {
           ? false
           : user.providerData[0].providerId == 'google.com',
       creationDate: user.metadata.creationTime!,
-      isPhotoChanged: !(user.providerData.isEmpty
+      isPhotoChanged: user.providerData.isEmpty
           ? false
-          : user.providerData[0].providerId == 'google.com'),
+          : user.providerData[0].providerId == 'google.com',
     );
   }
 }

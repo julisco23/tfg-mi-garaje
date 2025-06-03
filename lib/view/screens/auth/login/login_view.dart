@@ -69,15 +69,17 @@ class _LoginViewState extends ConsumerState<LoginView> {
                         onPressed: () async {
                           navigator.pushNamed(RouteNames.loading, arguments: {
                             'onInit': () async {
-                              String? response = await ref
-                                  .read(authProvider.notifier)
-                                  .signin("juli@gmail.com", "jjjjjj");
-                              if (response != null) {
-                                ToastHelper.show(response);
-                                navigator.pop();
-                              } else {
+                              try {
+                                await ref
+                                    .read(authProvider.notifier)
+                                    .signin("juli@gmail.com", "jjjjjj");
+
                                 navigator.pushNamedAndRemoveUntil(
                                     RouteNames.home, (route) => false);
+                              } catch (e) {
+                                ToastHelper.show(
+                                    e.toString().replaceAll('Exception: ', ''));
+                                navigator.pop(); // salir del loading
                               }
                             }
                           });
@@ -129,34 +131,25 @@ class _LoginViewState extends ConsumerState<LoginView> {
                       if (loginFormKey.currentState!.validate()) {
                         navigator.pushNamed(RouteNames.loading, arguments: {
                           'onInit': () async {
-                            String? response = await ref
-                                .read(authProvider.notifier)
-                                .signin(emailController.text,
-                                    passwordController.text);
-                            if (response != null) {
-                              ToastHelper.show(response);
-                              navigator.pop();
-                            } else {
+                            try {
+                              await ref.read(authProvider.notifier).signin(
+                                    emailController.text,
+                                    passwordController.text,
+                                  );
+
                               navigator.pushNamedAndRemoveUntil(
                                   RouteNames.home, (route) => false);
+                            } catch (e) {
+                              ToastHelper.show(
+                                  e.toString().replaceAll('Exception: ', ''));
+                              navigator.pop();
                             }
                           }
                         });
                       }
                     },
                   ),
-                  SizedBox(height: AppDimensions.screenHeight(context) * 0.025),
-
-                  // Olvidar contraseña
-                  GestureDetector(
-                    onTap: () => ToastHelper.show(
-                        localizations.functionalityNotAvailable),
-                    child: Text(
-                      localizations.forgotPassword,
-                      style: TextStyle(color: Theme.of(context).primaryColor),
-                    ),
-                  ),
-                  SizedBox(height: AppDimensions.screenHeight(context) * 0.13),
+                  SizedBox(height: AppDimensions.screenHeight(context) * 0.15),
 
                   // Botón de Google
                   MiButton(
@@ -164,15 +157,17 @@ class _LoginViewState extends ConsumerState<LoginView> {
                     onPressed: () async {
                       navigator.pushNamed(RouteNames.loading, arguments: {
                         'onInit': () async {
-                          String? response = await ref
-                              .read(authProvider.notifier)
-                              .signInWithGoogle();
+                          try {
+                            await ref
+                                .read(authProvider.notifier)
+                                .signInWithGoogle();
 
-                          if (response != null) {
-                            ToastHelper.show(response);
-                          } else {
                             navigator.pushNamedAndRemoveUntil(
                                 RouteNames.home, (route) => false);
+                          } catch (e) {
+                            ToastHelper.show(
+                                e.toString().replaceAll('Exception: ', ''));
+                            navigator.pop();
                           }
                         }
                       });

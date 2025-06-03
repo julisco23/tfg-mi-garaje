@@ -115,18 +115,18 @@ class _DialogCambioCuentaState extends ConsumerState<DialogCambioCuenta> {
             if (profileFormKey.currentState!.validate()) {
               navigator.pushNamed(RouteNames.loading, arguments: {
                 'onInit': () async {
-                  String? response = await ref
-                      .read(authProvider.notifier)
-                      .crearCuenta(
-                          emailController.text,
-                          passwordController.text,
-                          nameController.text[0].toUpperCase() +
-                              nameController.text.substring(1).trim());
-                  if (response != null) {
-                    ToastHelper.show(response);
-                  } else {
-                    navigator.pushNamedAndRemoveUntil(
-                        RouteNames.home, (route) => false);
+                  try {
+                    await ref.read(authProvider.notifier).linkAnonymousAccount(
+                        emailController.text,
+                        passwordController.text,
+                        nameController.text[0].toUpperCase() +
+                            nameController.text.substring(1).trim());
+                    navigator.pop();
+                    navigator.pop();
+                  } catch (e) {
+                    ToastHelper.show(
+                        e.toString().replaceAll('Exception: ', ''));
+                    navigator.pop();
                   }
                 }
               });

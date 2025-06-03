@@ -77,22 +77,6 @@ class GarageNotifier extends AsyncNotifier<GarageState> {
     ));
   }
 
-  void cerrarSesion() {
-    state = AsyncData(GarageState(vehicles: [], selectedVehicle: null));
-  }
-
-  Future<void> eliminarCuenta() async {
-    final auth = ref.read(authProvider).value;
-    if (auth == null) return;
-
-    if (auth.isFamily) {
-      await leaveFamily();
-    } else {
-      await _carService.deleteVehicles(auth.id, "users");
-      state = AsyncData(GarageState(vehicles: [], selectedVehicle: null));
-    }
-  }
-
   Future<void> addVehicle(Vehicle vehicle) async {
     final auth = ref.read(authProvider).value;
     if (auth == null) return;
@@ -173,28 +157,6 @@ class GarageNotifier extends AsyncNotifier<GarageState> {
     );
     state = AsyncData(
         GarageState(vehicles: updatedVehicles, selectedVehicle: selected));
-  }
-
-  Future<void> convertToFamily(String idFamily) async {
-    final auth = ref.read(authProvider).value;
-    if (auth == null) return;
-    await _carService.convertToFamily(auth.id, idFamily);
-    await _carService.deleteVehicles(auth.id, "users");
-  }
-
-  Future<void> joinFamily(String idFamily) async {
-    final auth = ref.read(authProvider).value;
-    if (auth == null) return;
-    await _carService.deleteVehicles(auth.id, "users");
-  }
-
-  Future<void> leaveFamily() async {
-    final auth = ref.read(authProvider).value;
-    if (auth == null) return;
-    if (auth.isLastMember) {
-      await _carService.deleteVehicles(auth.id, auth.type);
-    }
-    state = AsyncData(GarageState(vehicles: [], selectedVehicle: null));
   }
 }
 

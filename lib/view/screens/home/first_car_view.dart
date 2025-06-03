@@ -47,10 +47,8 @@ class _FirstCarState extends State<FirstCar> {
               MiButton(
                 text: localizations.joinFamily,
                 onPressed: () async {
-                  bool isFamily = await DialogFamilyCode.show(context);
-                  if (!isFamily) return;
-
-                  widget.onVehicleChanged(null);
+                  await DialogFamilyCode.show(
+                      context, widget.onVehicleChanged(null));
                 },
               ),
             ],

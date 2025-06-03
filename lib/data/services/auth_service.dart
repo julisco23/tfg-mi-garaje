@@ -16,7 +16,8 @@ class AuthService {
   Future<app.User?> get currentUser async {
     if (getUser == null) return null;
 
-    DocumentSnapshot doc = await _firestore.collection('users').doc(getUser!.uid).get();
+    DocumentSnapshot doc =
+        await _firestore.collection('users').doc(getUser!.uid).get();
 
     if (!doc.exists || doc.data() == null) return null;
 
@@ -37,268 +38,214 @@ class AuthService {
   }
 
   // Método para iniciar sesión con correo y contraseña
-  Future<String?> signin(
-      {required String email, required String password}) async {
+  Future<void> signin(String email, String password) async {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
-
-      print("Iniciar sesión con éxito");
-
-      return null;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-credential') {
-        return 'Correo o contraseña incorrecta.';
+        throw Exception('Correo o contraseña incorrecta.');
       } else {
-        return 'Error al intentar iniciar sesión. Por favor, inténtalo nuevamente.';
+        throw Exception(
+            'Error al intentar iniciar sesión. Por favor, inténtalo nuevamente.');
       }
+    } catch (_) {
+      throw Exception('Ha ocurrido un error inesperado.');
     }
   }
 
   // Método para iniciar sesión con Google
-  Future<String?> signInWithGoogle() async {
-    try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      if (googleUser == null) return "No ha seleccionado una cuenta de Google.";
+  Future<void> signInWithGoogle() async {
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    if (googleUser == null) {
+      throw Exception("No ha seleccionado una cuenta de Google.");
+    }
+
+    try {
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
       await _auth.signInWithCredential(credential);
-      print("Inicio de sesión con Google exitoso.");
 
       if (!await hasAccount()) {
-        createUser();
+        await createUser();
       }
-
-      return null;
     } catch (e) {
-      print("Error al iniciar sesión con Google: $e");
-      return "Error inesperado al iniciar sesión con Google.";
+      throw Exception("Error inesperado al iniciar sesión con Google.");
     }
   }
 
   // Método para registrar un usuario correo y contraseña
-  Future<String?> signup(
-      {required String email,
-      required String password,
-      required String displayName}) async {
+  Future<void> signup(String email, String password, String displayName) async {
     try {
       await _auth.createUserWithEmailAndPassword(
-          email: email, password: password);
-      await _auth.currentUser!.updateDisplayName(displayName);
-
-      await createUser();
-
-      print("Documento de usuario creado con éxito");
-
-      return null;
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'email-already-in-use') {
-        return 'Existe una cuenta con este correo electrónico.';
-      }
-      return 'Error al crear la cuenta. Por favor, inténtalo nuevamente.';
-    }
-  }
-
-  // Método para registrarse con Google
-  Future<String?> signupWithGoogle() async {
-    try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      if (googleUser == null) return "No ha seleccionado una cuenta de Google.";
-
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
+        email: email,
+        password: password,
       );
 
-      await _auth.signInWithCredential(credential);
-      print("Registro con Google exitoso.");
-
+      await _auth.currentUser!.updateDisplayName(displayName);
       await createUser();
-      return null;
-    } catch (e) {
-      print("Error al registrar con Google: $e");
-      return "Error inesperado al registrar con Google.";
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'email-already-in-use') {
+        throw Exception('Existe una cuenta con este correo electrónico.');
+      }
+      throw Exception(
+          'Error al crear la cuenta. Por favor, inténtalo nuevamente.');
+    } catch (_) {
+      throw Exception('Ha ocurrido un error inesperado al registrarse.');
     }
   }
 
   // Método para iniciar sesión como invitado
-  Future<String?> signInAnonymously() async {
+  Future<void> signUpAnonymously() async {
     try {
       await _auth.signInAnonymously();
-
-      createUser();
-
-      return null;
+      await createUser();
     } catch (e) {
-      return "Error al iniciar sesión de como invitado.";
+      throw Exception("Error al iniciar sesión como invitado.");
     }
   }
 
   // Método para vincular cuenta anónima con correo y contraseña
-  Future<String?> linkAnonymousAccount(
+  Future<void> linkAnonymousAccount(
       String email, String password, String displayName) async {
     try {
       await _auth.currentUser!.linkWithCredential(
-          EmailAuthProvider.credential(email: email, password: password));
+        EmailAuthProvider.credential(email: email, password: password),
+      );
 
       await _auth.currentUser!.updateDisplayName(displayName);
-
-      print("Con exito user: ${FirebaseAuth.instance.currentUser!.toString()}");
 
       await _firestore.collection('users').doc(getUser!.uid).update({
         'name': displayName,
         'email': email,
         'isAnonymous': false,
       });
-      print("Documento de usuario actualizado con éxito");
-      return null;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
-        return 'Existe una cuenta con este correo electrónico.';
+        throw Exception('Existe una cuenta con este correo electrónico.');
       }
-      return 'Error al vincular cuenta anónima. Por favor, inténtalo nuevamente.';
+      throw Exception(
+          'Error al vincular cuenta anónima. Por favor, inténtalo nuevamente.');
+    } catch (e) {
+      throw Exception('Error inesperado al vincular cuenta anónima.');
     }
   }
 
   // Método para vincular cuenta con Google
-  Future<String?> linkWithGoogle() async {
-    try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      if (googleUser == null) return "No ha seleccionado una cuenta de Google.";
+  Future<void> linkWithGoogle() async {
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    if (googleUser == null) {
+      throw Exception("No ha seleccionado una cuenta de Google.");
+    }
+
+    try {
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
       await getUser!.linkWithCredential(credential);
-      print("Cuenta vinculada exitosamente con Google.");
 
       await _firestore.collection('users').doc(getUser!.uid).update({
         'name': googleUser.displayName,
-        'email': googleUser.email,
         'photoURL': googleUser.photoUrl,
         'isAnonymous': false,
-        'isGoogle': true
+        'isGoogle': true,
       });
-      print(getUser.toString());
-
-      print("Documento de usuario actualizado con éxito ${_firestore.collection('users').doc(getUser!.uid).get().toString()}");
-      return null;
+    } on FirebaseAuthException catch (e) {
+      await GoogleSignIn().signOut();
+      if (e.code == 'credential-already-in-use') {
+        throw Exception(
+            'Esta cuenta de Google ya está vinculada a otro usuario.');
+      } else {
+        throw Exception('Error inesperado al vincular cuenta con Google.');
+      }
     } catch (e) {
-      print("Error al vincular cuenta con Google: $e");
-      return "Error inesperado al vincular cuenta con Google.";
+      await GoogleSignIn().signOut();
+      throw Exception('Error inesperado al vincular cuenta con Google.');
     }
   }
 
   // Método para cerrar sesión
-  Future<String?> signout() async {
+  Future<void> signout() async {
     try {
       await _auth.signOut();
-
-      print("Cerrar sesión con éxito");
-
-      return null;
     } catch (e) {
-      return "Error al cerrar sesión";
+      throw Exception("Error al cerrar sesión");
     }
   }
 
   // Método para cerrar sesión con Google
-  Future<String?> signOutGoogle() async {
+  Future<void> signOutGoogle() async {
     try {
       await GoogleSignIn().disconnect();
-
-      return signout();
     } catch (e) {
-      return "Error al cerrar sesión";
+      throw Exception("Error al cerrar sesión");
     }
   }
 
   // Método para eliminar la cuenta de usuario
-  Future<String?> deleteUserAccount() async {
+  Future<void> deleteUserAccount() async {
     try {
-      String userId = _auth.currentUser!.uid;
-
-      QuerySnapshot snapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .collection('vehicles')
-        .get();
-
-      for (var doc in snapshot.docs) {
-        await doc.reference.delete();
-      }
-
-      await FirebaseFirestore.instance.collection('users').doc(userId).delete();
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(_auth.currentUser!.uid)
+          .delete();
 
       await _auth.currentUser!.delete();
-
-      print("Cuenta eliminada con éxito.");
-      return null;
     } catch (e) {
-      print("Error al eliminar la cuenta: $e");
-      return "Error al eliminar la cuenta.";
+      throw Exception("Error al eliminar la cuenta.");
     }
   }
 
   // Método para actualizar el perfil de usuario
-  Future<String?> updateProfile(String name, String? photo, bool isPhotoChanged, String userId) async {
+  Future<void> updateProfile(
+      String name, String? photo, bool isPhotoChanged, String userId) async {
     try {
-        await _firestore.collection('users').doc(userId).update({
-          'name': name,
-          'photoURL': photo,
-          'isPhotoChanged': isPhotoChanged,
-        });
-      print("Documento de usuario actualizado con éxito");
-
-      return null;
-    } catch (e) {
-      return "Error al actualizar el perfil";
-    }
-  }
-
-  // Método para actualizar el perfil de la familia
-  Future<String?> updateFamilyProfile(String name, String familyId) async {
-    try {
-      await _firestore.collection('families').doc(familyId).update({
+      await _firestore.collection('users').doc(userId).update({
         'name': name,
+        'photoURL': photo,
+        'isPhotoChanged': isPhotoChanged,
       });
-
-      print("Documento de familia actualizado con éxito");
-
-      return null;
     } catch (e) {
-      return "Error al actualizar el perfil de la familia";
+      throw Exception("Error al actualizar el perfil");
     }
   }
 
   // Método para crear a una familia
-  Future<void> convertToFamily(Family family, String userId) async {
-    String familyId = _firestore.collection('families').doc().id; 
+  Future<String> convertToFamily(Family family, String userId) async {
+    try {
+      String familyId = _firestore.collection('families').doc().id;
 
-    await _firestore.collection('families').doc(familyId).set({
-      'name': family.name,
-      'members': [family.members!.first.id],
-      'code': family.code,
-      'creationDate': family.creationDate!.toIso8601String(),
-    });
+      await _firestore.collection('families').doc(familyId).set({
+        'members': [family.members!.first.id],
+        'code': family.code,
+        'creationDate': family.creationDate!.toIso8601String(),
+      });
 
-    await _firestore.collection('users').doc(userId).update({
-      'idFamily': familyId,
-    });
+      await _firestore.collection('users').doc(userId).update({
+        'idFamily': familyId,
+      });
 
-    print("Familia creada con éxito");
+      return familyId;
+    } catch (e) {
+      throw Exception('Error al convertir el usuario en familia.');
+    }
   }
 
   // Método para abandonar la familia
-  Future<void> leaveFamily(bool eliminar, String userId, String familyId) async {
+  Future<void> leaveFamily(
+      bool eliminar, String userId, String familyId) async {
     await _firestore.collection('families').doc(familyId).update({
       'members': FieldValue.arrayRemove([userId]),
     });
@@ -307,48 +254,55 @@ class AuthService {
       'idFamily': null,
     });
 
-    print("Salida de la familia con éxito");
-
     if (eliminar) {
       await _firestore.collection('families').doc(familyId).delete();
-      print("Familia eliminada con éxito");
     }
   }
 
   // Método para unirse a una familia
   Future<void> joinFamily(String familyCode, String userId) async {
-    QuerySnapshot snapshot = await _firestore.collection('families').where('code', isEqualTo: familyCode).get();
+    try {
+      QuerySnapshot snapshot = await _firestore
+          .collection('families')
+          .where('code', isEqualTo: familyCode)
+          .get();
 
-    if (snapshot.docs.isEmpty) {
-      throw Exception("No se encontró la familia");
+      if (snapshot.docs.isEmpty) {
+        throw Exception("No se encontró la familia");
+      }
+
+      DocumentSnapshot doc = snapshot.docs.first;
+
+      await _firestore.collection('families').doc(doc.id).update({
+        'members': FieldValue.arrayUnion([userId]),
+      });
+
+      await _firestore.collection('users').doc(userId).update({
+        'idFamily': doc.id,
+      });
+    } catch (e) {
+      throw Exception("Error al unirse a la familia.");
     }
-
-    DocumentSnapshot doc = snapshot.docs.first;
-
-    await _firestore.collection('families').doc(doc.id).update({
-      'members': FieldValue.arrayUnion([userId]),
-    });
-
-    await _firestore.collection('users').doc(userId).update({
-      'idFamily': doc.id,
-    });
   }
 
+  // Método para obtener la familia del usuario
   Future<Family> getFamily(String idFamily) async {
-    DocumentSnapshot doc = await _firestore.collection('families').doc(idFamily).get();
+    DocumentSnapshot doc =
+        await _firestore.collection('families').doc(idFamily).get();
 
-    Family family = Family.fromMap(doc.data() as Map<String, dynamic>)..id = doc.id;
+    Family family = Family.fromMap(doc.data() as Map<String, dynamic>)
+      ..id = doc.id;
 
     List<String> members = List<String>.from(doc.get('members'));
 
     List<app.User> users = [];
     for (String id in members) {
-      DocumentSnapshot userDoc = await _firestore.collection('users').doc(id).get();
-      users.add(app.User.fromMap(userDoc.data() as Map<String, dynamic>)..id = userDoc.id);
+      DocumentSnapshot userDoc =
+          await _firestore.collection('users').doc(id).get();
+      users.add(app.User.fromMap(userDoc.data() as Map<String, dynamic>)
+        ..id = userDoc.id);
     }
     family.addMembers(users);
     return family;
   }
-
-
 }

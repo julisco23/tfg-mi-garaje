@@ -65,7 +65,7 @@ extension LocalizedVehicleType on AppLocalizations {
         return isSingular ? activity2 : activity;
 
       default:
-        return isSingular ? normalized : type; // fallback
+        return isSingular ? normalized : type;
     }
   }
 }

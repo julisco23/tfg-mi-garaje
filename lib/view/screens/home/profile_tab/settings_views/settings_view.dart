@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mi_garaje/data/models/activity.dart';
 import 'package:mi_garaje/data/provider/activity_notifier.dart';
-import 'package:mi_garaje/data/provider/global_types_notifier.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/shared/utils/mapper_csv.dart';
@@ -75,9 +74,14 @@ class SettingsView extends ConsumerWidget {
 
                   navigator.pushNamed(RouteNames.loading, arguments: {
                     'onInit': () async {
-                      await ref.read(authProvider.notifier).linkWithGoogle();
-                      navigator.pop();
-                      ToastHelper.show("Cuenta vinculada con Google.");
+                      try {
+                        await ref.read(authProvider.notifier).linkWithGoogle();
+                        navigator.pop();
+                      } catch (e) {
+                        ToastHelper.show(
+                            e.toString().replaceAll('Exception: ', ''));
+                        navigator.pop();
+                      }
                     }
                   });
                 },
@@ -98,12 +102,16 @@ class SettingsView extends ConsumerWidget {
                     RouteNames.loading,
                     arguments: {
                       'onInit': () async {
-                        await ref.read(authProvider.notifier).signout();
-                        ref.read(garageProvider.notifier).cerrarSesion();
-
-                        navigator.pushNamedAndRemoveUntil(
-                            RouteNames.login, (route) => false);
-                        ToastHelper.show("Sesión cerrada.");
+                        try {
+                          await ref.read(authProvider.notifier).signout();
+                          navigator.pushNamedAndRemoveUntil(
+                              RouteNames.login, (route) => false);
+                          ToastHelper.show("Sesión cerrada.");
+                        } catch (e) {
+                          ToastHelper.show(
+                              e.toString().replaceAll('Exception: ', ''));
+                          navigator.pop();
+                        }
                       }
                     },
                   );
@@ -124,13 +132,18 @@ class SettingsView extends ConsumerWidget {
                   RouteNames.loading,
                   arguments: {
                     'onInit': () async {
-                      await ref.read(garageProvider.notifier).eliminarCuenta();
-                      await ref.read(authProvider.notifier).eliminarCuenta();
+                      try {
+                        await ref.read(authProvider.notifier).deleteAccount();
 
-                      navigator.pushNamedAndRemoveUntil(
-                          RouteNames.login, (route) => false);
+                        navigator.pushNamedAndRemoveUntil(
+                            RouteNames.login, (route) => false);
 
-                      ToastHelper.show("Cuenta eliminada.");
+                        ToastHelper.show("Cuenta eliminada.");
+                      } catch (e) {
+                        ToastHelper.show(
+                            e.toString().replaceAll('Exception: ', ''));
+                        navigator.pop();
+                      }
                     }
                   },
                 );
@@ -155,19 +168,15 @@ class SettingsView extends ConsumerWidget {
 
                   navigator.pushNamed(RouteNames.loading, arguments: {
                     'onInit': () async {
-                      await ref
-                          .read(authProvider.notifier)
-                          .convertirEnFamilia();
-                      await ref
-                          .read(garageProvider.notifier)
-                          .convertToFamily(user.idFamily!);
-                      await ref
-                          .read(globalTypesProvider.notifier)
-                          .convertToFamily();
-
-                      navigator.pushNamedAndRemoveUntil(
-                          RouteNames.home, (route) => false);
-                      ToastHelper.show("Familia creada.");
+                      try {
+                        await ref.read(authProvider.notifier).convertToFamily();
+                        navigator.pop();
+                        ToastHelper.show("Familia creada.");
+                      } catch (e) {
+                        ToastHelper.show(
+                            e.toString().replaceAll('Exception: ', ''));
+                        navigator.pop();
+                      }
                     }
                   });
                 },
@@ -176,32 +185,10 @@ class SettingsView extends ConsumerWidget {
                 icon: Icons.group_rounded,
                 title: localizations.joinFamily,
                 onTap: () async {
-                  bool isFamily = await DialogFamilyCode.show(context);
-                  if (!isFamily) return;
-
-                  navigator.pushNamed(RouteNames.loading, arguments: {
-                    'onInit': () async {
-                      await ref
-                          .read(garageProvider.notifier)
-                          .joinFamily(user.idFamily!);
-                      await ref.read(globalTypesProvider.notifier).joinFamily();
-
-                      navigator.pushNamedAndRemoveUntil(
-                          RouteNames.home, (route) => false);
-
-                      ToastHelper.show("Unido a la familia.");
-                    }
-                  });
+                  await DialogFamilyCode.show(context);
                 },
               )
             ] else ...[
-              SettingCard(
-                icon: Icons.group_rounded,
-                title: localizations.updateFamily,
-                onTap: () {
-                  DialogEditProfile.show(context, isFamily: true);
-                },
-              ),
               SettingCard(
                 icon: Icons.exit_to_app_rounded,
                 title: localizations.leaveFamily,
@@ -218,14 +205,18 @@ class SettingsView extends ConsumerWidget {
                     RouteNames.loading,
                     arguments: {
                       'onInit': () async {
-                        await ref.read(authProvider.notifier).salirDeFamilia();
-                        await ref.read(garageProvider.notifier).leaveFamily();
-                        ref.read(activityProvider.notifier).clearActivities();
+                        try {
+                          await ref.read(authProvider.notifier).leaveFamily();
+                          navigator.pushNamedAndRemoveUntil(
+                              RouteNames.home, (route) => false);
 
-                        navigator.pushNamedAndRemoveUntil(
-                            RouteNames.home, (route) => false);
-
-                        ToastHelper.show("Familia abandonada.");
+                          ToastHelper.show("Familia abandonada.");
+                        } catch (e) {
+                          ToastHelper.show(
+                              e.toString().replaceAll('Exception: ', ''));
+                          navigator.pop();
+                          return;
+                        }
                       }
                     },
                   );

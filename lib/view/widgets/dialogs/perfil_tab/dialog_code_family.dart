@@ -1,19 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mi_garaje/data/models/vehicle.dart';
 import 'package:mi_garaje/data/provider/auth_notifier.dart';
+import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/shared/utils/validator.dart';
+import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DialogFamilyCode extends ConsumerWidget {
-  const DialogFamilyCode({
-    super.key,
-  });
+  final Function(Vehicle?)? onVehicleChanged;
 
-  static Future<bool> show(BuildContext context) async {
-    return await showDialog(
-            context: context, builder: (context) => DialogFamilyCode()) ??
-        false;
+  const DialogFamilyCode({super.key, this.onVehicleChanged});
+
+  static Future<void> show(
+    BuildContext context, [
+    Function(Vehicle?)? onVehicleChanged,
+  ]) async {
+    return await showDialog<void>(
+      context: context,
+      builder: (context) => DialogFamilyCode(
+        onVehicleChanged: onVehicleChanged,
+      ),
+    );
   }
 
   @override
@@ -34,7 +43,7 @@ class DialogFamilyCode extends ConsumerWidget {
           IconButton(
             icon: Icon(Icons.close, color: Theme.of(context).primaryColor),
             onPressed: () {
-              navigator.pop(false);
+              navigator.pop();
             },
           ),
         ],
@@ -58,19 +67,34 @@ class DialogFamilyCode extends ConsumerWidget {
             TextButton(
               child: Text(localizations.cancel,
                   style: TextStyle(color: Theme.of(context).primaryColor)),
-              onPressed: () => navigator.pop(false),
+              onPressed: () => navigator.pop(),
             ),
             TextButton(
               child: Text(localizations.confirm,
                   style: TextStyle(color: Theme.of(context).primaryColor)),
               onPressed: () async {
-                if (!formKey.currentState!.validate()) return;
+                if (formKey.currentState!.validate()) {
+                  navigator.pushNamed(RouteNames.loading, arguments: {
+                    'onInit': () async {
+                      try {
+                        await ref
+                            .read(authProvider.notifier)
+                            .joinFamily(controller.text);
 
-                await ref
-                    .read(authProvider.notifier)
-                    .unirseAFamilia(controller.text);
+                        if (onVehicleChanged != null) {
+                          onVehicleChanged!(null);
+                        }
 
-                navigator.pop(true);
+                        navigator.pop();
+                        navigator.pop();
+                      } catch (e) {
+                        ToastHelper.show(
+                            e.toString().replaceAll('Exception: ', ''));
+                        navigator.pop();
+                      }
+                    }
+                  });
+                }
               },
             ),
           ],

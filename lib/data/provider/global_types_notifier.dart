@@ -134,19 +134,6 @@ class GlobalTypesNotifier extends AsyncNotifier<GlobalTypesState> {
   List<String> getTabsList() {
     return state.value?.tabs ?? [];
   }
-
-  Future<void> convertToFamily() async {
-    final auth = ref.watch(authProvider).value;
-    if (auth == null) return;
-    await _userTypeService.transformTypesToFamily(
-        auth.user!.id!, auth.family!.id!);
-  }
-
-  Future<void> joinFamily() async {
-    final auth = ref.watch(authProvider).value;
-    if (auth == null) return;
-    await _userTypeService.deleteTypeFromUser(auth.user!.id!);
-  }
 }
 
 final globalTypesProvider =

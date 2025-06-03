@@ -1,10 +1,14 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mi_garaje/data/models/family.dart' as my;
 import 'package:mi_garaje/data/models/user.dart';
+import 'package:mi_garaje/data/provider/activity_notifier.dart';
+import 'package:mi_garaje/data/provider/tab_update_notifier.dart';
 import 'package:mi_garaje/data/services/auth_service.dart';
+import 'package:mi_garaje/data/services/garage_service.dart';
+import 'package:mi_garaje/data/services/user_types_service.dart';
+import 'package:mi_garaje/shared/utils/family_code_generator.dart';
 
 class AuthState {
   final User? user;
@@ -34,143 +38,138 @@ class AuthState {
 
 class AuthNotifier extends AsyncNotifier<AuthState> {
   final AuthService _authService = AuthService();
+  final CarService _carService = CarService();
+  final UserTypesService _userTypeService = UserTypesService();
 
   @override
   FutureOr<AuthState> build() async {
-    final user = await _authService.currentUser;
-    my.Family? family;
-    if (user != null && user.hasFamily) {
-      family = await _authService.getFamily(user.idFamily!);
+    try {
+      final user = await _authService.currentUser;
+      my.Family? family;
+      if (user != null && user.hasFamily) {
+        family = await _authService.getFamily(user.idFamily!);
+      }
+      return AuthState(user: user, family: family);
+    } catch (e, st) {
+      throw AsyncError(e, st);
     }
-    return AuthState(user: user, family: family);
   }
 
   Future<void> updateUser() async {
-    User? user = await _authService.currentUser;
-    my.Family? family;
-    if (user != null && user.hasFamily) {
-      family = await _authService.getFamily(user.idFamily!);
+    try {
+      final user = await _authService.currentUser;
+      my.Family? family;
+      if (user != null && user.hasFamily) {
+        family = await _authService.getFamily(user.idFamily!);
+      }
+      state = AsyncData(AuthState(user: user, family: family));
+    } catch (e, st) {
+      state = AsyncError(e, st);
     }
-    state = AsyncData(AuthState(user: user, family: family));
   }
 
   Future<bool> checkUser() async {
-    await updateUser();
-    return state.value?.isUser ?? false;
-  }
-
-  Future<String?> signin(String email, String password) async {
-    final response =
-        await _authService.signin(email: email, password: password);
-    await updateUser();
-    return response;
-  }
-
-  Future<String?> signInWithGoogle() async {
-    final response = await _authService.signInWithGoogle();
-    await updateUser();
-    return response;
-  }
-
-  Future<String?> signupWithGoogle() async {
-    final response = await _authService.signupWithGoogle();
-    await updateUser();
-    return response;
-  }
-
-  Future<String?> linkWithGoogle() async {
-    final response = await _authService.linkWithGoogle();
-    await updateUser();
-    return response;
-  }
-
-  Future<String?> signup(String email, String password, String name) async {
-    final response = await _authService.signup(
-        email: email, password: password, displayName: name);
-    await updateUser();
-    return response;
-  }
-
-  Future<String?> signInAnonymously() async {
-    final response = await _authService.signInAnonymously();
-    await updateUser();
-    return response;
-  }
-
-  Future<String?> signout() async {
-    String? response;
-    if (state.value?.isGoogle ?? false) {
-      response = await _authService.signOutGoogle();
-    } else {
-      response = await _authService.signout();
+    try {
+      await updateUser();
+      return state.value?.isUser ?? false;
+    } catch (_) {
+      return false;
     }
+  }
+
+  Future<void> signin(String email, String password) async {
+    await _authService.signin(email, password);
     await updateUser();
-    return response;
   }
 
-  Future<String?> eliminarCuenta() async {
-    await salirDeFamilia();
-    final response = await _authService.deleteUserAccount();
-    state = AsyncData(AuthState(user: null, family: null));
-    return response;
+  Future<void> signInWithGoogle() async {
+    await _authService.signInWithGoogle();
+    await updateUser();
   }
 
-  Future<String?> crearCuenta(
+  Future<void> signup(String email, String password, String name) async {
+    await _authService.signup(email, password, name);
+    await updateUser();
+  }
+
+  Future<void> signupAnonymously() async {
+    await _authService.signUpAnonymously();
+    await updateUser();
+  }
+
+  Future<void> linkWithGoogle() async {
+    await _authService.linkWithGoogle();
+    await updateUser();
+  }
+
+  Future<void> signout() async {
+    if (state.value!.isGoogle) {
+      await _authService.signOutGoogle();
+    }
+
+    await _authService.signout();
+    ref.read(tabStateProvider.notifier).limpiar();
+    await updateUser();
+  }
+
+  Future<void> deleteAccount() async {
+    if (state.value!.isFamily) {
+      await leaveFamily();
+    } else {
+      await _carService.deleteVehicles(state.value!.id, state.value!.type);
+    }
+
+    if (state.value!.isGoogle) {
+      await _authService.signOutGoogle();
+    }
+
+    await _authService.deleteUserAccount();
+    ref.read(tabStateProvider.notifier).limpiar();
+    await updateUser();
+  }
+
+  Future<void> linkAnonymousAccount(
       String email, String password, String name) async {
-    final response =
-        await _authService.linkAnonymousAccount(email, password, name);
+    await _authService.linkAnonymousAccount(email, password, name);
     await updateUser();
-    return response;
   }
 
-  Future<String?> actualizarProfile(
+  Future<void> updateProfile(
       String name, String? photo, bool isPhotoChanged) async {
-    final userId = state.value?.user?.id;
-    if (userId == null) return "No user logged in";
-    final response =
-        await _authService.updateProfile(name, photo, isPhotoChanged, userId);
+    await _authService.updateProfile(
+        name, photo, isPhotoChanged, state.value!.user!.id!);
     await updateUser();
-    return response;
   }
 
-  Future<String?> actualizarFamilia(String name) async {
-    if (state.value?.family?.id == null) return "No family found";
-    final response =
-        await _authService.updateFamilyProfile(name, state.value!.family!.id!);
-    await updateUser();
-    return response;
-  }
+  Future<void> convertToFamily() async {
+    final user = state.value!.user!;
 
-  String generateFamilyCode() {
-    const String chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    return String.fromCharCodes(
-      Iterable.generate(
-          6, (_) => chars.codeUnitAt(Random().nextInt(chars.length))),
-    );
-  }
-
-  Future<void> convertirEnFamilia() async {
-    final user = state.value?.user;
-    if (user == null) return;
     final family = my.Family(
-      name: "Familia de ${user.displayName}",
-      code: generateFamilyCode(),
+      code: FamilyCodeGenerator.generate(),
       members: [user],
     );
-    await _authService.convertToFamily(family, user.id!);
+
+    String idFamily = await _authService.convertToFamily(family, user.id!);
+    await _carService.convertToFamily(user.id!, idFamily);
+    await _userTypeService.transformTypesToFamily(user.id!, idFamily);
     await updateUser();
   }
 
-  Future<void> unirseAFamilia(String familyCode) async {
-    if (state.value?.user?.id == null) return;
+  Future<void> joinFamily(String familyCode) async {
+    await _carService.deleteVehicles(state.value!.user!.id!, "users");
+    await _userTypeService.deleteTypeFromUser(state.value!.user!.id!);
+
     await _authService.joinFamily(familyCode, state.value!.user!.id!);
     await updateUser();
   }
 
-  Future<void> salirDeFamilia() async {
-    if (state.value?.family == null || state.value?.user == null) return;
+  Future<void> leaveFamily() async {
     await _authService.leaveFamily(state.value!.isLastMember,
         state.value!.user!.id!, state.value!.family!.id!);
+    if (state.value!.isLastMember) {
+      await _carService.deleteVehicles(state.value!.id, state.value!.type);
+    }
+    ref.read(activityProvider.notifier).clearActivities();
     await updateUser();
   }
 }

@@ -26,7 +26,7 @@ class CarService {
       throw GarageException("fetch_vehicles_error");
     }
   }
-  
+
   // Añadir un vehículo
   Future<void> addVehicle(Vehicle vehicle, String id, String collection) async {
     try {
@@ -47,7 +47,8 @@ class CarService {
   }
 
   // Actualizar un vehículo
-  Future<void> updateVehicle(Vehicle vehicle, String id, String collection) async {
+  Future<void> updateVehicle(
+      Vehicle vehicle, String id, String collection) async {
     try {
       await _firestore
           .collection(collection)
@@ -64,7 +65,8 @@ class CarService {
   }
 
   // Eliminar un vehículo
-  Future<void> deleteVehicle(String vehicleId, String id, String collection) async {
+  Future<void> deleteVehicle(
+      String vehicleId, String id, String collection) async {
     try {
       await _firestore
           .collection(collection)
@@ -81,21 +83,22 @@ class CarService {
   }
 
   // Obtener un stream de actividades
-  Future<List<Activity>> getActivities(String carId, String id, String collection) async {
+  Future<List<Activity>> getActivities(
+      String carId, String id, String collection) async {
     try {
       return await _firestore
-        .collection(collection)
-        .doc(id)
-        .collection('vehicles')
-        .doc(carId)
-        .collection('activities')
-        .get()
-        .then((querySnapshot) {
-          return querySnapshot.docs.map((doc) {
-            final data = doc.data();
-            return Activity.fromMap(data)..idActivity = doc.id;
-          }).toList();
-        });
+          .collection(collection)
+          .doc(id)
+          .collection('vehicles')
+          .doc(carId)
+          .collection('activities')
+          .get()
+          .then((querySnapshot) {
+        return querySnapshot.docs.map((doc) {
+          final data = doc.data();
+          return Activity.fromMap(data)..idActivity = doc.id;
+        }).toList();
+      });
     } catch (e) {
       debugPrint("Error al obtener todas las actividades: $e");
       throw GarageException("fetch_activities_error");
@@ -103,7 +106,8 @@ class CarService {
   }
 
   // Añadir actividad a un coche
-  Future<void> addActivity(String carId, Activity activity, String id, String collection) async {
+  Future<void> addActivity(
+      String carId, Activity activity, String id, String collection) async {
     try {
       final docRef = _firestore
           .collection(collection)
@@ -124,7 +128,8 @@ class CarService {
   }
 
   // Eliminar actividad
-  Future<void> deleteActivity(String carId, String activityId, String id, String collection) async {
+  Future<void> deleteActivity(
+      String carId, String activityId, String id, String collection) async {
     try {
       await _firestore
           .collection(collection)
@@ -143,7 +148,8 @@ class CarService {
   }
 
   // Actualizar actividad
-  Future<void> updateActivity(String carId, Activity activity, String id, String collection) async {
+  Future<void> updateActivity(
+      String carId, Activity activity, String id, String collection) async {
     try {
       await _firestore
           .collection(collection)
@@ -161,7 +167,8 @@ class CarService {
     }
   }
 
-  Future<void> removeAllActivities(String id, String typeName, String type, String collection) async {
+  Future<void> removeAllActivities(
+      String id, String typeName, String type, String collection) async {
     try {
       var vehiclesSnapshot = await _firestore
           .collection(collection)
@@ -209,37 +216,38 @@ class CarService {
     }
   }
 
-  Future<void> editAllActivities(String id, String oldName, String newName, String type, String collection) async {
+  Future<void> editAllActivities(String id, String oldName, String newName,
+      String type, String collection) async {
     try {
       var vehiclesSnapshot = await _firestore
-        .collection(collection)
-        .doc(id)
-        .collection('vehicles')
-        .get();
+          .collection(collection)
+          .doc(id)
+          .collection('vehicles')
+          .get();
 
       for (var vehicleDoc in vehiclesSnapshot.docs) {
         var vehicleId = vehicleDoc.id;
 
         var activitiesSnapshot = await _firestore
-          .collection(collection)
-          .doc(id)
-          .collection('vehicles')
-          .doc(vehicleId)
-          .collection('activities')
-          .get();
+            .collection(collection)
+            .doc(id)
+            .collection('vehicles')
+            .doc(vehicleId)
+            .collection('activities')
+            .get();
 
         for (var activityDoc in activitiesSnapshot.docs) {
           var activityData = activityDoc.data();
 
           if (activityData['${type.toLowerCase()}Type'] == oldName) {
             await _firestore
-              .collection(collection)
-              .doc(id)
-              .collection('vehicles')
-              .doc(vehicleId)
-              .collection('activities')
-              .doc(activityDoc.id)
-              .update({'${type.toLowerCase()}Type': newName});
+                .collection(collection)
+                .doc(id)
+                .collection('vehicles')
+                .doc(vehicleId)
+                .collection('activities')
+                .doc(activityDoc.id)
+                .update({'${type.toLowerCase()}Type': newName});
           }
         }
       }
@@ -251,13 +259,14 @@ class CarService {
     }
   }
 
-  Future<void> updateVehicleType(String id, String oldName, String newName, String type, String collection) async {
+  Future<void> updateVehicleType(String id, String oldName, String newName,
+      String type, String collection) async {
     try {
       var vehiclesSnapshot = await _firestore
-        .collection(collection)
-        .doc(id)
-        .collection('vehicles')
-        .get();
+          .collection(collection)
+          .doc(id)
+          .collection('vehicles')
+          .get();
 
       for (var vehicleDoc in vehiclesSnapshot.docs) {
         var vehicleId = vehicleDoc.id;
@@ -265,11 +274,11 @@ class CarService {
 
         if (vehicleData['${type.toLowerCase()}Type'] == oldName) {
           await _firestore
-            .collection(collection)
-            .doc(id)
-            .collection('vehicles')
-            .doc(vehicleId)
-            .update({'${type.toLowerCase()}Type': newName});
+              .collection(collection)
+              .doc(id)
+              .collection('vehicles')
+              .doc(vehicleId)
+              .update({'${type.toLowerCase()}Type': newName});
         }
       }
 
@@ -279,13 +288,14 @@ class CarService {
     }
   }
 
-  Future<void> deleteVehicleType(String id, String typeName, String type, String collection) async {
+  Future<void> deleteVehicleType(
+      String id, String typeName, String type, String collection) async {
     try {
       var vehiclesSnapshot = await _firestore
-        .collection(collection)
-        .doc(id)
-        .collection('vehicles')
-        .get();
+          .collection(collection)
+          .doc(id)
+          .collection('vehicles')
+          .get();
 
       for (var vehicleDoc in vehiclesSnapshot.docs) {
         var vehicleId = vehicleDoc.id;
@@ -293,11 +303,11 @@ class CarService {
 
         if (vehicleData['${type.toLowerCase()}Type'] == typeName) {
           await _firestore
-            .collection(collection)
-            .doc(id)
-            .collection('vehicles')
-            .doc(vehicleId)
-            .delete();
+              .collection(collection)
+              .doc(id)
+              .collection('vehicles')
+              .doc(vehicleId)
+              .delete();
         }
       }
 
@@ -319,8 +329,6 @@ class CarService {
         var vehicleId = vehicleDoc.id;
         var vehicleData = vehicleDoc.data();
 
-        print("Vehículo a añadir: $vehicleData");
-
         // Copiar vehículo a la familia
         await _firestore
             .collection('families')
@@ -328,8 +336,6 @@ class CarService {
             .collection('vehicles')
             .doc(vehicleId)
             .set(vehicleData);
-
-        print("Vehículo añadido a la familia correctamente.");
 
         // Obtener todas las actividades del vehículo
         var activitiesSnapshot = await _firestore
@@ -344,8 +350,6 @@ class CarService {
           var activityId = activityDoc.id;
           var activityData = activityDoc.data();
 
-          print("Actividad a añadir: $activityData");
-
           // Copiar actividad al vehículo en la familia
           await _firestore
               .collection('families')
@@ -355,11 +359,10 @@ class CarService {
               .collection('activities')
               .doc(activityId)
               .set(activityData);
-
-          print("Actividad añadida correctamente.");
         }
       }
-      print("Usuario convertido a familia correctamente.");
+
+      await deleteVehicles(idUser, "users");
     } catch (e) {
       throw GarageException("create_familype_error");
     }
@@ -368,47 +371,44 @@ class CarService {
   Future<void> deleteVehicles(String userId, String collection) async {
     try {
       var vehiclesSnapshot = await _firestore
-        .collection(collection)
-        .doc(userId)
-        .collection('vehicles')
-        .get();
+          .collection(collection)
+          .doc(userId)
+          .collection('vehicles')
+          .get();
 
       for (var vehicleDoc in vehiclesSnapshot.docs) {
         var vehicleId = vehicleDoc.id;
 
         var activitiesSnapshot = await _firestore
-          .collection(collection)
-          .doc(userId)
-          .collection('vehicles')
-          .doc(vehicleId)
-          .collection('activities')
-          .get();
-
-        for (var activityDoc in activitiesSnapshot.docs) {
-          var activityId = activityDoc.id;
-
-          await _firestore
             .collection(collection)
             .doc(userId)
             .collection('vehicles')
             .doc(vehicleId)
             .collection('activities')
-            .doc(activityId)
-            .delete();
+            .get();
+
+        for (var activityDoc in activitiesSnapshot.docs) {
+          var activityId = activityDoc.id;
+
+          await _firestore
+              .collection(collection)
+              .doc(userId)
+              .collection('vehicles')
+              .doc(vehicleId)
+              .collection('activities')
+              .doc(activityId)
+              .delete();
         }
 
         await _firestore
-          .collection(collection)
-          .doc(userId)
-          .collection('vehicles')
-          .doc(vehicleId)
-          .delete();
+            .collection(collection)
+            .doc(userId)
+            .collection('vehicles')
+            .doc(vehicleId)
+            .delete();
       }
-
-      print("Vehículos eliminados correctamente.");
     } catch (e) {
       throw GarageException("delete_all_vehicles_error");
     }
   }
-
 }

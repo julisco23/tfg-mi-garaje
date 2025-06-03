@@ -68,7 +68,9 @@ class _TypesViewState extends ConsumerState<TypesView> {
               controller.text.substring(1).trim(),
           widget.type);
       if (isActivity) {
-        ref.read(tabStateProvider.notifier).newTab(controller.text);
+        ref.read(tabStateProvider.notifier).newTab(
+            controller.text[0].toUpperCase() +
+                controller.text.substring(1).trim());
       }
 
       ToastHelper.show('${controller.text} añadido');

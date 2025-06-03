@@ -45,8 +45,7 @@ class MyApp extends ConsumerWidget {
           home: const AuthWrapper(),
         ),
         loading: () => const CircularProgressIndicator(),
-        error: (e, st) =>
-            ErrorScreen(errorMessage: "Error al cargar el tema"),
+        error: (e, st) => ErrorScreen(errorMessage: "Error al cargar el tema"),
       ),
       loading: () => const CircularProgressIndicator(),
       error: (e, st) => ErrorScreen(errorMessage: 'Error cargando locale'),

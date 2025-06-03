@@ -13,18 +13,16 @@ import 'package:mi_garaje/data/provider/auth_notifier.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DialogEditProfile extends ConsumerStatefulWidget {
-  final bool isFamily;
-
-  const DialogEditProfile({super.key, required this.isFamily});
+  const DialogEditProfile({super.key});
 
   @override
   ConsumerState<DialogEditProfile> createState() => _DialogEditProfileState();
 
-  static Future<void> show(BuildContext context, {bool isFamily = false}) {
+  static Future<void> show(BuildContext context) {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
-        return DialogEditProfile(isFamily: isFamily);
+        return DialogEditProfile();
       },
     );
   }
@@ -44,19 +42,14 @@ class _DialogEditProfileState extends ConsumerState<DialogEditProfile> {
     super.initState();
 
     final authState = ref.read(authProvider);
-    if (widget.isFamily) {
-      nameController =
-          TextEditingController(text: authState.valueOrNull!.family!.name);
-      accountType = "familia";
-    } else {
-      nameController =
-          TextEditingController(text: authState.valueOrNull!.user!.name);
-      if (authState.valueOrNull!.isPhotoURL) {
-        imageBase64 = authState.valueOrNull!.user!.photoURL!;
-      }
-      isPhotoChanged = authState.valueOrNull!.user!.hasPhotoChanged;
-      accountType = "perfil";
+
+    nameController =
+        TextEditingController(text: authState.valueOrNull!.user!.name);
+    if (authState.valueOrNull!.isPhotoURL) {
+      imageBase64 = authState.valueOrNull!.user!.photoURL!;
     }
+    isPhotoChanged = authState.valueOrNull!.user!.hasPhotoChanged;
+    accountType = "perfil";
   }
 
   @override
@@ -90,10 +83,7 @@ class _DialogEditProfileState extends ConsumerState<DialogEditProfile> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-              widget.isFamily
-                  ? localizations.updateFamily
-                  : localizations.updateProfile,
+          Text(localizations.updateProfile,
               style: Theme.of(context).textTheme.titleLarge),
           IconButton(
             icon: Icon(Icons.close, color: Theme.of(context).primaryColor),
@@ -107,14 +97,15 @@ class _DialogEditProfileState extends ConsumerState<DialogEditProfile> {
         width: double.maxFinite,
         child: Form(
             key: profileFormKey,
-            child: Column(mainAxisSize: MainAxisSize.min, children: [
-              MiTextFormField(
-                controller: nameController,
-                labelText: localizations.accountName(accountType),
-                hintText: 'Mi Garaje',
-                validator: Validator.validateName,
-              ),
-              if (!widget.isFamily) ...[
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                MiTextFormField(
+                  controller: nameController,
+                  labelText: localizations.accountName(accountType),
+                  hintText: 'Mi Garaje',
+                  validator: Validator.validateName,
+                ),
                 SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 
                 // Selector de imagen
@@ -141,7 +132,7 @@ class _DialogEditProfileState extends ConsumerState<DialogEditProfile> {
                                         child: Column(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            !isPhotoChanged
+                                            isPhotoChanged
                                                 ? Image.memory(
                                                     base64Decode(imageBase64!),
                                                     fit: BoxFit.cover,
@@ -158,7 +149,7 @@ class _DialogEditProfileState extends ConsumerState<DialogEditProfile> {
                                 },
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(8),
-                                  child: !isPhotoChanged
+                                  child: isPhotoChanged
                                       ? Image.memory(
                                           base64Decode(imageBase64!),
                                           height: 50,
@@ -202,7 +193,7 @@ class _DialogEditProfileState extends ConsumerState<DialogEditProfile> {
                   ],
                 ),
               ],
-            ])),
+            )),
       ),
       actions: [
         Row(
@@ -220,27 +211,18 @@ class _DialogEditProfileState extends ConsumerState<DialogEditProfile> {
                 if (profileFormKey.currentState!.validate()) {
                   navigator.pushNamed(RouteNames.loading, arguments: {
                     'onInit': () async {
-                      String? response;
-                      if (widget.isFamily) {
-                        response = await ref
-                            .read(authProvider.notifier)
-                            .actualizarFamilia(
-                                nameController.text[0].toUpperCase() +
-                                    nameController.text.substring(1).trim());
-                      } else {
-                        response = await ref
-                            .read(authProvider.notifier)
-                            .actualizarProfile(
-                                nameController.text[0].toUpperCase() +
-                                    nameController.text.substring(1).trim(),
-                                imageBase64,
-                                isPhotoChanged);
-                      }
-                      if (response != null) {
-                        ToastHelper.show(response);
-                      } else {
-                        navigator.pushNamedAndRemoveUntil(
-                            RouteNames.home, (route) => false);
+                      try {
+                        await ref.read(authProvider.notifier).updateProfile(
+                            nameController.text[0].toUpperCase() +
+                                nameController.text.substring(1).trim(),
+                            imageBase64,
+                            isPhotoChanged);
+                        navigator.pop();
+                        navigator.pop();
+                      } catch (e) {
+                        ToastHelper.show(
+                            e.toString().replaceAll('Exception: ', ''));
+                        navigator.pop();
                       }
                     }
                   });

@@ -108,19 +108,22 @@ class _SignupViewState extends ConsumerState<SignupView> {
                         if (signupFormKey.currentState!.validate()) {
                           navigator.pushNamed(RouteNames.loading, arguments: {
                             'onInit': () async {
-                              String? response = await ref
-                                  .read(authProvider.notifier)
-                                  .signup(
-                                    emailController.text,
-                                    passwordController.text,
-                                    nameController.text[0].toUpperCase() +
-                                        nameController.text.substring(1).trim(),
-                                  );
-                              if (response != null) {
-                                ToastHelper.show(response);
-                              } else {
+                              try {
+                                await ref.read(authProvider.notifier).signup(
+                                      emailController.text,
+                                      passwordController.text,
+                                      nameController.text[0].toUpperCase() +
+                                          nameController.text
+                                              .substring(1)
+                                              .trim(),
+                                    );
+
                                 navigator.pushNamedAndRemoveUntil(
                                     RouteNames.home, (route) => false);
+                              } catch (e) {
+                                ToastHelper.show(
+                                    e.toString().replaceAll('Exception: ', ''));
+                                navigator.pop();
                               }
                             }
                           });
@@ -136,15 +139,17 @@ class _SignupViewState extends ConsumerState<SignupView> {
                       onPressed: () async {
                         navigator.pushNamed(RouteNames.loading, arguments: {
                           'onInit': () async {
-                            String? message = await ref
-                                .read(authProvider.notifier)
-                                .signInAnonymously();
+                            try {
+                              await ref
+                                  .read(authProvider.notifier)
+                                  .signupAnonymously();
 
-                            if (message != null) {
-                              ToastHelper.show(message);
-                            } else {
                               navigator.pushNamedAndRemoveUntil(
                                   RouteNames.home, (route) => false);
+                            } catch (e) {
+                              ToastHelper.show(
+                                  e.toString().replaceAll('Exception: ', ''));
+                              navigator.pop();
                             }
                           }
                         });
@@ -159,15 +164,17 @@ class _SignupViewState extends ConsumerState<SignupView> {
                       onPressed: () async {
                         navigator.pushNamed(RouteNames.loading, arguments: {
                           'onInit': () async {
-                            String? response = await ref
-                                .read(authProvider.notifier)
-                                .signupWithGoogle();
+                            try {
+                              await ref
+                                  .read(authProvider.notifier)
+                                  .signInWithGoogle();
 
-                            if (response != null) {
-                              ToastHelper.show(response);
-                            } else {
                               navigator.pushNamedAndRemoveUntil(
                                   RouteNames.home, (route) => false);
+                            } catch (e) {
+                              ToastHelper.show(
+                                  e.toString().replaceAll('Exception: ', ''));
+                              navigator.pop();
                             }
                           }
                         });

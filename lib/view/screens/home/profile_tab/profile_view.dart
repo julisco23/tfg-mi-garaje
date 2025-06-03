@@ -100,7 +100,7 @@ class Perfil extends ConsumerWidget {
           child: CircleAvatar(
               radius: 50,
               backgroundImage: (user.isPhoto)
-                  ? (!user.hasPhotoChanged
+                  ? (user.hasPhotoChanged
                       ? MemoryImage(base64Decode(user.photoURL!))
                           as ImageProvider
                       : CachedNetworkImageProvider(user.photoURL!)
@@ -168,20 +168,15 @@ class Perfil extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          localizations.myFamily,
-          style: TextStyle(
-            color: Theme.of(context).primaryColor,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
         Row(
           children: [
             Text(
-              family.name,
-              style: TextStyle(fontWeight: FontWeight.bold),
+              localizations.myFamily,
+              style: TextStyle(
+                color: Theme.of(context).primaryColor,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             SizedBox(width: AppDimensions.screenWidth(context) * 0.015),
             InkWell(
@@ -232,7 +227,7 @@ class Perfil extends ConsumerWidget {
                         CircleAvatar(
                             radius: 35,
                             backgroundImage: (member.isPhoto)
-                                ? (!member.hasPhotoChanged
+                                ? (member.hasPhotoChanged
                                     ? MemoryImage(
                                             base64Decode(member.photoURL!))
                                         as ImageProvider

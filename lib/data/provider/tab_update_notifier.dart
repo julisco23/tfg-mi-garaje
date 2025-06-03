@@ -9,7 +9,7 @@ class TabState {
     required this.tabIndex,
   });
 
-  bool get isScrollable => activityTypes.length > 4;
+  bool get isScrollable => activityTypes.length > 3;
 
   TabState copyWith({
     List<String>? activityTypes,
@@ -27,6 +27,10 @@ class TabStateNotifier extends StateNotifier<TabState> {
 
   void inicializar(List<String> types) {
     state = state.copyWith(activityTypes: List.from(types));
+  }
+
+  void limpiar() {
+    state = TabState(activityTypes: [], tabIndex: 0);
   }
 
   void newTab(String text) {
