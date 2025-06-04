@@ -182,7 +182,7 @@ class Perfil extends ConsumerWidget {
             InkWell(
               onTap: () {
                 Clipboard.setData(ClipboardData(text: family.code));
-                ToastHelper.show("Código de familia copiado al portapapeles");
+                ToastHelper.show(localizations.familyCodeCopied);
               },
               borderRadius: BorderRadius.circular(10),
               child: Container(

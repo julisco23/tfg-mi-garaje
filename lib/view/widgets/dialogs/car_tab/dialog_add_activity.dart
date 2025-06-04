@@ -13,7 +13,6 @@ import 'package:mi_garaje/data/provider/activity_notifier.dart';
 import 'package:mi_garaje/data/provider/global_types_notifier.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/utils/validator.dart';
-import 'package:mi_garaje/shared/exceptions/garage_exception.dart';
 import 'package:mi_garaje/utils/app_localizations_extensions.dart';
 import 'package:mi_garaje/view/widgets/utils/date_form_field.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
@@ -78,9 +77,9 @@ class _DialogAddActivityState extends ConsumerState<DialogAddActivity> {
         isCustom = true;
       } else {
         customType = widget.activity!.getActivityType;
-        _typesFuture =
-            ref.read(globalTypesProvider.notifier).getTypes(customType);
+        _loadTypesSafely(customType);
       }
+
       costController.text = widget.activity!.getCost.toString();
       selectedDate = widget.activity!.getDate;
       selectedType = widget.activity!.getType;
@@ -89,7 +88,7 @@ class _DialogAddActivityState extends ConsumerState<DialogAddActivity> {
         costLiterController.text =
             (widget.activity as Fuel).costLiter.toString();
       } else {
-        detailsController.text = widget.activity!.getDetails!;
+        detailsController.text = widget.activity!.getDetails ?? '';
         if (widget.activity!.isPhoto) {
           imageBytes = base64Decode(widget.activity!.getPhoto!);
         }
@@ -100,12 +99,24 @@ class _DialogAddActivityState extends ConsumerState<DialogAddActivity> {
       }
     } else {
       customType = widget.customType!;
-      if (["Fuel", "Repair", "Record"].contains(widget.customType)) {
-        _typesFuture =
-            ref.read(globalTypesProvider.notifier).getTypes(customType);
+      if (["Fuel", "Repair", "Record"].contains(customType)) {
+        _loadTypesSafely(customType);
       } else {
         isCustom = true;
       }
+    }
+  }
+
+  void _loadTypesSafely(String type) async {
+    try {
+      final future = ref.read(globalTypesProvider.notifier).getTypes(type);
+      setState(() {
+        _typesFuture = future;
+      });
+    } catch (e) {
+      setState(() {
+        _typesFuture = Future.value([]);
+      });
     }
   }
 
@@ -429,7 +440,8 @@ class _DialogAddActivityState extends ConsumerState<DialogAddActivity> {
                                   await ref
                                       .read(activityProvider.notifier)
                                       .addActivity(newActivity);
-                                  ToastHelper.show('$customType añadida');
+                                  ToastHelper.show(localizations
+                                      .customTypeAdded(customType));
                                 } else {
                                   newActivity.idActivity =
                                       widget.activity!.idActivity;
@@ -438,12 +450,14 @@ class _DialogAddActivityState extends ConsumerState<DialogAddActivity> {
                                       .updateActivity(newActivity);
                                   await widget.onActivityUpdated
                                       ?.call(newActivity);
-                                  ToastHelper.show('$customType actualizada');
+                                  ToastHelper.show(localizations
+                                      .customTypeUpdated(customType));
                                 }
 
                                 navigator.pop();
-                              } on GarageException catch (e) {
-                                ToastHelper.show(e.message);
+                              } catch (e) {
+                                ToastHelper.show(localizations
+                                    .getErrorMessage(e.toString()));
                               }
                             }
                           },

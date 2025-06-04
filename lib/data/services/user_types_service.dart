@@ -9,20 +9,20 @@ class UserTypesService {
     try {
       DocumentSnapshot userSnapshot =
           await _firestore.collection(ownerType).doc(ownerId).get();
-      var userData = userSnapshot.data() as Map<String, dynamic>;
+
+      var userData = userSnapshot.data() as Map<String, dynamic>?;
 
       List<String> addedFuelTypes =
-          List<String>.from(userData["added$typeName"] ?? []);
+          List<String>.from(userData?["added$typeName"] ?? []);
       List<String> removedFuelTypes =
-          List<String>.from(userData["removed$typeName"] ?? []);
+          List<String>.from(userData?["removed$typeName"] ?? []);
 
       return {
         "added": addedFuelTypes,
         "removed": removedFuelTypes,
       };
     } catch (e) {
-      print("Error al obtener los datos del usuario: $e");
-      return {};
+      throw Exception('get_user_data_error');
     }
   }
 
@@ -34,7 +34,7 @@ class UserTypesService {
         "added$typeName": FieldValue.arrayUnion([type]),
       });
     } catch (e) {
-      print(e);
+      throw Exception('add_type_error');
     }
   }
 
@@ -52,7 +52,7 @@ class UserTypesService {
         });
       }
     } catch (e) {
-      print(e);
+      throw Exception('remove_type_error');
     }
   }
 
@@ -64,63 +64,73 @@ class UserTypesService {
         "removed$typeName": FieldValue.arrayRemove([type]),
       });
     } catch (e) {
-      print(e);
+      throw Exception('reactivate_type_error');
     }
   }
 
   // Método para obtener los tabs guardados del usuario
   Future<List<String>> getTabs(String ownerId, String ownerType) async {
-    final userRef = _firestore.collection(ownerType).doc(ownerId);
-    final doc = await userRef.get();
+    try {
+      final userRef = _firestore.collection(ownerType).doc(ownerId);
+      final doc = await userRef.get();
 
-    if (doc.exists) {
-      return List<String>.from(doc.data()?['addedActivity'] ?? []);
+      if (doc.exists) {
+        return List<String>.from(doc.data()?['tabs'] ?? []);
+      }
+      return [];
+    } catch (e) {
+      throw Exception('get_tabs_error');
     }
-
-    return [];
   }
 
   // Método para transpasar los types de un usuario a una familia
   Future<void> transformTypesToFamily(String userId, String idFamily) async {
-    for (String typeName in [
-      "Fuel",
-      "Repair",
-      "Record",
-      "Vehicle",
-      "Activity"
-    ]) {
-      await getUserData(userId, "users", typeName).then((userData) {
-        List<String> addedTypes = userData["added"] ?? [];
-        if (addedTypes.isNotEmpty) {
-          _firestore.collection("families").doc(idFamily).update({
-            "added$typeName": FieldValue.arrayUnion(addedTypes),
-          });
-        }
+    try {
+      for (String typeName in [
+        "Fuel",
+        "Repair",
+        "Record",
+        "Vehicle",
+        "Activity"
+      ]) {
+        await getUserData(userId, "users", typeName).then((userData) {
+          List<String> addedTypes = userData["added"] ?? [];
+          if (addedTypes.isNotEmpty) {
+            _firestore.collection("families").doc(idFamily).update({
+              "added$typeName": FieldValue.arrayUnion(addedTypes),
+            });
+          }
 
-        List<String> removedTypes = userData["removed"] ?? [];
-        if (removedTypes.isNotEmpty) {
-          _firestore.collection("families").doc(idFamily).update({
-            "removed$typeName": FieldValue.arrayUnion(removedTypes),
-          });
-        }
-      });
+          List<String> removedTypes = userData["removed"] ?? [];
+          if (removedTypes.isNotEmpty) {
+            _firestore.collection("families").doc(idFamily).update({
+              "removed$typeName": FieldValue.arrayUnion(removedTypes),
+            });
+          }
+        });
+      }
+    } catch (e) {
+      throw Exception('transform_types_error');
     }
-
     deleteTypeFromUser(userId);
   }
 
   Future<void> deleteTypeFromUser(String userId) async {
-    for (String typeName in [
-      "Fuel",
-      "Repair",
-      "Record",
-      "Vehicle",
-      "Activity"
-    ]) {
-      _firestore.collection("users").doc(userId).update({
-        "added$typeName": FieldValue.delete(),
-        "removed$typeName": FieldValue.delete(),
-      });
+    try {
+      for (String typeName in [
+        "Fuel",
+        "Repair",
+        "Record",
+        "Vehicle",
+        "Activity"
+      ]) {
+        _firestore.collection("users").doc(userId).update({
+          "added$typeName": FieldValue.delete(),
+          "removed$typeName": FieldValue.delete(),
+        });
+      }
+    } catch (e) {
+      throw Exception('delete_type_from_user_error');
     }
   }
 }

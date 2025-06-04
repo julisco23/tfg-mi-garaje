@@ -1,10 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:mi_garaje/data/models/activity.dart';
 import 'package:mi_garaje/data/models/vehicle.dart';
-import 'package:mi_garaje/shared/exceptions/garage_exception.dart';
 
-class CarService {
+class VehicleService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<List<Vehicle>> getVehiclesFuture(String id, String collection) async {
@@ -15,15 +13,12 @@ class CarService {
           .collection('vehicles')
           .get();
 
-      debugPrint("Vehículos obtenidos: ${snapshot.docs.length}");
-
       return snapshot.docs.map((doc) {
         final data = doc.data();
         return Vehicle.fromMap(data)..id = doc.id;
       }).toList();
     } catch (e) {
-      debugPrint("Error al obtener vehículos: $e");
-      throw GarageException("fetch_vehicles_error");
+      throw Exception('fetch_vehicles_error');
     }
   }
 
@@ -38,29 +33,8 @@ class CarService {
 
       vehicle.setId(docRef.id);
       await docRef.set(vehicle.toMap());
-
-      debugPrint("Vehículo añadido: ${vehicle.toString()}");
     } catch (e) {
-      debugPrint("Error al añadir vehículo: $e");
-      throw GarageException("add_vehicle_error");
-    }
-  }
-
-  // Actualizar un vehículo
-  Future<void> updateVehicle(
-      Vehicle vehicle, String id, String collection) async {
-    try {
-      await _firestore
-          .collection(collection)
-          .doc(id)
-          .collection('vehicles')
-          .doc(vehicle.id)
-          .update(vehicle.toMap());
-
-      debugPrint("Vehículo actualizado: ${vehicle.toString()}");
-    } catch (e) {
-      debugPrint("Error al actualizar vehículo: $e");
-      throw GarageException("update_vehicle_error");
+      throw Exception('add_vehicle_error');
     }
   }
 
@@ -74,11 +48,23 @@ class CarService {
           .collection('vehicles')
           .doc(vehicleId)
           .delete();
-
-      debugPrint("Vehículo eliminado: $vehicleId");
     } catch (e) {
-      debugPrint("Error al eliminar vehículo: $e");
-      throw GarageException("delete_vehicle_error");
+      throw Exception('delete_vehicle_error');
+    }
+  }
+
+  // Actualizar un vehículo
+  Future<void> updateVehicle(
+      Vehicle vehicle, String id, String collection) async {
+    try {
+      await _firestore
+          .collection(collection)
+          .doc(id)
+          .collection('vehicles')
+          .doc(vehicle.id)
+          .update(vehicle.toMap());
+    } catch (e) {
+      throw Exception('update_vehicle_error');
     }
   }
 
@@ -100,8 +86,7 @@ class CarService {
         }).toList();
       });
     } catch (e) {
-      debugPrint("Error al obtener todas las actividades: $e");
-      throw GarageException("fetch_activities_error");
+      throw Exception('fetch_activities_error');
     }
   }
 
@@ -119,11 +104,8 @@ class CarService {
 
       activity.setId(docRef.id);
       await docRef.set(activity.toMap());
-
-      debugPrint("Actividad añadida: ${activity.toMap()}");
     } catch (e) {
-      debugPrint("Error al añadir actividad: $e");
-      throw GarageException("add_activity_error");
+      throw Exception('add_activity_error');
     }
   }
 
@@ -139,11 +121,8 @@ class CarService {
           .collection('activities')
           .doc(activityId)
           .delete();
-
-      debugPrint("Actividad eliminada: $activityId");
     } catch (e) {
-      debugPrint("Error al eliminar actividad: $e");
-      throw GarageException("delete_activity_error");
+      throw Exception('delete_activity_error');
     }
   }
 
@@ -159,11 +138,8 @@ class CarService {
           .collection('activities')
           .doc(activity.idActivity)
           .update(activity.toMap());
-
-      debugPrint("Actividad actualizada: ${activity.toMap()}");
     } catch (e) {
-      debugPrint("Error al actualizar actividad: $e");
-      throw GarageException("update_activity_error");
+      throw Exception('update_activity_error');
     }
   }
 
@@ -209,10 +185,8 @@ class CarService {
           }
         }
       }
-      print("Todas las actividades eliminadas correctamente.");
     } catch (e) {
-      print("Error al eliminar todas las actividades: $e");
-      throw GarageException("delete_all_activities_error");
+      throw Exception('delete_all_activities_error');
     }
   }
 
@@ -251,11 +225,8 @@ class CarService {
           }
         }
       }
-
-      print("Todas las actividades editadas correctamente.");
     } catch (e) {
-      print("Error al editar actividades: $e");
-      throw GarageException("edit_activityType_error");
+      throw Exception('edit_all_activities_error');
     }
   }
 
@@ -281,10 +252,8 @@ class CarService {
               .update({'${type.toLowerCase()}Type': newName});
         }
       }
-
-      print("Todas los vehiculos editadas correctamente.");
     } catch (e) {
-      throw GarageException("edit_vehicleType_error");
+      throw Exception('edit_vehicleType_error');
     }
   }
 
@@ -310,10 +279,8 @@ class CarService {
               .delete();
         }
       }
-
-      print("Todas los vehiculos eliminados correctamente.");
     } catch (e) {
-      throw GarageException("delete_vehicleType_error");
+      throw Exception('delete_vehicleType_error');
     }
   }
 
@@ -364,7 +331,7 @@ class CarService {
 
       await deleteVehicles(idUser, "users");
     } catch (e) {
-      throw GarageException("create_familype_error");
+      throw Exception('create_family_error');
     }
   }
 
@@ -408,7 +375,7 @@ class CarService {
             .delete();
       }
     } catch (e) {
-      throw GarageException("delete_all_vehicles_error");
+      throw Exception('delete_all_vehicles_error');
     }
   }
 }

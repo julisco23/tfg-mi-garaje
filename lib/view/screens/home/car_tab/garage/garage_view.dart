@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mi_garaje/data/models/vehicle.dart';
-import 'package:mi_garaje/shared/exceptions/garage_exception.dart';
+import 'package:mi_garaje/utils/app_localizations_extensions.dart';
 import 'package:mi_garaje/view/widgets/cards/vehicle_card.dart';
 import 'package:mi_garaje/view/widgets/dialogs/garage_tab/dialog_add_vehicle.dart';
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_confirm.dart';
@@ -64,8 +64,8 @@ class GarageView extends ConsumerWidget {
                       .deleteVehicle(vehicle);
                   ToastHelper.show(
                       '${vehicle.getVehicleType()} ${localizations.deleted}');
-                } on GarageException catch (e) {
-                  ToastHelper.show(e.message);
+                } catch (e) {
+                  ToastHelper.show(localizations.getErrorMessage(e.toString()));
                 }
               },
               background: Container(

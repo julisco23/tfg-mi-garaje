@@ -5,7 +5,6 @@ class TypesCard extends StatefulWidget {
   final IconData icon;
   final bool contains;
   final VoidCallback? onPressed;
-  final ValueChanged<String>? onNameChanged;
 
   const TypesCard({
     super.key,
@@ -13,7 +12,6 @@ class TypesCard extends StatefulWidget {
     required this.icon,
     this.contains = false,
     required this.onPressed,
-    this.onNameChanged,
   });
 
   @override

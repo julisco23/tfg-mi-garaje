@@ -38,7 +38,7 @@ class AuthState {
 
 class AuthNotifier extends AsyncNotifier<AuthState> {
   final AuthService _authService = AuthService();
-  final CarService _carService = CarService();
+  final VehicleService _vehicleService = VehicleService();
   final UserTypesService _userTypeService = UserTypesService();
 
   @override
@@ -50,8 +50,8 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
         family = await _authService.getFamily(user.idFamily!);
       }
       return AuthState(user: user, family: family);
-    } catch (e, st) {
-      throw AsyncError(e, st);
+    } catch (e, stackTrace) {
+      throw AsyncError(e, stackTrace);
     }
   }
 
@@ -116,7 +116,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     if (state.value!.isFamily) {
       await leaveFamily();
     } else {
-      await _carService.deleteVehicles(state.value!.id, state.value!.type);
+      await _vehicleService.deleteVehicles(state.value!.id, state.value!.type);
     }
 
     if (state.value!.isGoogle) {
@@ -150,13 +150,13 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     );
 
     String idFamily = await _authService.convertToFamily(family, user.id!);
-    await _carService.convertToFamily(user.id!, idFamily);
+    await _vehicleService.convertToFamily(user.id!, idFamily);
     await _userTypeService.transformTypesToFamily(user.id!, idFamily);
     await updateUser();
   }
 
   Future<void> joinFamily(String familyCode) async {
-    await _carService.deleteVehicles(state.value!.user!.id!, "users");
+    await _vehicleService.deleteVehicles(state.value!.user!.id!, "users");
     await _userTypeService.deleteTypeFromUser(state.value!.user!.id!);
 
     await _authService.joinFamily(familyCode, state.value!.user!.id!);
@@ -167,7 +167,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     await _authService.leaveFamily(state.value!.isLastMember,
         state.value!.user!.id!, state.value!.family!.id!);
     if (state.value!.isLastMember) {
-      await _carService.deleteVehicles(state.value!.id, state.value!.type);
+      await _vehicleService.deleteVehicles(state.value!.id, state.value!.type);
     }
     ref.read(activityProvider.notifier).clearActivities();
     await updateUser();

@@ -30,26 +30,31 @@ class GarageState {
 }
 
 class GarageNotifier extends AsyncNotifier<GarageState> {
-  final CarService _carService = CarService();
+  final VehicleService _vehicleService = VehicleService();
 
   @override
   Future<GarageState> build() async {
-    final auth = ref.watch(authProvider).value;
-    if (auth == null) return GarageState();
+    try {
+      final auth = ref.watch(authProvider).value;
+      if (auth == null) return GarageState();
 
-    if (!auth.isUser) {
+      if (!auth.isUser) {
+        return GarageState(
+          vehicles: [],
+          selectedVehicle: null,
+        );
+      }
+
+      final vehicles =
+          await _vehicleService.getVehiclesFuture(auth.id, auth.type);
+
       return GarageState(
-        vehicles: [],
-        selectedVehicle: null,
+        vehicles: vehicles,
+        selectedVehicle: vehicles.isNotEmpty ? vehicles.first : null,
       );
+    } catch (e, stackTrace) {
+      throw AsyncError(e, stackTrace);
     }
-
-    final vehicles = await _carService.getVehiclesFuture(auth.id, auth.type);
-
-    return (GarageState(
-      vehicles: vehicles,
-      selectedVehicle: vehicles.isNotEmpty ? vehicles.first : null,
-    ));
   }
 
   Future<void> setSelectedVehicle(Vehicle? vehicle) async {
@@ -57,10 +62,10 @@ class GarageNotifier extends AsyncNotifier<GarageState> {
   }
 
   Future<void> refreshGarage() async {
-    final auth = ref.read(authProvider).value;
-    if (auth == null) return;
+    final auth = ref.read(authProvider).value!;
 
-    final vehicles = await _carService.getVehiclesFuture(auth.id, auth.type);
+    final vehicles =
+        await _vehicleService.getVehiclesFuture(auth.id, auth.type);
     Vehicle? selected;
     if (vehicles.isNotEmpty) {
       selected = vehicles.firstWhere(
@@ -78,10 +83,9 @@ class GarageNotifier extends AsyncNotifier<GarageState> {
   }
 
   Future<void> addVehicle(Vehicle vehicle) async {
-    final auth = ref.read(authProvider).value;
-    if (auth == null) return;
+    final auth = ref.read(authProvider).value!;
 
-    await _carService.addVehicle(vehicle, auth.id, auth.type);
+    await _vehicleService.addVehicle(vehicle, auth.id, auth.type);
     final updatedList = [...state.value!.vehicles, vehicle];
 
     state = AsyncData(state.value!.copyWith(
@@ -91,10 +95,9 @@ class GarageNotifier extends AsyncNotifier<GarageState> {
   }
 
   Future<void> deleteVehicle(Vehicle vehicle) async {
-    final auth = ref.read(authProvider).value;
-    if (auth == null) return;
+    final auth = ref.read(authProvider).value!;
 
-    await _carService.deleteVehicle(vehicle.id!, auth.id, auth.type);
+    await _vehicleService.deleteVehicle(vehicle.id!, auth.id, auth.type);
     final updatedList =
         state.value!.vehicles.where((v) => v.id != vehicle.id).toList();
     final selected = state.value!.selectedVehicle?.id == vehicle.id
@@ -106,10 +109,9 @@ class GarageNotifier extends AsyncNotifier<GarageState> {
   }
 
   Future<void> updateVehicle(Vehicle vehicle) async {
-    final auth = ref.read(authProvider).value;
-    if (auth == null) return;
+    final auth = ref.read(authProvider).value!;
 
-    await _carService.updateVehicle(vehicle, auth.id, auth.type);
+    await _vehicleService.updateVehicle(vehicle, auth.id, auth.type);
     final updatedList = state.value!.vehicles
         .map((v) => v.id == vehicle.id ? vehicle : v)
         .toList();
@@ -121,10 +123,9 @@ class GarageNotifier extends AsyncNotifier<GarageState> {
   }
 
   Future<void> deleteVehicleType(String type, String typeName) async {
-    final auth = ref.read(authProvider).value;
-    if (auth == null) return;
+    final auth = ref.read(authProvider).value!;
 
-    await _carService.deleteVehicleType(auth.id, type, typeName, auth.type);
+    await _vehicleService.deleteVehicleType(auth.id, type, typeName, auth.type);
 
     final updatedVehicles =
         state.value!.vehicles.where((v) => !(v.vehicleType == type)).toList();
@@ -138,10 +139,9 @@ class GarageNotifier extends AsyncNotifier<GarageState> {
 
   Future<void> updateVehicleType(
       String oldName, String newName, String type) async {
-    final auth = ref.read(authProvider).value;
-    if (auth == null) return;
+    final auth = ref.read(authProvider).value!;
 
-    await _carService.updateVehicleType(
+    await _vehicleService.updateVehicleType(
         auth.id, oldName, newName, type, auth.type);
 
     final updatedVehicles = state.value!.vehicles.map((v) {

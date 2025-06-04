@@ -5,6 +5,7 @@ import 'package:mi_garaje/data/provider/activity_notifier.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/shared/utils/mapper_csv.dart';
+import 'package:mi_garaje/utils/app_localizations_extensions.dart';
 import 'package:mi_garaje/utils/export_utils.dart';
 import 'package:mi_garaje/view/widgets/cards/settings_card.dart';
 import 'package:mi_garaje/view/widgets/dialogs/auth/dialog_create_profile.dart';
@@ -79,7 +80,7 @@ class SettingsView extends ConsumerWidget {
                         navigator.pop();
                       } catch (e) {
                         ToastHelper.show(
-                            e.toString().replaceAll('Exception: ', ''));
+                            localizations.getErrorMessage(e.toString()));
                         navigator.pop();
                       }
                     }
@@ -106,10 +107,10 @@ class SettingsView extends ConsumerWidget {
                           await ref.read(authProvider.notifier).signout();
                           navigator.pushNamedAndRemoveUntil(
                               RouteNames.login, (route) => false);
-                          ToastHelper.show("Sesión cerrada.");
+                          ToastHelper.show(localizations.sessionClosed);
                         } catch (e) {
                           ToastHelper.show(
-                              e.toString().replaceAll('Exception: ', ''));
+                              localizations.getErrorMessage(e.toString()));
                           navigator.pop();
                         }
                       }
@@ -138,10 +139,10 @@ class SettingsView extends ConsumerWidget {
                         navigator.pushNamedAndRemoveUntil(
                             RouteNames.login, (route) => false);
 
-                        ToastHelper.show("Cuenta eliminada.");
+                        ToastHelper.show(localizations.accountDeleted);
                       } catch (e) {
                         ToastHelper.show(
-                            e.toString().replaceAll('Exception: ', ''));
+                            localizations.getErrorMessage(e.toString()));
                         navigator.pop();
                       }
                     }
@@ -171,10 +172,10 @@ class SettingsView extends ConsumerWidget {
                       try {
                         await ref.read(authProvider.notifier).convertToFamily();
                         navigator.pop();
-                        ToastHelper.show("Familia creada.");
+                        ToastHelper.show(localizations.familyCreated);
                       } catch (e) {
                         ToastHelper.show(
-                            e.toString().replaceAll('Exception: ', ''));
+                            localizations.getErrorMessage(e.toString()));
                         navigator.pop();
                       }
                     }
@@ -210,10 +211,10 @@ class SettingsView extends ConsumerWidget {
                           navigator.pushNamedAndRemoveUntil(
                               RouteNames.home, (route) => false);
 
-                          ToastHelper.show("Familia abandonada.");
+                          ToastHelper.show(localizations.familyLeft);
                         } catch (e) {
                           ToastHelper.show(
-                              e.toString().replaceAll('Exception: ', ''));
+                              localizations.getErrorMessage(e.toString()));
                           navigator.pop();
                           return;
                         }
@@ -302,19 +303,23 @@ class SettingsView extends ConsumerWidget {
                 final Map<String, List<Activity>> activitiesMap = {};
 
                 for (var vehicle in vehicles) {
-                  final acts = await ref
-                      .read(activityProvider.notifier)
-                      .getActivitiesByVehicle(vehicle.id!);
-                  activitiesMap[vehicle.id!] = acts;
+                  try {
+                    final acts = await ref
+                        .read(activityProvider.notifier)
+                        .getActivitiesByVehicle(vehicle.id!);
+                    activitiesMap[vehicle.id!] = acts;
+                  } catch (e) {
+                    activitiesMap[vehicle.id!] = [];
+                  }
                 }
                 try {
                   await exportToCSV(exportAllCarsWithActivitiesToCSV(
                     vehicles,
                     activitiesMap,
                   ));
-                  ToastHelper.show("Datos exportados.");
-                } on Exception catch (e) {
-                  return ToastHelper.show(e.toString());
+                  ToastHelper.show(localizations.dataExported);
+                } catch (e) {
+                  ToastHelper.show(localizations.getErrorMessage(e.toString()));
                 }
               },
             ),

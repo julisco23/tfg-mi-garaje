@@ -38,17 +38,28 @@ class _TypesViewState extends ConsumerState<TypesView> {
   }
 
   void defineTypes() async {
+    final localizations = AppLocalizations.of(context)!;
     isActivity = widget.type == 'Activity';
     isVehicle = widget.type == 'Vehicle';
 
-    typesFuture = ref.read(globalTypesProvider.notifier).getTypes(widget.type);
+    try {
+      typesFuture =
+          ref.read(globalTypesProvider.notifier).getTypes(widget.type);
 
-    if (!isActivity) {
-      removedtypesFuture =
-          ref.read(globalTypesProvider.notifier).getRemovedTypes(widget.type);
+      if (!isActivity) {
+        removedtypesFuture =
+            ref.read(globalTypesProvider.notifier).getRemovedTypes(widget.type);
+      }
+
+      final globalTypes = ref.read(globalTypesProvider).value!.globalTypes;
+
+      getTypesGlobal = globalTypes[widget.type]!;
+    } catch (e) {
+      ToastHelper.show(localizations.getErrorMessage(e.toString()));
+      typesFuture = Future.value([]);
+      removedtypesFuture = Future.value([]);
+      getTypesGlobal = [];
     }
-    getTypesGlobal =
-        ref.read(globalTypesProvider).value!.globalTypes[widget.type]!;
   }
 
   @override
@@ -63,71 +74,85 @@ class _TypesViewState extends ConsumerState<TypesView> {
     Future<void> addType(AsyncValue<AuthState> authState) async {
       FocusScope.of(context).unfocus();
 
-      await ref.read(globalTypesProvider.notifier).addType(
-          controller.text[0].toUpperCase() +
-              controller.text.substring(1).trim(),
-          widget.type);
-      if (isActivity) {
-        ref.read(tabStateProvider.notifier).newTab(
-            controller.text[0].toUpperCase() +
-                controller.text.substring(1).trim());
+      try {
+        final formattedText = controller.text[0].toUpperCase() +
+            controller.text.substring(1).trim();
+
+        await ref
+            .read(globalTypesProvider.notifier)
+            .addType(formattedText, widget.type);
+
+        if (isActivity) {
+          ref.read(tabStateProvider.notifier).newTab(formattedText);
+        }
+
+        ToastHelper.show(localizations.typeAdded(controller.text));
+        controller.clear();
+      } catch (e) {
+        ToastHelper.show(localizations.getErrorMessage(e.toString()));
       }
-
-      ToastHelper.show('${controller.text} añadido');
-
-      controller.clear();
     }
 
     // Función para eliminar tipos
     Future<void> removeType(
         AsyncValue<AuthState> authState, String typeName) async {
-      await ref
-          .read(globalTypesProvider.notifier)
-          .removeType(typeName, widget.type);
+      try {
+        await ref
+            .read(globalTypesProvider.notifier)
+            .removeType(typeName, widget.type);
 
-      if (isActivity) {
-        ref.read(tabStateProvider.notifier).removeTab(typeName);
-        await ref.read(activityProvider.notifier).deleteAllActivities(typeName);
-        await ref.read(garageProvider.notifier).refreshGarage();
-      } else if (isVehicle) {
-        await ref
-            .read(garageProvider.notifier)
-            .deleteVehicleType(typeName, widget.type);
-      } else {
-        await ref
-            .read(activityProvider.notifier)
-            .deleteAllActivities(typeName, type: widget.type);
-        await ref.read(garageProvider.notifier).refreshGarage();
+        if (isActivity) {
+          ref.read(tabStateProvider.notifier).removeTab(typeName);
+          await ref
+              .read(activityProvider.notifier)
+              .deleteAllActivities(typeName);
+          await ref.read(garageProvider.notifier).refreshGarage();
+        } else if (isVehicle) {
+          await ref
+              .read(garageProvider.notifier)
+              .deleteVehicleType(typeName, widget.type);
+        } else {
+          await ref
+              .read(activityProvider.notifier)
+              .deleteAllActivities(typeName, type: widget.type);
+          await ref.read(garageProvider.notifier).refreshGarage();
+        }
+
+        ToastHelper.show(localizations.typeDeleted(typeName));
+      } catch (e) {
+        ToastHelper.show(localizations.getErrorMessage(e.toString()));
       }
-
-      ToastHelper.show('$typeName eliminado');
     }
 
     // Función para editar tipos
     Future<void> editType(
         AsyncValue<AuthState> authState, String oldName, String newName) async {
-      await ref
-          .read(globalTypesProvider.notifier)
-          .editType(oldName, newName, widget.type);
+      try {
+        await ref
+            .read(globalTypesProvider.notifier)
+            .editType(oldName, newName, widget.type);
 
-      if (isActivity) {
-        ref.read(tabStateProvider.notifier).editTab(oldName, newName);
-        await ref
-            .read(activityProvider.notifier)
-            .editAllActivities(oldName, newName);
-        await ref.read(garageProvider.notifier).refreshGarage();
-      } else if (isVehicle) {
-        await ref
-            .read(garageProvider.notifier)
-            .updateVehicleType(oldName, newName, widget.type);
-      } else {
-        await ref
-            .read(activityProvider.notifier)
-            .editAllActivities(oldName, newName);
-        await ref.read(garageProvider.notifier).refreshGarage();
+        if (isActivity) {
+          ref.read(tabStateProvider.notifier).editTab(oldName, newName);
+          await ref
+              .read(activityProvider.notifier)
+              .editAllActivities(oldName, newName);
+          await ref.read(garageProvider.notifier).refreshGarage();
+        } else if (isVehicle) {
+          await ref
+              .read(garageProvider.notifier)
+              .updateVehicleType(oldName, newName, widget.type);
+        } else {
+          await ref
+              .read(activityProvider.notifier)
+              .editAllActivities(oldName, newName);
+          await ref.read(garageProvider.notifier).refreshGarage();
+        }
+
+        ToastHelper.show(localizations.typeUpdated(newName));
+      } catch (e) {
+        ToastHelper.show(localizations.getErrorMessage(e.toString()));
       }
-
-      ToastHelper.show('$newName actualizado');
     }
 
     return Scaffold(
@@ -218,8 +243,8 @@ class _TypesViewState extends ConsumerState<TypesView> {
                                   ),
                                   confirmDismiss: (direction) async {
                                     if (userTypes.length == 1) {
-                                      ToastHelper.show(
-                                          'No puedes eliminar el último ${widget.type}');
+                                      ToastHelper.show(localizations
+                                          .cannotDeleteLastType(widget.type));
                                       return false;
                                     }
                                     return await ConfirmDialog.show(
@@ -247,10 +272,6 @@ class _TypesViewState extends ConsumerState<TypesView> {
                                     title: localizations.getSubType(typeItem),
                                     icon: Icons.edit,
                                     contains: getTypesGlobal.contains(typeItem),
-                                    onNameChanged: (newName) => ref
-                                        .read(globalTypesProvider.notifier)
-                                        .editType(
-                                            typeItem, newName, widget.type),
                                     onPressed: () => EditTypeDialog.show(
                                       context,
                                       typeItem,
@@ -310,17 +331,22 @@ class _TypesViewState extends ConsumerState<TypesView> {
                   title: localizations.getSubType(removedItem),
                   icon: Icons.restore,
                   onPressed: () async {
-                    await ref
-                        .read(globalTypesProvider.notifier)
-                        .reactivateType(removedItem, widget.type);
-                    ToastHelper.show('$removedItem restaurado');
-
-                    // Refrescar el future manualmente
-                    setState(() {
-                      removedtypesFuture = ref
+                    try {
+                      await ref
                           .read(globalTypesProvider.notifier)
-                          .getRemovedTypes(widget.type);
-                    });
+                          .reactivateType(removedItem, widget.type);
+
+                      ToastHelper.show(localizations.typeRestored(removedItem));
+
+                      setState(() {
+                        removedtypesFuture = ref
+                            .read(globalTypesProvider.notifier)
+                            .getRemovedTypes(widget.type);
+                      });
+                    } catch (e) {
+                      ToastHelper.show(
+                          localizations.getErrorMessage(e.toString()));
+                    }
                   },
                 );
               }).toList(),

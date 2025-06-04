@@ -30,18 +30,22 @@ class GlobalTypesNotifier extends AsyncNotifier<GlobalTypesState> {
 
   @override
   Future<GlobalTypesState> build() async {
-    final auth = ref.watch(authProvider).value;
-    if (auth == null) return GlobalTypesState();
+    try {
+      final auth = ref.watch(authProvider).value;
+      if (auth == null) return GlobalTypesState();
 
-    await GlobalTypesService.loadTypes();
-    final globalTypes = GlobalTypesService.getTypes();
+      await GlobalTypesService.loadTypes();
+      final globalTypes = GlobalTypesService.getTypes();
 
-    final userTabs = await _userTypeService.getTabs(auth.id, auth.type);
+      final userTabs = await _userTypeService.getTabs(auth.id, auth.type);
 
-    final activityTabs = globalTypes['Activity'] ?? [];
+      final activityTabs = globalTypes['Activity'] ?? [];
 
-    return GlobalTypesState(
-        globalTypes: globalTypes, tabs: [...activityTabs, ...userTabs]);
+      return GlobalTypesState(
+          globalTypes: globalTypes, tabs: [...activityTabs, ...userTabs]);
+    } catch (e, stackTrace) {
+      throw AsyncError(e, stackTrace);
+    }
   }
 
   Future<List<String>> getTypes(String typeName) async {

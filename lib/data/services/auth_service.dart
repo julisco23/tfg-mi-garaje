@@ -43,13 +43,12 @@ class AuthService {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-credential') {
-        throw Exception('Correo o contraseña incorrecta.');
+        throw Exception(e.code);
       } else {
-        throw Exception(
-            'Error al intentar iniciar sesión. Por favor, inténtalo nuevamente.');
+        throw Exception('singin_error');
       }
     } catch (_) {
-      throw Exception('Ha ocurrido un error inesperado.');
+      throw Exception('singin_error');
     }
   }
 
@@ -58,7 +57,7 @@ class AuthService {
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
     if (googleUser == null) {
-      throw Exception("No ha seleccionado una cuenta de Google.");
+      throw Exception('no_google_account_selected');
     }
 
     try {
@@ -76,7 +75,7 @@ class AuthService {
         await createUser();
       }
     } catch (e) {
-      throw Exception("Error inesperado al iniciar sesión con Google.");
+      throw Exception('google_signin_error');
     }
   }
 
@@ -92,12 +91,11 @@ class AuthService {
       await createUser();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
-        throw Exception('Existe una cuenta con este correo electrónico.');
+        throw Exception(e.code);
       }
-      throw Exception(
-          'Error al crear la cuenta. Por favor, inténtalo nuevamente.');
+      throw Exception('singup_error');
     } catch (_) {
-      throw Exception('Ha ocurrido un error inesperado al registrarse.');
+      throw Exception('singup_error');
     }
   }
 
@@ -107,7 +105,7 @@ class AuthService {
       await _auth.signInAnonymously();
       await createUser();
     } catch (e) {
-      throw Exception("Error al iniciar sesión como invitado.");
+      throw Exception('singup_anonymous_error');
     }
   }
 
@@ -128,12 +126,11 @@ class AuthService {
       });
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
-        throw Exception('Existe una cuenta con este correo electrónico.');
+        throw Exception(e.code);
       }
-      throw Exception(
-          'Error al vincular cuenta anónima. Por favor, inténtalo nuevamente.');
+      throw Exception('link_anonymous_account_error');
     } catch (e) {
-      throw Exception('Error inesperado al vincular cuenta anónima.');
+      throw Exception('link_anonymous_account_error');
     }
   }
 
@@ -142,7 +139,7 @@ class AuthService {
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
     if (googleUser == null) {
-      throw Exception("No ha seleccionado una cuenta de Google.");
+      throw Exception('no_google_account_selected');
     }
 
     try {
@@ -165,14 +162,13 @@ class AuthService {
     } on FirebaseAuthException catch (e) {
       await GoogleSignIn().signOut();
       if (e.code == 'credential-already-in-use') {
-        throw Exception(
-            'Esta cuenta de Google ya está vinculada a otro usuario.');
+        throw Exception(e.code);
       } else {
-        throw Exception('Error inesperado al vincular cuenta con Google.');
+        throw Exception('link_google_account_error');
       }
     } catch (e) {
       await GoogleSignIn().signOut();
-      throw Exception('Error inesperado al vincular cuenta con Google.');
+      throw Exception('link_google_account_error');
     }
   }
 
@@ -181,7 +177,7 @@ class AuthService {
     try {
       await _auth.signOut();
     } catch (e) {
-      throw Exception("Error al cerrar sesión");
+      throw Exception('signout_error');
     }
   }
 
@@ -190,7 +186,7 @@ class AuthService {
     try {
       await GoogleSignIn().disconnect();
     } catch (e) {
-      throw Exception("Error al cerrar sesión");
+      throw Exception('signout_google_error');
     }
   }
 
@@ -204,7 +200,7 @@ class AuthService {
 
       await _auth.currentUser!.delete();
     } catch (e) {
-      throw Exception("Error al eliminar la cuenta.");
+      throw Exception('delete_account_error');
     }
   }
 
@@ -218,7 +214,7 @@ class AuthService {
         'isPhotoChanged': isPhotoChanged,
       });
     } catch (e) {
-      throw Exception("Error al actualizar el perfil");
+      throw Exception('update_profile_error');
     }
   }
 
@@ -239,23 +235,27 @@ class AuthService {
 
       return familyId;
     } catch (e) {
-      throw Exception('Error al convertir el usuario en familia.');
+      throw Exception('convert_to_family_error');
     }
   }
 
   // Método para abandonar la familia
   Future<void> leaveFamily(
       bool eliminar, String userId, String familyId) async {
-    await _firestore.collection('families').doc(familyId).update({
-      'members': FieldValue.arrayRemove([userId]),
-    });
+    try {
+      await _firestore.collection('families').doc(familyId).update({
+        'members': FieldValue.arrayRemove([userId]),
+      });
 
-    await _firestore.collection('users').doc(userId).update({
-      'idFamily': null,
-    });
+      await _firestore.collection('users').doc(userId).update({
+        'idFamily': null,
+      });
 
-    if (eliminar) {
-      await _firestore.collection('families').doc(familyId).delete();
+      if (eliminar) {
+        await _firestore.collection('families').doc(familyId).delete();
+      }
+    } catch (e) {
+      throw Exception('leave_family_error');
     }
   }
 
@@ -268,7 +268,7 @@ class AuthService {
           .get();
 
       if (snapshot.docs.isEmpty) {
-        throw Exception("No se encontró la familia");
+        throw Exception('family_not_found');
       }
 
       DocumentSnapshot doc = snapshot.docs.first;
@@ -281,28 +281,32 @@ class AuthService {
         'idFamily': doc.id,
       });
     } catch (e) {
-      throw Exception("Error al unirse a la familia.");
+      throw Exception('ejoin_family_error');
     }
   }
 
   // Método para obtener la familia del usuario
   Future<Family> getFamily(String idFamily) async {
-    DocumentSnapshot doc =
-        await _firestore.collection('families').doc(idFamily).get();
+    try {
+      DocumentSnapshot doc =
+          await _firestore.collection('families').doc(idFamily).get();
 
-    Family family = Family.fromMap(doc.data() as Map<String, dynamic>)
-      ..id = doc.id;
+      Family family = Family.fromMap(doc.data() as Map<String, dynamic>)
+        ..id = doc.id;
 
-    List<String> members = List<String>.from(doc.get('members'));
+      List<String> members = List<String>.from(doc.get('members'));
 
-    List<app.User> users = [];
-    for (String id in members) {
-      DocumentSnapshot userDoc =
-          await _firestore.collection('users').doc(id).get();
-      users.add(app.User.fromMap(userDoc.data() as Map<String, dynamic>)
-        ..id = userDoc.id);
+      List<app.User> users = [];
+      for (String id in members) {
+        DocumentSnapshot userDoc =
+            await _firestore.collection('users').doc(id).get();
+        users.add(app.User.fromMap(userDoc.data() as Map<String, dynamic>)
+          ..id = userDoc.id);
+      }
+      family.addMembers(users);
+      return family;
+    } catch (e) {
+      throw Exception('get_family_error');
     }
-    family.addMembers(users);
-    return family;
   }
 }

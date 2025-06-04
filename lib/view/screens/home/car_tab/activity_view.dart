@@ -7,7 +7,6 @@ import 'package:mi_garaje/data/models/activity.dart';
 import 'package:mi_garaje/data/models/fuel.dart';
 import 'package:mi_garaje/data/provider/activity_notifier.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
-import 'package:mi_garaje/shared/exceptions/garage_exception.dart';
 import 'package:mi_garaje/utils/app_localizations_extensions.dart';
 import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_add_activity.dart';
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_confirm.dart';
@@ -56,8 +55,8 @@ class _ActivityViewState extends ConsumerState<ActivityView> {
                 await ref
                     .read(activityProvider.notifier)
                     .deleteActivity(activity);
-              } on GarageException catch (e) {
-                ToastHelper.show(e.message);
+              } catch (e) {
+                ToastHelper.show(localizations.getErrorMessage(e.toString()));
                 return;
               }
 

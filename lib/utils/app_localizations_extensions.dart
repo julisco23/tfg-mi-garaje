@@ -68,4 +68,94 @@ extension LocalizedVehicleType on AppLocalizations {
         return isSingular ? normalized : type;
     }
   }
+
+  String getErrorMessage(String code) {
+    final normalized =
+        code.replaceAll('Exception: ', '').toLowerCase().replaceAll('-', '');
+
+    switch (normalized) {
+      case 'invalidcredential':
+        return invalidCredential;
+      case 'singinerror':
+        return singinError;
+      case 'nogoogleaccountselected':
+        return noGoogleAccountSelected;
+      case 'googlesigninerror':
+        return googleSigninError;
+      case 'emailalreadyinuse':
+        return emailAlreadyInUse;
+      case 'singuperror':
+        return singupError;
+      case 'singupanonymouserror':
+        return singupAnonymousError;
+      case 'linkanonymousaccounterror':
+        return linkAnonymousAccountError;
+      case 'credentialalreadyinuse':
+        return credentialAlreadyInUse;
+      case 'linkgoogleaccounterror':
+        return linkGoogleAccountError;
+      case 'signouterror':
+        return signoutError;
+      case 'signoutgoogleerror':
+        return signoutGoogleError;
+      case 'deleteaccounterror':
+        return deleteAccountError;
+      case 'updateprofileerror':
+        return updateProfileError;
+      case 'convertofamilyerror':
+        return convertToFamilyError;
+      case 'leavefamilyerror':
+        return leaveFamilyError;
+      case 'familynotfound':
+        return familyNotFound;
+      case 'ejoinfamilyerror':
+        return ejoinFamilyError;
+      case 'getfamilyerror':
+        return getFamilyError;
+      case 'getuserdataerror':
+        return getUserDataError;
+      case 'addtypeerror':
+        return addTypeError;
+      case 'removetypeerror':
+        return removeTypeError;
+      case 'reactivatetypeerror':
+        return reactivateTypeError;
+      case 'gettabserror':
+        return getTabsError;
+      case 'transformtypeserror':
+        return transformTypesError;
+      case 'deletetypefromusererror':
+        return deleteTypeFromUserError;
+      case 'fetchvehicleserror':
+        return fetchVehiclesError;
+      case 'addvehicleerror':
+        return addVehicleError;
+      case 'deletevehicleerror':
+        return deleteVehicleError;
+      case 'updatevehicleerror':
+        return updateVehicleError;
+      case 'fetchactivitieserror':
+        return fetchActivitiesError;
+      case 'addactivityerror':
+        return addActivityError;
+      case 'deleteactivityerror':
+        return deleteActivityError;
+      case 'updateactivityerror':
+        return updateActivityError;
+      case 'deleteallactivitieserror':
+        return deleteAllActivitiesError;
+      case 'editallactivitieserror':
+        return editAllActivitiesError;
+      case 'editvehicletypeerror':
+        return editVehicleTypeError;
+      case 'deletevehicletypeerror':
+        return deleteVehicleTypeError;
+      case 'createfamilyerror':
+        return createFamilyError;
+      case 'deleteallvehicleserror':
+        return deleteAllVehiclesError;
+      default:
+        return unknownError;
+    }
+  }
 }

@@ -38,10 +38,14 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
     final Map<String, List<Activity>> activitiesMap = {};
 
     for (var vehicle in vehicles) {
-      final acts = await ref
-          .read(activityProvider.notifier)
-          .getActivitiesByVehicle(vehicle.id!);
-      activitiesMap[vehicle.id!] = acts;
+      try {
+        final acts = await ref
+            .read(activityProvider.notifier)
+            .getActivitiesByVehicle(vehicle.id!);
+        activitiesMap[vehicle.id!] = acts;
+      } catch (e) {
+        activitiesMap[vehicle.id!] = [];
+      }
     }
 
     setState(() {

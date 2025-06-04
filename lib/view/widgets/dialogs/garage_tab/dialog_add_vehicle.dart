@@ -7,7 +7,6 @@ import 'package:mi_garaje/data/models/vehicle.dart';
 import 'package:mi_garaje/data/provider/global_types_notifier.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/utils/validator.dart';
-import 'package:mi_garaje/shared/exceptions/garage_exception.dart';
 import 'package:mi_garaje/utils/app_localizations_extensions.dart';
 import 'package:mi_garaje/view/widgets/utils/elevated_button_utils.dart';
 import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
@@ -275,8 +274,8 @@ class _DialogAddVehicleState extends ConsumerState<DialogAddVehicle> {
                                     widget.onVehicleChanged!(null);
                                   }
 
-                                  ToastHelper.show(
-                                      '$selectedVehicleType añadido');
+                                  ToastHelper.show(localizations
+                                      .typeAdded(selectedVehicleType!));
                                 } else {
                                   // Actualizar vehículo
                                   vehicle.id = widget.vehicle!.id;
@@ -287,11 +286,13 @@ class _DialogAddVehicleState extends ConsumerState<DialogAddVehicle> {
                                   widget.onVehicleChanged!(vehicle);
 
                                   ToastHelper.show(
-                                      '$selectedVehicleType actualizado');
+                                      localizations.vehicleTypeUpdated(
+                                          selectedVehicleType!));
                                 }
                                 navigator.pop();
-                              } on GarageException catch (e) {
-                                ToastHelper.show(e.message);
+                              } catch (e) {
+                                ToastHelper.show(localizations
+                                    .getErrorMessage(e.toString()));
                               }
                             }
                           },
