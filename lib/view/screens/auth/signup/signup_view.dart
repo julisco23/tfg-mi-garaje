@@ -30,6 +30,7 @@ class _SignupViewState extends ConsumerState<SignupView> {
   Widget build(BuildContext context) {
     final NavigatorState navigator = Navigator.of(context);
     final localizations = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
 
     return Scaffold(
         resizeToAvoidBottomInset: true,
@@ -49,11 +50,8 @@ class _SignupViewState extends ConsumerState<SignupView> {
                       child: Text(localizations.welcomeTitle,
                           style: Theme.of(context).textTheme.titleLarge),
                     ),
-                    SizedBox(
-                        height: AppDimensions.screenHeight(context) * 0.02),
-                    Image.asset('assets/images/logo.png', width: 100),
-                    SizedBox(
-                        height: AppDimensions.screenHeight(context) * 0.02),
+                    Image.asset('assets/images/logo.png',
+                        height: AppDimensions.screenHeight(context) * 0.2),
 
                     // Campo de nombre de perfil
                     MiTextFormField(
@@ -61,7 +59,7 @@ class _SignupViewState extends ConsumerState<SignupView> {
                       labelText: localizations.profileName,
                       hintText: localizations.myGarage,
                       validator: (value) {
-                        return Validator.validateName(value);
+                        return Validator.validateName(value, localizations);
                       },
                     ),
                     SizedBox(
@@ -73,7 +71,7 @@ class _SignupViewState extends ConsumerState<SignupView> {
                       labelText: localizations.email,
                       hintText: 'migaraje@gmail.com',
                       validator: (value) {
-                        return Validator.validateEmail(value);
+                        return Validator.validateEmail(value, localizations);
                       },
                     ),
                     SizedBox(
@@ -86,7 +84,7 @@ class _SignupViewState extends ConsumerState<SignupView> {
                       labelText: localizations.password,
                       hintText: obscureText ? '******' : localizations.password,
                       validator: (value) {
-                        return Validator.validatePassword(value);
+                        return Validator.validatePassword(value, localizations);
                       },
                       suffixIcon: IconButton(
                         icon: Icon(
@@ -122,8 +120,10 @@ class _SignupViewState extends ConsumerState<SignupView> {
                                 navigator.pushNamedAndRemoveUntil(
                                     RouteNames.home, (route) => false);
                               } catch (e) {
-                                ToastHelper.show(localizations
-                                    .getErrorMessage(e.toString()));
+                                ToastHelper.show(
+                                    theme,
+                                    localizations
+                                        .getErrorMessage(e.toString()));
                                 navigator.pop();
                               }
                             }
@@ -148,7 +148,7 @@ class _SignupViewState extends ConsumerState<SignupView> {
                               navigator.pushNamedAndRemoveUntil(
                                   RouteNames.home, (route) => false);
                             } catch (e) {
-                              ToastHelper.show(
+                              ToastHelper.show(theme,
                                   localizations.getErrorMessage(e.toString()));
                               navigator.pop();
                             }
@@ -173,7 +173,7 @@ class _SignupViewState extends ConsumerState<SignupView> {
                               navigator.pushNamedAndRemoveUntil(
                                   RouteNames.home, (route) => false);
                             } catch (e) {
-                              ToastHelper.show(
+                              ToastHelper.show(theme,
                                   localizations.getErrorMessage(e.toString()));
                               navigator.pop();
                             }

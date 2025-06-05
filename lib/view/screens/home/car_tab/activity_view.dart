@@ -36,6 +36,7 @@ class _ActivityViewState extends ConsumerState<ActivityView> {
   Widget build(BuildContext context) {
     final NavigatorState navigator = Navigator.of(context);
     final AppLocalizations localizations = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -56,7 +57,8 @@ class _ActivityViewState extends ConsumerState<ActivityView> {
                     .read(activityProvider.notifier)
                     .deleteActivity(activity);
               } catch (e) {
-                ToastHelper.show(localizations.getErrorMessage(e.toString()));
+                ToastHelper.show(
+                    theme, localizations.getErrorMessage(e.toString()));
                 return;
               }
 

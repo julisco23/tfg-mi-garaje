@@ -137,6 +137,7 @@ class _DialogAddActivityState extends ConsumerState<DialogAddActivity> {
   Widget build(BuildContext context) {
     final NavigatorState navigator = Navigator.of(context);
     final AppLocalizations localizations = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
 
     return Dialog(
       insetPadding: EdgeInsets.all(10),
@@ -164,7 +165,7 @@ class _DialogAddActivityState extends ConsumerState<DialogAddActivity> {
                             isSingular: true)),
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
-                  SizedBox(height: AppDimensions.screenHeight(context) * 0.05),
+                  SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 
                   // Selección de Tipo
                   if (isCustom) ...[
@@ -174,7 +175,8 @@ class _DialogAddActivityState extends ConsumerState<DialogAddActivity> {
                           .typeOfCustomType(customType.toLowerCase()),
                       hintText: localizations
                           .typeOfCustomType(customType.toLowerCase()),
-                      validator: Validator.validateCustomType,
+                      validator: (value) =>
+                          Validator.validateCustomType(value, localizations),
                     ),
                   ] else ...[
                     SizedBox(
@@ -241,13 +243,14 @@ class _DialogAddActivityState extends ConsumerState<DialogAddActivity> {
                                           .bodyMedium),
                                 ),
                             ],
-                            validator: Validator.validateDropdown,
+                            validator: (value) => Validator.validateDropdown(
+                                value, localizations),
                           );
                         },
                       ),
                     ),
                   ],
-                  SizedBox(height: AppDimensions.screenHeight(context) * 0.03),
+                  SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 
                   // Fecha
                   DatePickerField(
@@ -258,7 +261,7 @@ class _DialogAddActivityState extends ConsumerState<DialogAddActivity> {
                       });
                     },
                   ),
-                  SizedBox(height: AppDimensions.screenHeight(context) * 0.03),
+                  SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 
                   // Coste
                   MiTextFormField(
@@ -266,9 +269,10 @@ class _DialogAddActivityState extends ConsumerState<DialogAddActivity> {
                     labelText: localizations.costE,
                     hintText: '20 €',
                     keyboardType: TextInputType.number,
-                    validator: Validator.validateCostRequired,
+                    validator: (value) =>
+                        Validator.validateCostRequired(value, localizations),
                   ),
-                  SizedBox(height: AppDimensions.screenHeight(context) * 0.03),
+                  SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 
                   // Campo "Precio por Litro"
                   if (widget.customType == "Fuel" ||
@@ -278,7 +282,8 @@ class _DialogAddActivityState extends ConsumerState<DialogAddActivity> {
                       labelText: localizations.pricePerLiterE,
                       hintText: '1.442 €',
                       keyboardType: TextInputType.number,
-                      validator: Validator.validateCostLi,
+                      validator: (value) =>
+                          Validator.validateCostLi(value, localizations),
                     ),
                   ] else ...[
                     // Campo de descripción
@@ -289,7 +294,7 @@ class _DialogAddActivityState extends ConsumerState<DialogAddActivity> {
                       maxLines: 5,
                     ),
                     SizedBox(
-                        height: AppDimensions.screenHeight(context) * 0.03),
+                        height: AppDimensions.screenHeight(context) * 0.02),
 
                     // Selector de imagen
                     Column(
@@ -362,11 +367,11 @@ class _DialogAddActivityState extends ConsumerState<DialogAddActivity> {
                       ],
                     ),
                   ],
-                  SizedBox(height: AppDimensions.screenHeight(context) * 0.05),
+                  SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 
                   // Botones
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       Expanded(
                         child: TextButton(
@@ -376,7 +381,6 @@ class _DialogAddActivityState extends ConsumerState<DialogAddActivity> {
                           onPressed: () => navigator.pop(),
                         ),
                       ),
-                      SizedBox(width: 20),
                       Expanded(
                         child: TextButton(
                           child: Text(localizations.save,
@@ -440,8 +444,11 @@ class _DialogAddActivityState extends ConsumerState<DialogAddActivity> {
                                   await ref
                                       .read(activityProvider.notifier)
                                       .addActivity(newActivity);
-                                  ToastHelper.show(localizations
-                                      .customTypeAdded(customType));
+                                  ToastHelper.show(
+                                      theme,
+                                      localizations.customTypeAdded(
+                                          localizations
+                                              .getSubType(customType)));
                                 } else {
                                   newActivity.idActivity =
                                       widget.activity!.idActivity;
@@ -450,14 +457,19 @@ class _DialogAddActivityState extends ConsumerState<DialogAddActivity> {
                                       .updateActivity(newActivity);
                                   await widget.onActivityUpdated
                                       ?.call(newActivity);
-                                  ToastHelper.show(localizations
-                                      .customTypeUpdated(customType));
+                                  ToastHelper.show(
+                                      theme,
+                                      localizations.customTypeUpdated(
+                                          localizations
+                                              .getSubType(customType)));
                                 }
 
                                 navigator.pop();
                               } catch (e) {
-                                ToastHelper.show(localizations
-                                    .getErrorMessage(e.toString()));
+                                ToastHelper.show(
+                                    theme,
+                                    localizations
+                                        .getErrorMessage(e.toString()));
                               }
                             }
                           },

@@ -20,21 +20,12 @@ class LanguageSelectorDialog extends ConsumerWidget {
     final currentLocale = ref.watch(localeProvider).valueOrNull;
     final localeNotifier = ref.read(localeProvider.notifier);
     final localizations = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
 
     return AlertDialog(
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            localizations.selectLanguage,
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          IconButton(
-            icon: Icon(Icons.close, color: Theme.of(context).primaryColor),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-        ],
-      ),
+      title: Text(localizations.selectLanguage,
+          style: Theme.of(context).textTheme.titleLarge,
+          textAlign: TextAlign.center),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -44,7 +35,7 @@ class LanguageSelectorDialog extends ConsumerWidget {
             selected: currentLocale?.languageCode == 'es',
             onTap: () {
               localeNotifier.changeLocale(const Locale('es'));
-              ToastHelper.show("Idioma cambiado a Español.");
+              ToastHelper.show(theme, "Idioma cambiado a Español.");
             },
           ),
           _buildOptionTile(
@@ -53,7 +44,7 @@ class LanguageSelectorDialog extends ConsumerWidget {
             selected: currentLocale?.languageCode == 'en',
             onTap: () {
               localeNotifier.changeLocale(const Locale('en'));
-              ToastHelper.show("Language changed to English.");
+              ToastHelper.show(theme, "Language changed to English.");
             },
           ),
         ],
@@ -68,7 +59,7 @@ class LanguageSelectorDialog extends ConsumerWidget {
     required VoidCallback onTap,
   }) {
     return ListTile(
-      title: Text(title),
+      title: Text(title, style: Theme.of(context).textTheme.bodyMedium),
       trailing: selected
           ? Icon(Icons.check, color: Theme.of(context).primaryColor)
           : null,

@@ -78,22 +78,13 @@ class _DialogEditProfileState extends ConsumerState<DialogEditProfile> {
   Widget build(BuildContext context) {
     final NavigatorState navigator = Navigator.of(context);
     final AppLocalizations localizations = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
 
     return AlertDialog(
       insetPadding: EdgeInsets.all(10),
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(localizations.updateProfile,
-              style: Theme.of(context).textTheme.titleLarge),
-          IconButton(
-            icon: Icon(Icons.close, color: Theme.of(context).primaryColor),
-            onPressed: () {
-              navigator.pop();
-            },
-          ),
-        ],
-      ),
+      title: Text(localizations.updateProfile,
+          style: Theme.of(context).textTheme.titleLarge,
+          textAlign: TextAlign.center),
       content: SizedBox(
         width: double.maxFinite,
         child: Form(
@@ -101,11 +92,15 @@ class _DialogEditProfileState extends ConsumerState<DialogEditProfile> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
+
+                // Campo de nombre
                 MiTextFormField(
                   controller: nameController,
                   labelText: localizations.accountName(accountType),
                   hintText: 'Mi Garaje',
-                  validator: Validator.validateName,
+                  validator: (value) =>
+                      Validator.validateName(value, localizations),
                 ),
                 SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 
@@ -197,6 +192,7 @@ class _DialogEditProfileState extends ConsumerState<DialogEditProfile> {
             )),
       ),
       actions: [
+        SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
@@ -222,7 +218,7 @@ class _DialogEditProfileState extends ConsumerState<DialogEditProfile> {
                         navigator.pop();
                       } catch (e) {
                         ToastHelper.show(
-                            localizations.getErrorMessage(e.toString()));
+                            theme, localizations.getErrorMessage(e.toString()));
                         navigator.pop();
                       }
                     }

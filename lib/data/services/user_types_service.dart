@@ -75,7 +75,7 @@ class UserTypesService {
       final doc = await userRef.get();
 
       if (doc.exists) {
-        return List<String>.from(doc.data()?['tabs'] ?? []);
+        return List<String>.from(doc.data()?['addedActivity'] ?? []);
       }
       return [];
     } catch (e) {

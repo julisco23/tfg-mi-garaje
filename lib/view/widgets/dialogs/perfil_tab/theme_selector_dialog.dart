@@ -19,21 +19,12 @@ class ThemeSelectorDialog extends ConsumerWidget {
     final themeMode = ref.watch(themeProvider).valueOrNull;
     final themeNotifier = ref.read(themeProvider.notifier);
     final localizations = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
 
     return AlertDialog(
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            localizations.changeTheme,
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          IconButton(
-            icon: Icon(Icons.close, color: Theme.of(context).primaryColor),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-        ],
-      ),
+      title: Text(localizations.changeTheme,
+          style: Theme.of(context).textTheme.titleLarge,
+          textAlign: TextAlign.center),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -44,7 +35,7 @@ class ThemeSelectorDialog extends ConsumerWidget {
             onTap: () async {
               await themeNotifier.setLightMode();
               ToastHelper.show(
-                  localizations.themeChangedTo(localizations.ligth));
+                  theme, localizations.themeChangedTo(localizations.ligth));
             },
           ),
           _buildOptionTile(
@@ -54,7 +45,7 @@ class ThemeSelectorDialog extends ConsumerWidget {
             onTap: () async {
               await themeNotifier.setDarkMode();
               ToastHelper.show(
-                  localizations.themeChangedTo(localizations.dark));
+                  theme, localizations.themeChangedTo(localizations.dark));
             },
           ),
           _buildOptionTile(
@@ -64,7 +55,7 @@ class ThemeSelectorDialog extends ConsumerWidget {
             onTap: () async {
               await themeNotifier.setSystemMode();
               ToastHelper.show(
-                  localizations.themeChangedTo(localizations.system));
+                  theme, localizations.themeChangedTo(localizations.system));
             },
           ),
         ],
@@ -79,7 +70,7 @@ class ThemeSelectorDialog extends ConsumerWidget {
     required VoidCallback onTap,
   }) {
     return ListTile(
-      title: Text(title),
+      title: Text(title, style: Theme.of(context).textTheme.bodyMedium),
       trailing: selected
           ? Icon(Icons.check, color: Theme.of(context).primaryColor)
           : null,

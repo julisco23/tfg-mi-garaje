@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/utils/monthly_total_spending.dart';
 import 'package:intl/intl.dart';
 import 'package:mi_garaje/shared/utils/statics.dart';
@@ -87,7 +88,7 @@ class _MonthlyTotalSpendingChartState extends State<MonthlyTotalSpendingChart> {
                         color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: AppDimensions.screenWidth(context) * 0.02),
                     DropdownButton<String>(
                       style: Theme.of(context).textTheme.bodyMedium,
                       value: selectedYear,
@@ -109,9 +110,9 @@ class _MonthlyTotalSpendingChartState extends State<MonthlyTotalSpendingChart> {
                 )),
           ],
         ),
-        const SizedBox(height: 18),
+        SizedBox(height: AppDimensions.screenHeight(context) * 0.03),
         SizedBox(
-          height: 300,
+          height: AppDimensions.screenHeight(context) * 0.45,
           child: Stack(children: [
             BarChart(
               BarChartData(

@@ -38,7 +38,9 @@ class AppThemes {
     ),
     textTheme: TextTheme(
       titleLarge: TextStyle(
-          color: azul, fontSize: 28), // Titulo login/register/titulos dialog
+          color: azul,
+          fontSize: 28,
+          fontWeight: FontWeight.bold), // Titulo login/register/titulos dialog
       titleMedium: TextStyle(color: oscuro, fontSize: 30), // Titulos dialog
       titleSmall: TextStyle(color: Colors.amber),
       bodyLarge: TextStyle(color: oscuro),
@@ -186,7 +188,8 @@ class AppThemes {
       onSurface: blanco,
     ),
     textTheme: TextTheme(
-      titleLarge: TextStyle(color: azul, fontSize: 28),
+      titleLarge:
+          TextStyle(color: azul, fontSize: 28, fontWeight: FontWeight.bold),
       titleMedium: TextStyle(color: blanco, fontSize: 30),
       titleSmall: TextStyle(color: azulClaro),
       bodyLarge: TextStyle(color: blanco),

@@ -5,6 +5,7 @@ import 'package:mi_garaje/data/provider/activity_notifier.dart';
 import 'package:mi_garaje/data/provider/garage_notifier.dart';
 import 'package:mi_garaje/data/provider/global_types_notifier.dart';
 import 'package:mi_garaje/data/provider/tab_update_notifier.dart';
+import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/utils/app_localizations_extensions.dart';
 import 'package:mi_garaje/view/screens/error_screen.dart';
@@ -93,7 +94,7 @@ class _CarTabViewState extends ConsumerState<CarTabView>
                   base64Decode(vehicle.getPhoto()!),
                 ),
               ),
-            const SizedBox(width: 10),
+            SizedBox(width: AppDimensions.screenWidth(context) * 0.02),
             Text(vehicle.getNameTittle()),
           ],
         ),

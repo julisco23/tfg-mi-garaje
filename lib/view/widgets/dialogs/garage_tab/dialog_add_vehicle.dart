@@ -81,6 +81,7 @@ class _DialogAddVehicleState extends ConsumerState<DialogAddVehicle> {
   Widget build(BuildContext context) {
     final NavigatorState navigator = Navigator.of(context);
     final AppLocalizations localizations = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
 
     return Dialog(
       insetPadding: EdgeInsets.all(10),
@@ -103,7 +104,7 @@ class _DialogAddVehicleState extends ConsumerState<DialogAddVehicle> {
                         : localizations.editVehicle,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
-                  SizedBox(height: AppDimensions.screenHeight(context) * 0.05),
+                  SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 
                   // Campo de nombre (opcional)
                   MiTextFormField(
@@ -111,7 +112,7 @@ class _DialogAddVehicleState extends ConsumerState<DialogAddVehicle> {
                     labelText: localizations.nameOptional,
                     hintText: localizations.myCar,
                   ),
-                  SizedBox(height: AppDimensions.screenHeight(context) * 0.03),
+                  SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 
                   // Selector de tipo de vehículo
                   SizedBox(
@@ -130,16 +131,17 @@ class _DialogAddVehicleState extends ConsumerState<DialogAddVehicle> {
                         },
                       )),
 
-                  SizedBox(height: AppDimensions.screenHeight(context) * 0.03),
+                  SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 
                   // Campo de marca
                   MiTextFormField(
                     controller: brandController,
                     labelText: localizations.brand,
                     hintText: 'Renault',
-                    validator: Validator.validateBrand,
+                    validator: (value) =>
+                        Validator.validateBrand(value, localizations),
                   ),
-                  SizedBox(height: AppDimensions.screenHeight(context) * 0.03),
+                  SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 
                   // Campo de modelo
                   MiTextFormField(
@@ -147,7 +149,7 @@ class _DialogAddVehicleState extends ConsumerState<DialogAddVehicle> {
                     labelText: localizations.modelOptional,
                     hintText: 'Clio',
                   ),
-                  SizedBox(height: AppDimensions.screenHeight(context) * 0.03),
+                  SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 
                   // Selector de imagen
                   Column(
@@ -194,7 +196,7 @@ class _DialogAddVehicleState extends ConsumerState<DialogAddVehicle> {
                                 ),
                                 SizedBox(
                                     width: AppDimensions.screenWidth(context) *
-                                        0.015),
+                                        0.02),
                                 Expanded(
                                   child: Text(
                                     localizations.imageLoaded,
@@ -216,11 +218,11 @@ class _DialogAddVehicleState extends ConsumerState<DialogAddVehicle> {
                             ),
                     ],
                   ),
-                  SizedBox(height: AppDimensions.screenHeight(context) * 0.05),
+                  SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 
                   // Botones de acción
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       Expanded(
                         child: TextButton(
@@ -232,8 +234,6 @@ class _DialogAddVehicleState extends ConsumerState<DialogAddVehicle> {
                           onPressed: () => navigator.pop(),
                         ),
                       ),
-                      SizedBox(
-                          width: AppDimensions.screenWidth(context) * 0.05),
                       Expanded(
                         child: TextButton(
                           style: TextButton.styleFrom(
@@ -274,8 +274,10 @@ class _DialogAddVehicleState extends ConsumerState<DialogAddVehicle> {
                                     widget.onVehicleChanged!(null);
                                   }
 
-                                  ToastHelper.show(localizations
-                                      .typeAdded(selectedVehicleType!));
+                                  ToastHelper.show(
+                                      theme,
+                                      localizations.typeAdded(localizations
+                                          .getSubType(selectedVehicleType!)));
                                 } else {
                                   // Actualizar vehículo
                                   vehicle.id = widget.vehicle!.id;
@@ -286,13 +288,17 @@ class _DialogAddVehicleState extends ConsumerState<DialogAddVehicle> {
                                   widget.onVehicleChanged!(vehicle);
 
                                   ToastHelper.show(
+                                      theme,
                                       localizations.vehicleTypeUpdated(
-                                          selectedVehicleType!));
+                                          localizations.getSubType(
+                                              selectedVehicleType!)));
                                 }
                                 navigator.pop();
                               } catch (e) {
-                                ToastHelper.show(localizations
-                                    .getErrorMessage(e.toString()));
+                                ToastHelper.show(
+                                    theme,
+                                    localizations
+                                        .getErrorMessage(e.toString()));
                               }
                             }
                           },
@@ -354,7 +360,7 @@ class _DialogAddVehicleState extends ConsumerState<DialogAddVehicle> {
           ),
         ),
       ],
-      validator: Validator.validateDropdown,
+      validator: (value) => Validator.validateDropdown(value, localizations),
     );
   }
 }

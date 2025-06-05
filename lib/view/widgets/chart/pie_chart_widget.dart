@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:mi_garaje/shared/constants/constants.dart';
 
 class PieChartWidget extends StatelessWidget {
   final Map<String, double> dataMap;
@@ -47,11 +48,11 @@ class PieChartWidget extends StatelessWidget {
                 )),
           ],
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 
         // Gráfica circular
         SizedBox(
-          height: 250,
+          height: AppDimensions.screenHeight(context) * 0.3,
           child: PieChart(
             PieChartData(
               sections: dataMap.entries.map((entry) {
@@ -81,7 +82,7 @@ class PieChartWidget extends StatelessWidget {
           ),
         ),
 
-        const SizedBox(height: 12),
+        SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 
         // Leyenda
         Wrap(
@@ -102,7 +103,7 @@ class PieChartWidget extends StatelessWidget {
                     shape: BoxShape.circle,
                   ),
                 ),
-                const SizedBox(width: 6),
+                SizedBox(width: AppDimensions.screenWidth(context) * 0.01),
                 Text(title, style: const TextStyle(fontSize: 12)),
               ],
             );

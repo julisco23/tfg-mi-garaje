@@ -30,6 +30,20 @@ class _TypesViewState extends ConsumerState<TypesView> {
   late List<String> getTypesGlobal;
   bool isActivity = false;
   bool isVehicle = false;
+  late TextEditingController controller;
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 
   @override
   void didChangeDependencies() {
@@ -39,6 +53,7 @@ class _TypesViewState extends ConsumerState<TypesView> {
 
   void defineTypes() async {
     final localizations = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
     isActivity = widget.type == 'Activity';
     isVehicle = widget.type == 'Vehicle';
 
@@ -55,7 +70,7 @@ class _TypesViewState extends ConsumerState<TypesView> {
 
       getTypesGlobal = globalTypes[widget.type]!;
     } catch (e) {
-      ToastHelper.show(localizations.getErrorMessage(e.toString()));
+      ToastHelper.show(theme, localizations.getErrorMessage(e.toString()));
       typesFuture = Future.value([]);
       removedtypesFuture = Future.value([]);
       getTypesGlobal = [];
@@ -64,9 +79,7 @@ class _TypesViewState extends ConsumerState<TypesView> {
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController controller = TextEditingController();
-    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-
+    final theme = Theme.of(context);
     final localizations = AppLocalizations.of(context)!;
     final authState = ref.watch(authProvider);
 
@@ -86,10 +99,10 @@ class _TypesViewState extends ConsumerState<TypesView> {
           ref.read(tabStateProvider.notifier).newTab(formattedText);
         }
 
-        ToastHelper.show(localizations.typeAdded(controller.text));
+        ToastHelper.show(theme, localizations.typeAdded(controller.text));
         controller.clear();
       } catch (e) {
-        ToastHelper.show(localizations.getErrorMessage(e.toString()));
+        ToastHelper.show(theme, localizations.getErrorMessage(e.toString()));
       }
     }
 
@@ -118,9 +131,9 @@ class _TypesViewState extends ConsumerState<TypesView> {
           await ref.read(garageProvider.notifier).refreshGarage();
         }
 
-        ToastHelper.show(localizations.typeDeleted(typeName));
+        ToastHelper.show(theme, localizations.typeDeleted(typeName));
       } catch (e) {
-        ToastHelper.show(localizations.getErrorMessage(e.toString()));
+        ToastHelper.show(theme, localizations.getErrorMessage(e.toString()));
       }
     }
 
@@ -149,9 +162,9 @@ class _TypesViewState extends ConsumerState<TypesView> {
           await ref.read(garageProvider.notifier).refreshGarage();
         }
 
-        ToastHelper.show(localizations.typeUpdated(newName));
+        ToastHelper.show(theme, localizations.typeUpdated(newName));
       } catch (e) {
-        ToastHelper.show(localizations.getErrorMessage(e.toString()));
+        ToastHelper.show(theme, localizations.getErrorMessage(e.toString()));
       }
     }
 
@@ -184,12 +197,14 @@ class _TypesViewState extends ConsumerState<TypesView> {
                   onPressed: () async {
                     if (!formKey.currentState!.validate()) return;
                     await addType(authState);
+                    controller.clear();
                   },
                 ),
-                validator: Validator.validateCustomType,
+                validator: (value) =>
+                    Validator.validateCustomType(value, localizations),
               ),
             ),
-            SizedBox(height: 16),
+            SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 
             Expanded(
               child: SingleChildScrollView(
@@ -243,8 +258,10 @@ class _TypesViewState extends ConsumerState<TypesView> {
                                   ),
                                   confirmDismiss: (direction) async {
                                     if (userTypes.length == 1) {
-                                      ToastHelper.show(localizations
-                                          .cannotDeleteLastType(widget.type));
+                                      ToastHelper.show(
+                                          theme,
+                                          localizations.cannotDeleteLastType(
+                                              widget.type));
                                       return false;
                                     }
                                     return await ConfirmDialog.show(
@@ -305,6 +322,7 @@ class _TypesViewState extends ConsumerState<TypesView> {
       future: removedtypesFuture,
       builder: (context, snapshot) {
         final localizations = AppLocalizations.of(context)!;
+        final theme = Theme.of(context);
 
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
@@ -336,7 +354,8 @@ class _TypesViewState extends ConsumerState<TypesView> {
                           .read(globalTypesProvider.notifier)
                           .reactivateType(removedItem, widget.type);
 
-                      ToastHelper.show(localizations.typeRestored(removedItem));
+                      ToastHelper.show(
+                          theme, localizations.typeRestored(removedItem));
 
                       setState(() {
                         removedtypesFuture = ref
@@ -345,7 +364,7 @@ class _TypesViewState extends ConsumerState<TypesView> {
                       });
                     } catch (e) {
                       ToastHelper.show(
-                          localizations.getErrorMessage(e.toString()));
+                          theme, localizations.getErrorMessage(e.toString()));
                     }
                   },
                 );

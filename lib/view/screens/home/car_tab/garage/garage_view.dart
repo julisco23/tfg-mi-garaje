@@ -16,6 +16,7 @@ class GarageView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final localizations = AppLocalizations.of(context)!;
     final garageState = ref.watch(garageProvider);
+    final theme = Theme.of(context);
 
     final vehicles = garageState.value!.vehicles;
 
@@ -48,7 +49,8 @@ class GarageView extends ConsumerWidget {
               direction: DismissDirection.endToStart,
               confirmDismiss: (direction) async {
                 if (vehicles.length == 1) {
-                  ToastHelper.show(localizations.cannotDeleteLastVehicle);
+                  ToastHelper.show(
+                      theme, localizations.cannotDeleteLastVehicle);
                   return false;
                 }
                 return await ConfirmDialog.show(
@@ -62,10 +64,11 @@ class GarageView extends ConsumerWidget {
                   await ref
                       .read(garageProvider.notifier)
                       .deleteVehicle(vehicle);
-                  ToastHelper.show(
+                  ToastHelper.show(theme,
                       '${vehicle.getVehicleType()} ${localizations.deleted}');
                 } catch (e) {
-                  ToastHelper.show(localizations.getErrorMessage(e.toString()));
+                  ToastHelper.show(
+                      theme, localizations.getErrorMessage(e.toString()));
                 }
               },
               background: Container(

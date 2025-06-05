@@ -29,6 +29,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
   Widget build(BuildContext context) {
     final NavigatorState navigator = Navigator.of(context);
     final localizations = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -41,56 +42,15 @@ class _LoginViewState extends ConsumerState<LoginView> {
               key: loginFormKey,
               child: Column(
                 children: [
-                  /*// Título de la pantalla
                   Center(
                     child: Text(
                       'Mi Garaje',
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
-                  ),*/
-                  // Título de la pantalla con botón de inicio de sesión
-                  Row(
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.circle,
-                            color: Colors.transparent), // Icono invisible
-                        onPressed: null,
-                        enableFeedback: false,
-                      ),
-                      Expanded(
-                        child: Center(
-                          child: Text(
-                            'Mi Garaje',
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                        ),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.login),
-                        onPressed: () async {
-                          navigator.pushNamed(RouteNames.loading, arguments: {
-                            'onInit': () async {
-                              try {
-                                await ref
-                                    .read(authProvider.notifier)
-                                    .signin("juli@gmail.com", "jjjjjj");
-
-                                navigator.pushNamedAndRemoveUntil(
-                                    RouteNames.home, (route) => false);
-                              } catch (e) {
-                                ToastHelper.show(localizations
-                                    .getErrorMessage(e.toString()));
-                                navigator.pop();
-                              }
-                            }
-                          });
-                        },
-                      ),
-                    ],
                   ),
-                  SizedBox(height: AppDimensions.screenHeight(context) * 0.03),
-                  Image.asset('assets/images/logo.png', width: 150),
-                  SizedBox(height: AppDimensions.screenHeight(context) * 0.03),
+
+                  Image.asset('assets/images/logo.png',
+                      height: AppDimensions.screenHeight(context) * 0.2),
 
                   // Campo de correo electrónico
                   MiTextFormField(
@@ -98,7 +58,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                     labelText: localizations.email,
                     hintText: 'migaraje@gmail.com',
                     validator: (value) {
-                      return Validator.validateEmail(value);
+                      return Validator.validateEmail(value, localizations);
                     },
                   ),
                   SizedBox(height: AppDimensions.screenHeight(context) * 0.025),
@@ -110,7 +70,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                     labelText: localizations.password,
                     hintText: obscureText ? '******' : localizations.password,
                     validator: (value) {
-                      return Validator.validatePassword(value);
+                      return Validator.validatePassword(value, localizations);
                     },
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -141,7 +101,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                               navigator.pushNamedAndRemoveUntil(
                                   RouteNames.home, (route) => false);
                             } catch (e) {
-                              ToastHelper.show(
+                              ToastHelper.show(theme,
                                   localizations.getErrorMessage(e.toString()));
                               navigator.pop();
                             }
@@ -166,7 +126,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                             navigator.pushNamedAndRemoveUntil(
                                 RouteNames.home, (route) => false);
                           } catch (e) {
-                            ToastHelper.show(
+                            ToastHelper.show(theme,
                                 localizations.getErrorMessage(e.toString()));
                             navigator.pop();
                           }

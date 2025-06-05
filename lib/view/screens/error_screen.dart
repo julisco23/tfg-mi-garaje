@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:mi_garaje/shared/constants/constants.dart';
 
 class ErrorScreen extends StatefulWidget {
   final void Function()? onRetry;
@@ -34,13 +35,13 @@ class _ErrorScreenState extends State<ErrorScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Icon(Icons.error, color: Colors.red, size: 64),
-            const SizedBox(height: 16),
+            SizedBox(height: AppDimensions.screenHeight(context) * 0.025),
             Text(
               widget.errorMessage,
               textAlign: TextAlign.center,
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: AppDimensions.screenHeight(context) * 0.025),
             ElevatedButton(
               onPressed: _retry,
               child: Text(localizations.retry),

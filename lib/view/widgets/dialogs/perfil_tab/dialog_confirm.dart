@@ -22,18 +22,9 @@ class ConfirmDialog extends StatelessWidget {
 
     return AlertDialog(
       insetPadding: EdgeInsets.all(10),
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(title, style: Theme.of(context).textTheme.titleLarge),
-          IconButton(
-            icon: Icon(Icons.close, color: Theme.of(context).primaryColor),
-            onPressed: () {
-              Navigator.of(context).pop(false);
-            },
-          ),
-        ],
-      ),
+      title: Text(title,
+          style: Theme.of(context).textTheme.titleLarge,
+          textAlign: TextAlign.center),
       content: SizedBox(
         width: MediaQuery.of(context).size.width,
         child: Column(

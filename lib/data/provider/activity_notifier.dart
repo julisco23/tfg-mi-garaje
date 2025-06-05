@@ -27,21 +27,12 @@ class ActivityNotifier extends AsyncNotifier<ActivityState> {
 
       if (auth == null || vehicleId == null) return const ActivityState();
 
-      if (!auth.isUser) {
-        return const ActivityState(activities: []);
-      }
-
       return ActivityState(activities: await getActivitiesByVehicle(vehicleId));
     } catch (e, stackTrace) {
       throw AsyncError(e, stackTrace);
     }
   }
 
-  void clearActivities() {
-    state = AsyncData(const ActivityState());
-  }
-
-  //TODO Mirar
   Future<List<Activity>> getActivitiesByVehicle(String idVehicle) async {
     final auth = ref.read(authProvider).value;
     if (auth == null) return [];

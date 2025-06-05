@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:mi_garaje/data/models/activity.dart';
 import 'package:mi_garaje/data/models/vehicle.dart';
 import 'package:mi_garaje/data/provider/activity_notifier.dart';
+import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/view/widgets/cards/activity_card.dart';
 
 class VehicleHistoryView extends ConsumerWidget {
@@ -61,8 +62,7 @@ class VehicleHistoryView extends ConsumerWidget {
                 Column(
                   children: [
                     SizedBox(
-                      height: 14,
-                    ),
+                        height: AppDimensions.screenHeight(context) * 0.02),
                     // Nodo del mes
                     Container(
                       width: 16,
@@ -83,7 +83,7 @@ class VehicleHistoryView extends ConsumerWidget {
                     ),
                   ],
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: AppDimensions.screenWidth(context) * 0.025),
                 // Card del mes
                 Container(
                   padding:
@@ -136,7 +136,7 @@ class VehicleHistoryView extends ConsumerWidget {
                             ),
                     ],
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: AppDimensions.screenWidth(context) * 0.025),
                   // Card de la actividad
                   Expanded(
                     child: ActivityCard(
@@ -147,7 +147,7 @@ class VehicleHistoryView extends ConsumerWidget {
                 ],
               );
             }),
-            const SizedBox(height: 10),
+            SizedBox(height: AppDimensions.screenHeight(context) * 0.02)
           ],
         );
       },

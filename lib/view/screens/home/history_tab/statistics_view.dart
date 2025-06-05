@@ -4,6 +4,7 @@ import 'package:mi_garaje/data/models/activity.dart';
 import 'package:mi_garaje/data/models/vehicle.dart';
 import 'package:mi_garaje/data/provider/activity_notifier.dart';
 import 'package:mi_garaje/data/provider/garage_notifier.dart';
+import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/utils/statics.dart';
 import 'package:mi_garaje/view/widgets/chart/monthly_total_spending_chart.dart';
 import 'package:mi_garaje/view/widgets/chart/pie_chart_widget.dart';
@@ -69,7 +70,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildVehicleSelector(localizations),
-          const SizedBox(height: 16),
+          SizedBox(height: AppDimensions.screenHeight(context) * 0.025),
           stats['activityCount'] == 0
               ? selectedVehicle == null
                   ? Center(
@@ -82,7 +83,8 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildSummaryCard(localizations),
-                    const SizedBox(height: 24),
+                    SizedBox(
+                        height: AppDimensions.screenHeight(context) * 0.025),
                     _buildCharts()
                   ],
                 )
@@ -109,7 +111,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
               color: Theme.of(context).colorScheme.primary,
             ),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: AppDimensions.screenWidth(context) * 0.02),
           DropdownButton<Vehicle>(
             style: Theme.of(context).textTheme.bodyMedium,
             value: selectedVehicle,
@@ -195,7 +197,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         MonthlyTotalSpendingChart(data: stats["totalSpendingPerMonth"]),
-        const SizedBox(height: 24),
+        SizedBox(height: AppDimensions.screenHeight(context) * 0.025),
         PieChartWidget(dataMap: stats["totalPerActivity"]),
       ],
     );

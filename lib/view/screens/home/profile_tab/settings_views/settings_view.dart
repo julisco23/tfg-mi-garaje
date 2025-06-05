@@ -26,6 +26,7 @@ class SettingsView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final NavigatorState navigator = Navigator.of(context);
     final localizations = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
 
     final authState = ref.watch(authProvider);
     final user = authState.value?.user;
@@ -80,7 +81,7 @@ class SettingsView extends ConsumerWidget {
                         navigator.pop();
                       } catch (e) {
                         ToastHelper.show(
-                            localizations.getErrorMessage(e.toString()));
+                            theme, localizations.getErrorMessage(e.toString()));
                         navigator.pop();
                       }
                     }
@@ -107,9 +108,9 @@ class SettingsView extends ConsumerWidget {
                           await ref.read(authProvider.notifier).signout();
                           navigator.pushNamedAndRemoveUntil(
                               RouteNames.login, (route) => false);
-                          ToastHelper.show(localizations.sessionClosed);
+                          ToastHelper.show(theme, localizations.sessionClosed);
                         } catch (e) {
-                          ToastHelper.show(
+                          ToastHelper.show(theme,
                               localizations.getErrorMessage(e.toString()));
                           navigator.pop();
                         }
@@ -139,10 +140,10 @@ class SettingsView extends ConsumerWidget {
                         navigator.pushNamedAndRemoveUntil(
                             RouteNames.login, (route) => false);
 
-                        ToastHelper.show(localizations.accountDeleted);
+                        ToastHelper.show(theme, localizations.accountDeleted);
                       } catch (e) {
                         ToastHelper.show(
-                            localizations.getErrorMessage(e.toString()));
+                            theme, localizations.getErrorMessage(e.toString()));
                         navigator.pop();
                       }
                     }
@@ -172,10 +173,10 @@ class SettingsView extends ConsumerWidget {
                       try {
                         await ref.read(authProvider.notifier).convertToFamily();
                         navigator.pop();
-                        ToastHelper.show(localizations.familyCreated);
+                        ToastHelper.show(theme, localizations.familyCreated);
                       } catch (e) {
                         ToastHelper.show(
-                            localizations.getErrorMessage(e.toString()));
+                            theme, localizations.getErrorMessage(e.toString()));
                         navigator.pop();
                       }
                     }
@@ -208,12 +209,14 @@ class SettingsView extends ConsumerWidget {
                       'onInit': () async {
                         try {
                           await ref.read(authProvider.notifier).leaveFamily();
+
                           navigator.pushNamedAndRemoveUntil(
                               RouteNames.home, (route) => false);
 
-                          ToastHelper.show(localizations.familyLeft);
+                          ToastHelper.show(theme, localizations.familyLeft);
                         } catch (e) {
-                          ToastHelper.show(
+                          print('error: $e');
+                          ToastHelper.show(theme,
                               localizations.getErrorMessage(e.toString()));
                           navigator.pop();
                           return;
@@ -317,9 +320,10 @@ class SettingsView extends ConsumerWidget {
                     vehicles,
                     activitiesMap,
                   ));
-                  ToastHelper.show(localizations.dataExported);
+                  ToastHelper.show(theme, localizations.dataExported);
                 } catch (e) {
-                  ToastHelper.show(localizations.getErrorMessage(e.toString()));
+                  ToastHelper.show(
+                      theme, localizations.getErrorMessage(e.toString()));
                 }
               },
             ),
@@ -333,7 +337,8 @@ class SettingsView extends ConsumerWidget {
               title: localizations.faq,
               onTap: () {
                 //TODO: Implementar preguntas frecuentes
-                ToastHelper.show(localizations.functionalityNotAvailable);
+                ToastHelper.show(
+                    theme, localizations.functionalityNotAvailable);
               },
             ),
             SettingCard(
@@ -341,7 +346,8 @@ class SettingsView extends ConsumerWidget {
               title: localizations.sendFeedback,
               onTap: () {
                 //TODO: Implementar comentarios
-                ToastHelper.show(localizations.functionalityNotAvailable);
+                ToastHelper.show(
+                    theme, localizations.functionalityNotAvailable);
               },
             ),
           ],

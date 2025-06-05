@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mi_garaje/data/models/family.dart' as my;
 import 'package:mi_garaje/data/models/user.dart';
 import 'package:mi_garaje/data/provider/activity_notifier.dart';
+import 'package:mi_garaje/data/provider/garage_notifier.dart';
 import 'package:mi_garaje/data/provider/tab_update_notifier.dart';
 import 'package:mi_garaje/data/services/auth_service.dart';
 import 'package:mi_garaje/data/services/garage_service.dart';
@@ -19,9 +20,9 @@ class AuthState {
   bool get isUser => user != null;
   bool get isFamily => family != null;
 
-  String get id => family?.id ?? user?.id ?? '';
+  String get id => family?.id ?? user!.id!;
 
-  String get type => family != null ? "families" : "users";
+  String get type => isFamily ? "families" : "users";
 
   bool get isGoogle => user?.isGoogle ?? false;
   bool get isPhotoURL => user!.photoURL != null;
@@ -158,9 +159,14 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
   Future<void> joinFamily(String familyCode) async {
     await _vehicleService.deleteVehicles(state.value!.user!.id!, "users");
     await _userTypeService.deleteTypeFromUser(state.value!.user!.id!);
-
     await _authService.joinFamily(familyCode, state.value!.user!.id!);
     await updateUser();
+
+    // ignore: unused_result
+    ref.refresh(garageProvider.notifier);
+    // ignore: unused_result
+    ref.refresh(activityProvider.notifier);
+    ref.invalidate(tabStateProvider);
   }
 
   Future<void> leaveFamily() async {
@@ -169,8 +175,13 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     if (state.value!.isLastMember) {
       await _vehicleService.deleteVehicles(state.value!.id, state.value!.type);
     }
-    ref.read(activityProvider.notifier).clearActivities();
     await updateUser();
+
+    // ignore: unused_result
+    ref.refresh(garageProvider.notifier);
+    // ignore: unused_result
+    ref.refresh(activityProvider.notifier);
+    ref.invalidate(tabStateProvider);
   }
 }
 

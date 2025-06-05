@@ -164,6 +164,7 @@ class Perfil extends ConsumerWidget {
     }
 
     final family = authState.value!.family!;
+    final theme = Theme.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -182,7 +183,7 @@ class Perfil extends ConsumerWidget {
             InkWell(
               onTap: () {
                 Clipboard.setData(ClipboardData(text: family.code));
-                ToastHelper.show(localizations.familyCodeCopied);
+                ToastHelper.show(theme, localizations.familyCodeCopied);
               },
               borderRadius: BorderRadius.circular(10),
               child: Container(
@@ -205,7 +206,7 @@ class Perfil extends ConsumerWidget {
         ),
         SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
         SizedBox(
-          height: 140,
+          height: AppDimensions.screenHeight(context) * 0.2,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: family.members?.length ?? 0,
@@ -220,7 +221,7 @@ class Perfil extends ConsumerWidget {
                   ),
                   elevation: 2,
                   child: SizedBox(
-                    width: 120,
+                    width: AppDimensions.screenWidth(context) * 0.25,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

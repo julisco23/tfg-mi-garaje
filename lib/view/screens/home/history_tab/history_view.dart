@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mi_garaje/data/provider/garage_notifier.dart';
+import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/view/screens/home/history_tab/statistics_view.dart';
 import 'package:mi_garaje/view/screens/home/history_tab/vehicle_history_view.dart';
@@ -47,7 +48,7 @@ class _HistoryViewState extends ConsumerState<HistoryView>
                 radius: 20,
                 backgroundImage: MemoryImage(base64Decode(vehicle.getPhoto()!)),
               ),
-            const SizedBox(width: 10),
+            SizedBox(width: AppDimensions.screenWidth(context) * 0.02),
             Text(vehicle.getNameTittle()),
           ],
         ),

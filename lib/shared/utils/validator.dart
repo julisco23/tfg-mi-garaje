@@ -1,12 +1,15 @@
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 class Validator {
-  static String? validateBrand(String? value) {
+  static String? validateBrand(String? value, AppLocalizations localizations) {
     if (value == null || value.isEmpty) {
       return '* Marca es obligatoria.';
     }
     return null;
   }
 
-  static String? validateCustomType(String? value) {
+  static String? validateCustomType(
+      String? value, AppLocalizations localizations) {
     if (value == null || value.isEmpty) {
       return '* Tipo es obligatorio.';
     }
@@ -14,7 +17,7 @@ class Validator {
   }
 
   // Validación de correo electrónico
-  static String? validateEmail(String? value) {
+  static String? validateEmail(String? value, AppLocalizations localizations) {
     if (value == null || value.isEmpty) {
       return '* Correo electrónico es obligatorio.';
     }
@@ -26,7 +29,8 @@ class Validator {
   }
 
   // Validación de la contraseña
-  static String? validatePassword(String? value) {
+  static String? validatePassword(
+      String? value, AppLocalizations localizations) {
     if (value == null || value.isEmpty) {
       return '* Contraseña es obligatoria.';
     }
@@ -37,7 +41,7 @@ class Validator {
   }
 
   // Validación del nombre (solo para signup)
-  static String? validateName(String? value) {
+  static String? validateName(String? value, AppLocalizations localizations) {
     if (value == null || value.isEmpty) {
       return '* Nombre es obligatorio.';
     }
@@ -45,7 +49,8 @@ class Validator {
   }
 
   // Validación de dropdown
-  static String? validateDropdown(String? value) {
+  static String? validateDropdown(
+      String? value, AppLocalizations localizations) {
     if (value == null || value.isEmpty) {
       return '* Seleccione una opción.';
     }
@@ -53,7 +58,7 @@ class Validator {
   }
 
   // Validación COSTE
-  static String? validateCost(String? value) {
+  static String? validateCost(String? value, AppLocalizations localizations) {
     if (value != null && value.isNotEmpty) {
       if (double.tryParse(value) == null) {
         return '* Introduzca un número válido.';
@@ -63,7 +68,8 @@ class Validator {
   }
 
   // Validación coste obligatorio
-  static String? validateCostRequired(String? value) {
+  static String? validateCostRequired(
+      String? value, AppLocalizations localizations) {
     if (value == null || value.isEmpty) {
       return '* Introduzca el coste.';
     }
@@ -74,7 +80,7 @@ class Validator {
   }
 
   // Validación coste por litro
-  static String? validateCostLi(String? value) {
+  static String? validateCostLi(String? value, AppLocalizations localizations) {
     if (value == null || value.isEmpty) {
       return '* Introduce el precio por litro.';
     }
@@ -90,14 +96,16 @@ class Validator {
   }
 
   // Validación del nombre de tipo
-  static String? validateNameType(String? value) {
+  static String? validateNameType(
+      String? value, AppLocalizations localizations) {
     if (value == null || value.isEmpty) {
       return '* Nombre es obligatorio.';
     }
     return null;
   }
 
-  static String? validateFamilyCode(String? value) {
+  static String? validateFamilyCode(
+      String? value, AppLocalizations localizations) {
     if (value == null || value.isEmpty) {
       return '* Código de familia es obligatorio.';
     }

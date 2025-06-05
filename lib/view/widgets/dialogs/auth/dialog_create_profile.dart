@@ -39,22 +39,13 @@ class _DialogCambioCuentaState extends ConsumerState<DialogCambioCuenta> {
   Widget build(BuildContext context) {
     final NavigatorState navigator = Navigator.of(context);
     final AppLocalizations localizations = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
 
     return AlertDialog(
       insetPadding: EdgeInsets.all(10),
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(localizations.createAccount,
-              style: Theme.of(context).textTheme.titleLarge),
-          IconButton(
-            icon: Icon(Icons.close, color: Theme.of(context).primaryColor),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      ),
+      title: Text(localizations.createAccount,
+          style: Theme.of(context).textTheme.titleLarge,
+          textAlign: TextAlign.center),
       content: SizedBox(
         width: double.maxFinite,
         child: Form(
@@ -62,13 +53,15 @@ class _DialogCambioCuentaState extends ConsumerState<DialogCambioCuenta> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
+
               // Titulo del dialog
               MiTextFormField(
                 controller: nameController,
                 labelText: localizations.profileName,
                 hintText: 'Mi Garaje',
                 validator: (value) {
-                  return Validator.validateName(value);
+                  return Validator.validateName(value, localizations);
                 },
               ),
               SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
@@ -79,7 +72,7 @@ class _DialogCambioCuentaState extends ConsumerState<DialogCambioCuenta> {
                 labelText: localizations.email,
                 hintText: 'migaraje@gmail.com',
                 validator: (value) {
-                  return Validator.validateEmail(value);
+                  return Validator.validateEmail(value, localizations);
                 },
               ),
               SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
@@ -91,7 +84,7 @@ class _DialogCambioCuentaState extends ConsumerState<DialogCambioCuenta> {
                 labelText: localizations.password,
                 hintText: obscureText ? '******' : localizations.password,
                 validator: (value) {
-                  return Validator.validatePassword(value);
+                  return Validator.validatePassword(value, localizations);
                 },
                 suffixIcon: IconButton(
                   icon: Icon(
@@ -109,6 +102,7 @@ class _DialogCambioCuentaState extends ConsumerState<DialogCambioCuenta> {
         ),
       ),
       actions: [
+        SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
         // Botón de crear cuenta
         MiButton(
           text: localizations.createAccount,
@@ -126,7 +120,7 @@ class _DialogCambioCuentaState extends ConsumerState<DialogCambioCuenta> {
                     navigator.pop();
                   } catch (e) {
                     ToastHelper.show(
-                        localizations.getErrorMessage(e.toString()));
+                        theme, localizations.getErrorMessage(e.toString()));
                     navigator.pop();
                   }
                 }

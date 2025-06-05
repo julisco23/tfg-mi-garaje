@@ -23,6 +23,7 @@ class ActivityCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final AppLocalizations localizations = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
 
     return InkWell(
       onTap: () {
@@ -38,10 +39,11 @@ class ActivityCard extends ConsumerWidget {
         try {
           await ref.read(activityProvider.notifier).deleteActivity(activity);
         } catch (e) {
-          ToastHelper.show(localizations.getErrorMessage(e.toString()));
+          ToastHelper.show(theme, localizations.getErrorMessage(e.toString()));
           return;
         }
-        ToastHelper.show(localizations.activityDeleted(activity.getCustomType));
+        ToastHelper.show(
+            theme, localizations.activityDeleted(activity.getCustomType));
       },
       child: Card(
         child: Padding(

@@ -31,16 +31,9 @@ class EditTypeDialog extends StatelessWidget {
 
     return AlertDialog(
       insetPadding: EdgeInsets.all(10),
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(localizations.changeName, style: Theme.of(context).textTheme.titleLarge),
-          IconButton(
-            icon: Icon(Icons.close, color: Theme.of(context).primaryColor),
-            onPressed: () => Navigator.pop(context),
-          ),
-        ],
-      ),
+      title: Text(localizations.changeName,
+          style: Theme.of(context).textTheme.titleLarge,
+          textAlign: TextAlign.center),
       content: SizedBox(
         width: MediaQuery.of(context).size.width,
         child: Form(
@@ -49,7 +42,7 @@ class EditTypeDialog extends StatelessWidget {
             controller: controller,
             labelText: localizations.editType,
             hintText: localizations.newType,
-            validator: Validator.validateNameType,
+            validator: (value) => Validator.validateNameType(value, localizations),
           ),
         ),
       ),
