@@ -85,8 +85,6 @@ class _TypesViewState extends ConsumerState<TypesView> {
 
     // Función para agregar nuevos tipos
     Future<void> addType(AsyncValue<AuthState> authState) async {
-      FocusScope.of(context).unfocus();
-
       try {
         final formattedText = controller.text[0].toUpperCase() +
             controller.text.substring(1).trim();
@@ -158,7 +156,7 @@ class _TypesViewState extends ConsumerState<TypesView> {
         } else {
           await ref
               .read(activityProvider.notifier)
-              .editAllActivities(oldName, newName);
+              .editAllActivities(oldName, newName, type: widget.type);
           await ref.read(garageProvider.notifier).refreshGarage();
         }
 
@@ -197,6 +195,11 @@ class _TypesViewState extends ConsumerState<TypesView> {
                   onPressed: () async {
                     if (!formKey.currentState!.validate()) return;
                     await addType(authState);
+                    setState(() {
+                      typesFuture = ref
+                          .read(globalTypesProvider.notifier)
+                          .getTypes(widget.type);
+                    });
                     controller.clear();
                   },
                 ),
@@ -282,19 +285,32 @@ class _TypesViewState extends ConsumerState<TypesView> {
                                                       isSingular: true)),
                                     );
                                   },
-                                  onDismissed: (direction) {
-                                    removeType(authState, typeItem);
+                                  onDismissed: (direction) async {
+                                    await removeType(authState, typeItem);
+                                    setState(() {
+                                      userTypes.remove(typeItem);
+                                      removedtypesFuture = ref
+                                          .read(globalTypesProvider.notifier)
+                                          .getRemovedTypes(widget.type);
+                                    });
                                   },
                                   child: TypesCard(
                                     title: localizations.getSubType(typeItem),
                                     icon: Icons.edit,
                                     contains: getTypesGlobal.contains(typeItem),
-                                    onPressed: () => EditTypeDialog.show(
-                                      context,
-                                      typeItem,
-                                      (newName) => editType(
-                                          authState, typeItem, newName),
-                                    ),
+                                    onPressed: () async {
+                                      EditTypeDialog.show(context, typeItem,
+                                          (newName) async {
+                                        await editType(
+                                            authState, typeItem, newName);
+                                        setState(() {
+                                          typesFuture = ref
+                                              .read(
+                                                  globalTypesProvider.notifier)
+                                              .getTypes(widget.type);
+                                        });
+                                      });
+                                    },
                                   ),
                                 );
                               },
@@ -358,9 +374,10 @@ class _TypesViewState extends ConsumerState<TypesView> {
                           theme, localizations.typeRestored(removedItem));
 
                       setState(() {
-                        removedtypesFuture = ref
+                        typesFuture = ref
                             .read(globalTypesProvider.notifier)
-                            .getRemovedTypes(widget.type);
+                            .getTypes(widget.type);
+                        removedTypes.remove(removedItem);
                       });
                     } catch (e) {
                       ToastHelper.show(

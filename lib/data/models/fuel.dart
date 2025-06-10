@@ -52,4 +52,20 @@ class Fuel extends Activity {
       cost: map['cost'],
     );
   }
+
+  Fuel copyWith({
+    String? idActivity,
+    DateTime? date,
+    num? cost,
+    String? type,
+    num? costLiter,
+  }) {
+    return Fuel(
+      idActivity: idActivity ?? this.idActivity,
+      date: date ?? this.date,
+      cost: cost ?? this.cost,
+      fuelType: type ?? fuelType,
+      costLiter: costLiter ?? this.costLiter,
+    );
+  }
 }

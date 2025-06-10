@@ -97,7 +97,6 @@ class DialogFamilyCode extends ConsumerWidget {
                                       navigator.pop();
                                       navigator.pop();
                                     } catch (e) {
-                                      print('error: $e');
                                       ToastHelper.show(
                                         theme,
                                         localizations

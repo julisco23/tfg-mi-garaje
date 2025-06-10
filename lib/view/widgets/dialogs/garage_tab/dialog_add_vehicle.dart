@@ -49,6 +49,8 @@ class _DialogAddVehicleState extends ConsumerState<DialogAddVehicle> {
   String? selectedVehicleType;
   Uint8List? imageBytes;
 
+  late Future<List<String>> _typesFuture;
+
   @override
   void initState() {
     super.initState();
@@ -61,6 +63,20 @@ class _DialogAddVehicleState extends ConsumerState<DialogAddVehicle> {
       if (widget.vehicle!.photo != null) {
         imageBytes = base64Decode(widget.vehicle!.photo!);
       }
+    }
+    _loadTypesSafely();
+  }
+
+  void _loadTypesSafely() async {
+    try {
+      final future = ref.read(globalTypesProvider.notifier).getTypes('Vehicle');
+      setState(() {
+        _typesFuture = future;
+      });
+    } catch (e) {
+      setState(() {
+        _typesFuture = Future.value([]);
+      });
     }
   }
 
@@ -117,17 +133,12 @@ class _DialogAddVehicleState extends ConsumerState<DialogAddVehicle> {
                   // Selector de tipo de vehículo
                   SizedBox(
                       width: double.infinity,
-                      child: ref.watch(globalTypesProvider).when(
-                        data: (state) {
-                          final types = state.globalTypes['Vehicle']!;
-                          return _buildDropdown(types, context);
-                        },
-                        loading: () {
-                          return _buildDropdown([], context, isLoading: true);
-                        },
-                        error: (error, _) {
-                          return Text("Error: $error",
-                              style: TextStyle(color: Colors.red));
+                      child: FutureBuilder<List<String>>(
+                        future: _typesFuture,
+                        builder: (context, snapshot) {
+                          return _buildDropdown(snapshot.data, context,
+                              isLoading: snapshot.connectionState ==
+                                  ConnectionState.waiting);
                         },
                       )),
 
@@ -316,7 +327,7 @@ class _DialogAddVehicleState extends ConsumerState<DialogAddVehicle> {
   }
 
   Widget _buildDropdown(
-    List<String> types,
+    List<String>? types,
     BuildContext context, {
     bool isLoading = false,
   }) {
@@ -346,19 +357,20 @@ class _DialogAddVehicleState extends ConsumerState<DialogAddVehicle> {
         DropdownMenuItem<String>(
           value: null,
           child: Text(
-            localizations.vehicleType,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
+              localizations.typeOfCustomType(
+                  localizations.getSubType("vehicle", isSingular: true)),
+              style: Theme.of(context).textTheme.bodyMedium),
         ),
-        ...types.map(
-          (type) => DropdownMenuItem<String>(
-            value: type,
-            child: Text(
-              localizations.getSubType(type),
-              style: Theme.of(context).textTheme.bodyMedium,
+        if (!isLoading && types != null)
+          ...types.map(
+            (type) => DropdownMenuItem<String>(
+              value: type,
+              child: Text(
+                localizations.getSubType(type),
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
             ),
           ),
-        ),
       ],
       validator: (value) => Validator.validateDropdown(value, localizations),
     );

@@ -52,4 +52,22 @@ class Repair extends Activity {
       repairType: map['repairType'],
     );
   }
+
+  Repair copyWith({
+    String? idActivity,
+    DateTime? date,
+    num? cost,
+    String? type,
+    String? photo,
+    String? details,
+  }) {
+    return Repair(
+      idActivity: idActivity ?? this.idActivity,
+      date: date ?? this.date,
+      cost: cost ?? this.cost,
+      repairType: type ?? repairType,
+      photo: photo ?? this.photo,
+      details: details ?? this.details,
+    );
+  }
 }

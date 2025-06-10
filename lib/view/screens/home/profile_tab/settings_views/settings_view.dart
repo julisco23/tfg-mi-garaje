@@ -215,7 +215,6 @@ class SettingsView extends ConsumerWidget {
 
                           ToastHelper.show(theme, localizations.familyLeft);
                         } catch (e) {
-                          print('error: $e');
                           ToastHelper.show(theme,
                               localizations.getErrorMessage(e.toString()));
                           navigator.pop();

@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mi_garaje/data/models/activity.dart';
 import 'package:mi_garaje/data/models/vehicle.dart';
 
-class VehicleService {
+class GarageService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<List<Vehicle>> getVehiclesFuture(String id, String collection) async {

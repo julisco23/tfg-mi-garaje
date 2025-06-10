@@ -54,7 +54,7 @@ class CustomActivity extends Activity {
       idActivity: map['idActivity'],
       date: DateTime.parse(map['date']),
       details: map['details'],
-      cost: map['cost'], 
+      cost: map['cost'],
       customType: map['customType'],
       photo: map['photo'],
       type: map['type'],
@@ -64,5 +64,25 @@ class CustomActivity extends Activity {
   @override
   String toString() {
     return 'CustomActivity{idActivity: $idActivity, details: $details, cost: $cost}';
+  }
+
+  CustomActivity copyWith({
+    String? idActivity,
+    DateTime? date,
+    num? cost,
+    String? customType,
+    String? type,
+    String? photo,
+    String? details,
+  }) {
+    return CustomActivity(
+      idActivity: idActivity ?? this.idActivity,
+      date: date ?? this.date,
+      cost: cost ?? this.cost,
+      customType: customType ?? this.customType,
+      type: type ?? this.type,
+      photo: photo ?? this.photo,
+      details: details ?? this.details,
+    );
   }
 }

@@ -39,7 +39,7 @@ class AuthState {
 
 class AuthNotifier extends AsyncNotifier<AuthState> {
   final AuthService _authService = AuthService();
-  final VehicleService _vehicleService = VehicleService();
+  final GarageService _garageService = GarageService();
   final UserTypesService _userTypeService = UserTypesService();
 
   @override
@@ -117,7 +117,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     if (state.value!.isFamily) {
       await leaveFamily();
     } else {
-      await _vehicleService.deleteVehicles(state.value!.id, state.value!.type);
+      await _garageService.deleteVehicles(state.value!.id, state.value!.type);
     }
 
     if (state.value!.isGoogle) {
@@ -151,13 +151,13 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     );
 
     String idFamily = await _authService.convertToFamily(family, user.id!);
-    await _vehicleService.convertToFamily(user.id!, idFamily);
+    await _garageService.convertToFamily(user.id!, idFamily);
     await _userTypeService.transformTypesToFamily(user.id!, idFamily);
     await updateUser();
   }
 
   Future<void> joinFamily(String familyCode) async {
-    await _vehicleService.deleteVehicles(state.value!.user!.id!, "users");
+    await _garageService.deleteVehicles(state.value!.user!.id!, "users");
     await _userTypeService.deleteTypeFromUser(state.value!.user!.id!);
     await _authService.joinFamily(familyCode, state.value!.user!.id!);
     await updateUser();
@@ -173,7 +173,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     await _authService.leaveFamily(state.value!.isLastMember,
         state.value!.user!.id!, state.value!.family!.id!);
     if (state.value!.isLastMember) {
-      await _vehicleService.deleteVehicles(state.value!.id, state.value!.type);
+      await _garageService.deleteVehicles(state.value!.id, state.value!.type);
     }
     await updateUser();
 

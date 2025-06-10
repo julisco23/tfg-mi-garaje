@@ -78,4 +78,6 @@ abstract class Activity {
   String toString() {
     return 'Activty{idActivity: $idActivity, activityType: ${activityType.getName}, cost: $cost}';
   }
+
+  copyWith({required String type}) {}
 }

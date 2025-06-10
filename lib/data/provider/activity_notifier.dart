@@ -17,7 +17,7 @@ class ActivityState {
 }
 
 class ActivityNotifier extends AsyncNotifier<ActivityState> {
-  final VehicleService _vehicleService = VehicleService();
+  final GarageService _garageService = GarageService();
 
   @override
   Future<ActivityState> build() async {
@@ -36,7 +36,7 @@ class ActivityNotifier extends AsyncNotifier<ActivityState> {
   Future<List<Activity>> getActivitiesByVehicle(String idVehicle) async {
     final auth = ref.read(authProvider).value;
     if (auth == null) return [];
-    return await _vehicleService.getActivities(
+    return await _garageService.getActivities(
       idVehicle,
       auth.id,
       auth.type,
@@ -48,7 +48,7 @@ class ActivityNotifier extends AsyncNotifier<ActivityState> {
     final vehicleId = ref.read(garageProvider).value?.selectedVehicle?.id;
     if (auth == null || vehicleId == null) return;
 
-    await _vehicleService.addActivity(vehicleId, activity, auth.id, auth.type);
+    await _garageService.addActivity(vehicleId, activity, auth.id, auth.type);
     state = AsyncData(
         ActivityState(activities: [...?state.value?.activities, activity]));
   }
@@ -58,7 +58,7 @@ class ActivityNotifier extends AsyncNotifier<ActivityState> {
     final vehicleId = ref.read(garageProvider).value?.selectedVehicle?.id;
     if (auth == null || vehicleId == null) return;
 
-    await _vehicleService.deleteActivity(
+    await _garageService.deleteActivity(
         vehicleId, activity.idActivity!, auth.id, auth.type);
     final current = state.valueOrNull!.activities
         .where((a) => a.idActivity != activity.idActivity)
@@ -71,7 +71,7 @@ class ActivityNotifier extends AsyncNotifier<ActivityState> {
     final vehicleId = ref.read(garageProvider).value?.selectedVehicle?.id;
     if (auth == null || vehicleId == null) return;
 
-    await _vehicleService.updateActivity(
+    await _garageService.updateActivity(
         vehicleId, activity, auth.id, auth.type);
     final updated = state.value!.activities.map((a) {
       return a.idActivity == activity.idActivity ? activity : a;
@@ -84,7 +84,7 @@ class ActivityNotifier extends AsyncNotifier<ActivityState> {
     final auth = ref.read(authProvider).value;
     if (auth == null) return;
 
-    await _vehicleService.removeAllActivities(
+    await _garageService.removeAllActivities(
         auth.id, typeName, type, auth.type);
   }
 
@@ -92,8 +92,16 @@ class ActivityNotifier extends AsyncNotifier<ActivityState> {
       {String type = "custom"}) async {
     final auth = ref.read(authProvider).value;
     if (auth == null) return;
-    await _vehicleService.editAllActivities(
+    await _garageService.editAllActivities(
         auth.id, oldName, newName, type, auth.type);
+    /*final activities = await getActivitiesByVehicle(
+      ref.read(garageProvider).value!.selectedVehicle!.id!,
+    );
+    state = AsyncData(
+      ActivityState(
+        activities: activities,
+      ),
+    );*/
   }
 }
 

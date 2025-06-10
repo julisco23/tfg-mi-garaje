@@ -52,4 +52,22 @@ class Record extends Activity {
       recordType: map['recordType'],
     );
   }
+
+  Record copyWith({
+    String? idActivity,
+    DateTime? date,
+    num? cost,
+    String? type,
+    String? photo,
+    String? details,
+  }) {
+    return Record(
+      idActivity: idActivity ?? this.idActivity,
+      date: date ?? this.date,
+      cost: cost ?? this.cost,
+      recordType: type ?? recordType,
+      photo: photo ?? this.photo,
+      details: details ?? this.details,
+    );
+  }
 }
