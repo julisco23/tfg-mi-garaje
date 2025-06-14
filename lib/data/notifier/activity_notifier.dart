@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mi_garaje/data/models/activity.dart';
-import 'package:mi_garaje/data/provider/auth_notifier.dart';
-import 'package:mi_garaje/data/provider/garage_notifier.dart';
+import 'package:mi_garaje/data/notifier/auth_notifier.dart';
+import 'package:mi_garaje/data/notifier/garage_notifier.dart';
 import 'package:mi_garaje/data/services/garage_service.dart';
 
 class ActivityState {

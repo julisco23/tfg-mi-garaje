@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mi_garaje/data/provider/activity_notifier.dart';
-import 'package:mi_garaje/data/provider/auth_notifier.dart';
-import 'package:mi_garaje/data/provider/garage_notifier.dart';
-import 'package:mi_garaje/data/provider/tab_update_notifier.dart';
+import 'package:mi_garaje/data/notifier/activity_notifier.dart';
+import 'package:mi_garaje/data/notifier/auth_notifier.dart';
+import 'package:mi_garaje/data/notifier/garage_notifier.dart';
+import 'package:mi_garaje/data/notifier/tab_update_notifier.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/utils/validator.dart';
 import 'package:mi_garaje/utils/app_localizations_extensions.dart';
@@ -11,7 +11,7 @@ import 'package:mi_garaje/view/widgets/cards/types_card.dart';
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_confirm.dart';
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_name_type.dart';
 import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
-import 'package:mi_garaje/data/provider/global_types_notifier.dart';
+import 'package:mi_garaje/data/notifier/global_types_notifier.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 

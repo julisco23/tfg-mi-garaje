@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mi_garaje/data/provider/theme_notifier.dart';
+import 'package:mi_garaje/data/notifier/theme_notifier.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 

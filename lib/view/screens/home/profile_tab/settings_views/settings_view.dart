@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mi_garaje/data/models/activity.dart';
-import 'package:mi_garaje/data/provider/activity_notifier.dart';
+import 'package:mi_garaje/data/notifier/activity_notifier.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/shared/utils/mapper_csv.dart';
@@ -15,8 +15,8 @@ import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_confirm.dart';
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/language_selector_dialog.dart';
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/theme_selector_dialog.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
-import 'package:mi_garaje/data/provider/auth_notifier.dart';
-import 'package:mi_garaje/data/provider/garage_notifier.dart';
+import 'package:mi_garaje/data/notifier/auth_notifier.dart';
+import 'package:mi_garaje/data/notifier/garage_notifier.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SettingsView extends ConsumerWidget {

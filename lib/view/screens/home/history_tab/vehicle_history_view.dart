@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:mi_garaje/data/models/activity.dart';
 import 'package:mi_garaje/data/models/vehicle.dart';
-import 'package:mi_garaje/data/provider/activity_notifier.dart';
+import 'package:mi_garaje/data/notifier/activity_notifier.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/view/widgets/cards/activity_card.dart';
 
@@ -141,7 +141,6 @@ class VehicleHistoryView extends ConsumerWidget {
                   Expanded(
                     child: ActivityCard(
                       activity: activity,
-                      carName: vehicle.getNameTittle(),
                     ),
                   ),
                 ],

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mi_garaje/data/models/vehicle.dart';
-import 'package:mi_garaje/data/provider/auth_notifier.dart';
+import 'package:mi_garaje/data/notifier/auth_notifier.dart';
 import 'package:mi_garaje/data/services/garage_service.dart';
 
 class GarageState {

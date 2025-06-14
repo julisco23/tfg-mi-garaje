@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mi_garaje/data/provider/locale_notifier.dart';
+import 'package:mi_garaje/data/notifier/locale_notifier.dart';
 import 'package:mi_garaje/view/screens/auth_wrapper.dart';
 import 'package:mi_garaje/view/screens/error_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:mi_garaje/firebase_options.dart';
 import 'package:mi_garaje/shared/routes/app_routes.dart';
 import 'package:mi_garaje/shared/themes/app_themes.dart';
-import 'package:mi_garaje/data/provider/theme_notifier.dart';
+import 'package:mi_garaje/data/notifier/theme_notifier.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void main() async {

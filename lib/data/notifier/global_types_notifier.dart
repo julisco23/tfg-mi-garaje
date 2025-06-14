@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:mi_garaje/data/provider/auth_notifier.dart';
+import 'package:mi_garaje/data/notifier/auth_notifier.dart';
 import 'package:mi_garaje/data/services/user_types_service.dart';
 import 'package:mi_garaje/data/services/global_types_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

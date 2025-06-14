@@ -9,8 +9,8 @@ import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/view/widgets/cards/vehicle_card.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
-import 'package:mi_garaje/data/provider/auth_notifier.dart';
-import 'package:mi_garaje/data/provider/garage_notifier.dart';
+import 'package:mi_garaje/data/notifier/auth_notifier.dart';
+import 'package:mi_garaje/data/notifier/garage_notifier.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class Perfil extends ConsumerWidget {

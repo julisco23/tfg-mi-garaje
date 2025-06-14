@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mi_garaje/data/provider/auth_notifier.dart';
+import 'package:mi_garaje/data/notifier/auth_notifier.dart';
 import 'package:mi_garaje/view/screens/auth/login/login_view.dart';
 import 'package:mi_garaje/view/screens/error_screen.dart';
 import 'package:mi_garaje/view/screens/home/home_view.dart';

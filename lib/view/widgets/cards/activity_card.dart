@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:mi_garaje/data/models/activity.dart';
-import 'package:mi_garaje/data/provider/activity_notifier.dart';
+import 'package:mi_garaje/data/notifier/activity_notifier.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/utils/app_localizations_extensions.dart';
@@ -14,11 +14,9 @@ class ActivityCard extends ConsumerWidget {
   const ActivityCard({
     super.key,
     required this.activity,
-    required this.carName,
   });
 
   final Activity activity;
-  final String carName;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

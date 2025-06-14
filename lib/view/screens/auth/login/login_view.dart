@@ -4,7 +4,7 @@ import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/utils/validator.dart';
 import 'package:mi_garaje/utils/app_localizations_extensions.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
-import 'package:mi_garaje/data/provider/auth_notifier.dart';
+import 'package:mi_garaje/data/notifier/auth_notifier.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/view/widgets/utils/elevated_button_utils.dart';
 import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';

@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:mi_garaje/data/models/activity.dart';
 import 'package:mi_garaje/data/models/fuel.dart';
-import 'package:mi_garaje/data/provider/activity_notifier.dart';
+import 'package:mi_garaje/data/notifier/activity_notifier.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/utils/app_localizations_extensions.dart';
 import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_add_activity.dart';
