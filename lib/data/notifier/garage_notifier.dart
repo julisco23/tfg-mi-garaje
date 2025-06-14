@@ -16,6 +16,9 @@ class GarageState {
 
   bool get isVehicleSelected => selectedVehicle != null;
   String get id => selectedVehicle?.id ?? '';
+  bool areAllVehiclesOfType(String type) {
+    return vehicles.every((vehicle) => vehicle.getVehicleType() == type);
+  }
 
   GarageState copyWith({
     List<Vehicle>? vehicles,
@@ -125,6 +128,7 @@ class GarageNotifier extends AsyncNotifier<GarageState> {
       (v) => v.id == state.value?.selectedVehicle?.id,
       orElse: () => updatedVehicles.first,
     );
+
     state = AsyncData(
         GarageState(vehicles: updatedVehicles, selectedVehicle: selected));
   }

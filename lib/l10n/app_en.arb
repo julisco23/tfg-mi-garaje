@@ -192,7 +192,7 @@
   "typeAdded": "{type} added",
   "typeDeleted": "{type} deleted",
   "typeUpdated": "{type} updated",
-  "cannotDeleteLastType": "You cannot delete the last {type}",
+  "cannotDeleteLastType": "You cannot delete {type}",
   "typeRestored": "{type} restored",
   "customTypeAdded": "{type} added",
   "customTypeUpdated": "{type} updated",

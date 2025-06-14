@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mi_garaje/data/models/vehicle.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_code_family.dart';
 import 'package:mi_garaje/view/widgets/utils/elevated_button_utils.dart';
@@ -7,8 +6,7 @@ import 'package:mi_garaje/view/widgets/dialogs/garage_tab/dialog_add_vehicle.dar
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class FirstCar extends StatefulWidget {
-  final Function(Vehicle?) onVehicleChanged;
-  const FirstCar({super.key, required this.onVehicleChanged});
+  const FirstCar({super.key});
 
   @override
   State<FirstCar> createState() => _FirstCarState();
@@ -34,8 +32,7 @@ class _FirstCarState extends State<FirstCar> {
               MiButton(
                 text: localizations.addVehicle,
                 onPressed: () async {
-                  await DialogAddVehicle.show(context,
-                      onVehicleChanged: widget.onVehicleChanged);
+                  await DialogAddVehicle.show(context);
                 },
               ),
               SizedBox(height: AppDimensions.screenHeight(context) * 0.1),
@@ -47,8 +44,7 @@ class _FirstCarState extends State<FirstCar> {
               MiButton(
                 text: localizations.joinFamily,
                 onPressed: () async {
-                  await DialogFamilyCode.show(
-                      context, widget.onVehicleChanged(null));
+                  await DialogFamilyCode.show(context);
                 },
               ),
             ],

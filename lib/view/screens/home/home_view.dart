@@ -34,7 +34,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
       ),
       data: (garage) {
         if (!garage.isVehicleSelected) {
-          return FirstCar(onVehicleChanged: (vehicle) {});
+          return FirstCar();
         }
 
         return Scaffold(

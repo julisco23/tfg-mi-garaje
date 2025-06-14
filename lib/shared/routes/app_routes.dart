@@ -30,7 +30,7 @@ class AppRoutes {
 
       case RouteNames.firstCar:
         return _slideTransition(
-            FirstCar(onVehicleChanged: args['onVehicleChanged']));
+            FirstCar());
 
       case RouteNames.garage:
         return _slideTransition(const GarageView());

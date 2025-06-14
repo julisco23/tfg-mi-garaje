@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mi_garaje/data/models/vehicle.dart';
 import 'package:mi_garaje/data/notifier/auth_notifier.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/routes/route_names.dart';
@@ -11,19 +10,12 @@ import 'package:mi_garaje/view/widgets/utils/text_form_field.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DialogFamilyCode extends ConsumerWidget {
-  final Function(Vehicle?)? onVehicleChanged;
+  const DialogFamilyCode({super.key});
 
-  const DialogFamilyCode({super.key, this.onVehicleChanged});
-
-  static Future<void> show(
-    BuildContext context, [
-    Function(Vehicle?)? onVehicleChanged,
-  ]) async {
+  static Future<void> show(BuildContext context) async {
     return await showDialog<void>(
       context: context,
-      builder: (context) => DialogFamilyCode(
-        onVehicleChanged: onVehicleChanged,
-      ),
+      builder: (context) => DialogFamilyCode(),
     );
   }
 
@@ -89,10 +81,6 @@ class DialogFamilyCode extends ConsumerWidget {
                                           .read(authProvider.notifier)
                                           .joinFamily(
                                               controller.text.toUpperCase());
-
-                                      if (onVehicleChanged != null) {
-                                        onVehicleChanged!(null);
-                                      }
 
                                       navigator.pop();
                                       navigator.pop();

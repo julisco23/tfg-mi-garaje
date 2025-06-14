@@ -65,8 +65,6 @@ class _DialogAddActivityState extends ConsumerState<DialogAddActivity> {
   late String customType;
   bool isCustom = false;
 
-  late Future<List<String>> _typesFuture;
-
   @override
   void initState() {
     super.initState();
@@ -77,7 +75,6 @@ class _DialogAddActivityState extends ConsumerState<DialogAddActivity> {
         isCustom = true;
       } else {
         customType = widget.activity!.getActivityType;
-        _loadTypesSafely(customType);
       }
 
       costController.text = widget.activity!.getCost.toString();
@@ -99,24 +96,9 @@ class _DialogAddActivityState extends ConsumerState<DialogAddActivity> {
       }
     } else {
       customType = widget.customType!;
-      if (["Fuel", "Repair", "Record"].contains(customType)) {
-        _loadTypesSafely(customType);
-      } else {
+      if (!["Fuel", "Repair", "Record"].contains(customType)) {
         isCustom = true;
       }
-    }
-  }
-
-  void _loadTypesSafely(String type) async {
-    try {
-      final future = ref.read(globalTypesProvider.notifier).getTypes(type);
-      setState(() {
-        _typesFuture = future;
-      });
-    } catch (e) {
-      setState(() {
-        _typesFuture = Future.value([]);
-      });
     }
   }
 
@@ -181,73 +163,7 @@ class _DialogAddActivityState extends ConsumerState<DialogAddActivity> {
                   ] else ...[
                     SizedBox(
                       width: double.infinity,
-                      child: FutureBuilder<List<String>>(
-                        future: _typesFuture,
-                        builder: (context, snapshot) {
-                          return DropdownButtonFormField<String>(
-                            value: selectedType,
-                            decoration: InputDecoration(
-                              floatingLabelStyle: TextStyle(
-                                  color: Theme.of(context).primaryColor),
-                              labelText: localizations.typeOfCustomType(
-                                  localizations.getSubType(
-                                      customType.toLowerCase(),
-                                      isSingular: true)),
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              filled: true,
-                            ),
-                            onChanged: (newValue) {
-                              setState(() {
-                                selectedType = newValue;
-                              });
-                            },
-                            items: [
-                              DropdownMenuItem<String>(
-                                value: null,
-                                child: Text(
-                                    localizations.typeOfCustomType(localizations
-                                        .getSubType(customType.toLowerCase(),
-                                            isSingular: true)),
-                                    style:
-                                        Theme.of(context).textTheme.bodyMedium),
-                              ),
-                              if (snapshot.connectionState !=
-                                  ConnectionState.waiting)
-                                ...snapshot.data!.map<DropdownMenuItem<String>>(
-                                  (String tipo) {
-                                    return DropdownMenuItem<String>(
-                                      value: tipo,
-                                      child: Text(
-                                          localizations.getSubType(tipo),
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium),
-                                    );
-                                  },
-                                ),
-                              if (snapshot.connectionState ==
-                                      ConnectionState.waiting &&
-                                  selectedType != null)
-                                DropdownMenuItem<String>(
-                                  value: selectedType,
-                                  child: Text(selectedType!,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium),
-                                ),
-                            ],
-                            validator: (value) => Validator.validateDropdown(
-                                value, localizations),
-                          );
-                        },
-                      ),
+                      child: _buildDropdown(context),
                     ),
                   ],
                   SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
@@ -483,6 +399,67 @@ class _DialogAddActivityState extends ConsumerState<DialogAddActivity> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildDropdown(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    final globalTypes = ref.watch(globalTypesProvider);
+
+    return globalTypes.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, _) {
+        return Text(
+          localizations.getErrorMessage(e.toString()),
+          style: TextStyle(color: Theme.of(context).colorScheme.error),
+        );
+      },
+      data: (types) {
+        return DropdownButtonFormField<String>(
+          value: selectedType,
+          decoration: InputDecoration(
+            floatingLabelStyle:
+                TextStyle(color: Theme.of(context).primaryColor),
+            labelText: localizations.typeOfCustomType(
+              localizations.getSubType(customType.toLowerCase(),
+                  isSingular: true),
+            ),
+            border: OutlineInputBorder(
+              borderSide: BorderSide.none,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            filled: true,
+          ),
+          onChanged: (newValue) {
+            setState(() {
+              selectedType = newValue;
+            });
+          },
+          items: [
+            DropdownMenuItem<String>(
+              value: null,
+              child: Text(
+                localizations.typeOfCustomType(
+                  localizations.getSubType(customType.toLowerCase(),
+                      isSingular: true),
+                ),
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ),
+            ...types.userTypes(customType).map(
+                  (type) => DropdownMenuItem<String>(
+                    value: type,
+                    child: Text(
+                      localizations.getSubType(type),
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ),
+                ),
+          ],
+          validator: (value) =>
+              Validator.validateDropdown(value, localizations),
+        );
+      },
     );
   }
 }
