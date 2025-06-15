@@ -26,6 +26,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
   String? selectedSubType;
 
   late Map<String, dynamic> stats;
+  String? selectedYear;
 
   @override
   void initState() {
@@ -52,7 +53,8 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
     setState(() {
       this.vehicles = vehicles;
       vehicleActivities = activitiesMap;
-      stats = Statics.generateStats(vehicleActivities, selectedVehicle?.id);
+      stats = Statics.generateStats(
+          vehicleActivities, selectedVehicle?.id, selectedYear);
     });
   }
 
@@ -129,12 +131,43 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
               setState(() {
                 selectedVehicle = value;
                 stats = Statics.generateStats(
-                  vehicleActivities,
-                  selectedVehicle?.id,
-                );
+                    vehicleActivities, selectedVehicle?.id, selectedYear);
               });
             },
           ),
+          SizedBox(width: AppDimensions.screenWidth(context) * 0.02),
+          Text(
+            localizations.yearLabel,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
+          SizedBox(width: AppDimensions.screenWidth(context) * 0.02),
+          DropdownButton<String>(
+            style: Theme.of(context).textTheme.bodyMedium,
+            value: selectedYear,
+            items: [
+              DropdownMenuItem(
+                value: null,
+                child: Text(localizations.all),
+              ),
+              ...stats['availableYears'].map<DropdownMenuItem<String>>((year) {
+                return DropdownMenuItem<String>(
+                  value: year.toString(),
+                  child: Text(year.toString()),
+                );
+              }).toList(),
+            ],
+            onChanged: (year) {
+              setState(() {
+                selectedYear = year;
+                stats = Statics.generateStats(
+                    vehicleActivities, selectedVehicle?.id, selectedYear);
+              });
+            },
+          )
         ],
       ),
     );
@@ -196,8 +229,12 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        MonthlyTotalSpendingChart(data: stats["totalSpendingPerMonth"]),
-        SizedBox(height: AppDimensions.screenHeight(context) * 0.025),
+        if (selectedYear != null) ...[
+          MonthlyTotalSpendingChart(
+              data: stats["totalSpendingPerMonth"],
+              selectedYear: selectedYear!),
+          SizedBox(height: AppDimensions.screenHeight(context) * 0.025),
+        ],
         PieChartWidget(dataMap: stats["totalPerActivity"]),
       ],
     );

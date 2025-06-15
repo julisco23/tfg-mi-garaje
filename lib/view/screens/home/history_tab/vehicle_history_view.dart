@@ -35,7 +35,13 @@ class VehicleHistoryView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    List<Activity> activities = ref.watch(activityProvider).value!.activities;
+    List<Activity>? activities = ref.watch(activityProvider).value?.activities;
+
+    if (activities == null) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
     final local = Localizations.localeOf(context).languageCode;
 
     final groupedActivities = _groupActivitiesByMonth(activities, local);

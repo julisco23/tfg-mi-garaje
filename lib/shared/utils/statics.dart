@@ -5,6 +5,7 @@ class Statics {
   static Map<String, dynamic> generateStats(
     Map<String, List<Activity>> vehicleActivities,
     String? selectedVehicleId,
+    String? selectedYear,
   ) {
     List<Activity> activities;
 
@@ -12,6 +13,14 @@ class Statics {
       activities = vehicleActivities[selectedVehicleId] ?? [];
     } else {
       activities = vehicleActivities.values.expand((list) => list).toList();
+    }
+
+    final availableYearsList = availableYears(activities);
+
+    if (selectedYear != null) {
+      activities = activities
+          .where((activity) => activity.date.year.toString() == selectedYear)
+          .toList();
     }
 
     if (activities.isEmpty) {
@@ -22,6 +31,7 @@ class Statics {
         'avgActivity': 0.0,
         'totalSpendingPerMonth': [],
         'totalPerActivity': <String, double>{},
+        'availableYears': [],
       };
     }
 
@@ -39,6 +49,7 @@ class Statics {
       'avgActivity': avgActivity,
       'totalSpendingPerMonth': totalSpendingPerMonth,
       'totalPerActivity': totalPerActivity,
+      'availableYears': availableYearsList,
     };
   }
 
@@ -126,5 +137,11 @@ class Statics {
     }
 
     return agrupado;
+  }
+
+  static List<int> availableYears(List<Activity> activities) {
+    final years = activities.map((a) => a.date.year).toSet().toList();
+    years.sort();
+    return years;
   }
 }

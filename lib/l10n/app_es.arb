@@ -92,6 +92,8 @@
   "activityDeleted": "{customType} eliminado",
   "spentOn": "Gasto en:",
   "distributionByType": "Distribución por tipo de actividad:",
+  "monthlyAverageExpense": "Gasto promedio mensual:",
+  "yearLabel": "Año:",
   "date": "Fecha",
   "selectDate": "Selecciona una fecha",
   "pleaseSelectDate": "* Seleccione una fecha.",

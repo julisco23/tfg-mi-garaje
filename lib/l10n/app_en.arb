@@ -92,6 +92,8 @@
   "activityDeleted": "{customType} deleted",
   "spentOn": "Spent on:",
   "distributionByType": "Distribution by activity type:",
+  "monthlyAverageExpense": "Monthly average expense:",
+  "yearLabel": "Year:",
   "date": "Date",
   "selectDate": "Select a date",
   "pleaseSelectDate": "* Please select a date.",

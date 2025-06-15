@@ -3,13 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/shared/utils/monthly_total_spending.dart';
 import 'package:intl/intl.dart';
-import 'package:mi_garaje/shared/utils/statics.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:mi_garaje/shared/utils/statics.dart';
 
 class MonthlyTotalSpendingChart extends StatefulWidget {
   final List<MonthlyTotalSpending> data;
+  final String selectedYear;
 
-  const MonthlyTotalSpendingChart({super.key, required this.data});
+  const MonthlyTotalSpendingChart(
+      {super.key, required this.data, required this.selectedYear});
 
   @override
   State<MonthlyTotalSpendingChart> createState() =>
@@ -17,46 +19,11 @@ class MonthlyTotalSpendingChart extends StatefulWidget {
 }
 
 class _MonthlyTotalSpendingChartState extends State<MonthlyTotalSpendingChart> {
-  late List<String> availableYears;
-  late String selectedYear;
-
-  @override
-  void initState() {
-    super.initState();
-    availableYears = widget.data
-        .map((e) => e.monthLabel.substring(0, 4))
-        .toSet()
-        .toList()
-      ..sort();
-    selectedYear = availableYears.last;
-  }
-
-  @override
-  void didUpdateWidget(covariant MonthlyTotalSpendingChart oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    if (oldWidget.data != widget.data) {
-      final newYears = widget.data
-          .map((e) => e.monthLabel.substring(0, 4))
-          .toSet()
-          .toList()
-        ..sort();
-
-      setState(() {
-        availableYears = newYears;
-
-        if (!availableYears.contains(selectedYear)) {
-          selectedYear = availableYears.first;
-        }
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final AppLocalizations localizations = AppLocalizations.of(context)!;
     final List<MonthlyTotalSpending> yearData =
-        Statics.generateMonthlyDataForYear(widget.data, selectedYear);
+        Statics.generateMonthlyDataForYear(widget.data, widget.selectedYear);
 
     final maxTotal =
         yearData.map((e) => e.total).reduce((a, b) => a > b ? a : b);
@@ -70,7 +37,7 @@ class _MonthlyTotalSpendingChartState extends State<MonthlyTotalSpendingChart> {
           children: [
             Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 15),
                 decoration: BoxDecoration(
                   color: Theme.of(context)
                       .colorScheme
@@ -81,30 +48,12 @@ class _MonthlyTotalSpendingChartState extends State<MonthlyTotalSpendingChart> {
                 child: Row(
                   children: [
                     Text(
-                      localizations.spentOn,
+                      localizations.monthlyAverageExpense,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.primary,
                       ),
-                    ),
-                    SizedBox(width: AppDimensions.screenWidth(context) * 0.02),
-                    DropdownButton<String>(
-                      style: Theme.of(context).textTheme.bodyMedium,
-                      value: selectedYear,
-                      items: availableYears
-                          .map((year) => DropdownMenuItem(
-                                value: year,
-                                child: Text(year),
-                              ))
-                          .toList(),
-                      onChanged: (year) {
-                        if (year != null) {
-                          setState(() {
-                            selectedYear = year;
-                          });
-                        }
-                      },
                     ),
                   ],
                 )),
