@@ -70,7 +70,7 @@ class _VehicleCardState extends ConsumerState<VehicleCard> {
                             color: Theme.of(context).colorScheme.onPrimary),
                       ),
                     ),
-              SizedBox(width: AppDimensions.screenHeight(context) * 0.04),
+              SizedBox(width: AppDimensions.screenWidth(context) * 0.04),
 
               // Información del vehículo
               Expanded(

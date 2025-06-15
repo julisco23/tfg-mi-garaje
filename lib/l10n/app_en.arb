@@ -50,6 +50,8 @@
   "myProfile": "My Profile",
   "myVehicles": "My Vehicles",
   "myFamily": "My Family",
+  "memebers": "({num} members)",
+  "vehicles": "({num} vehicles)",
   "code": "Code:",
   "settings": "Settings",
   "account": "Account",

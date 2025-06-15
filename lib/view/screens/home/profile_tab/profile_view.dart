@@ -131,13 +131,26 @@ class Perfil extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          localizations.myVehicles,
-          style: TextStyle(
-            color: Theme.of(context).primaryColor,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+        Row(
+          children: [
+            Text(
+              localizations.myVehicles,
+              style: TextStyle(
+                color: Theme.of(context).primaryColor,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Spacer(),
+            Text(
+              localizations.vehicles(vehicles.length),
+              style: TextStyle(
+                color: Theme.of(context).primaryColor,
+                fontSize: 18,
+              ),
+            ),
+            SizedBox(width: AppDimensions.screenWidth(context) * 0.01),
+          ],
         ),
         SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
         ListView.builder(
@@ -157,14 +170,18 @@ class Perfil extends ConsumerWidget {
     );
   }
 
-  Widget _buildFamilyList(BuildContext context, AsyncValue<AuthState> authState,
-      AppLocalizations localizations) {
-    if (!authState.value!.isFamily) {
-      return CircularProgressIndicator();
-    }
-
+  Widget _buildFamilyList(
+    BuildContext context,
+    AsyncValue<AuthState> authState,
+    AppLocalizations localizations,
+  ) {
     final family = authState.value!.family!;
+    final currentUserId = authState.value!.user!.id;
     final theme = Theme.of(context);
+
+    // Filtrar miembros para excluir al usuario actual
+    final filteredMembers =
+        family.members?.where((m) => m.id != currentUserId).toList() ?? [];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -174,7 +191,7 @@ class Perfil extends ConsumerWidget {
             Text(
               localizations.myFamily,
               style: TextStyle(
-                color: Theme.of(context).primaryColor,
+                color: theme.primaryColor,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -196,12 +213,21 @@ class Perfil extends ConsumerWidget {
                   children: [
                     Text(
                       "${localizations.code} ${family.code}",
-                      style: TextStyle(color: Theme.of(context).primaryColor),
+                      style: TextStyle(color: theme.primaryColor),
                     ),
                   ],
                 ),
               ),
-            )
+            ),
+            Spacer(),
+            Text(
+              localizations.memebers(family.members!.length),
+              style: TextStyle(
+                color: Theme.of(context).primaryColor,
+                fontSize: 18,
+              ),
+            ),
+            SizedBox(width: AppDimensions.screenWidth(context) * 0.01),
           ],
         ),
         SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
@@ -209,9 +235,9 @@ class Perfil extends ConsumerWidget {
           height: AppDimensions.screenHeight(context) * 0.2,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            itemCount: family.members?.length ?? 0,
+            itemCount: filteredMembers.length,
             itemBuilder: (context, index) {
-              final member = family.members![index];
+              final member = filteredMembers[index];
 
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 1.0),
@@ -221,37 +247,41 @@ class Perfil extends ConsumerWidget {
                   ),
                   elevation: 2,
                   child: SizedBox(
-                    width: AppDimensions.screenWidth(context) * 0.25,
+                    width: AppDimensions.screenWidth(context) * 0.35,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         CircleAvatar(
-                            radius: 35,
-                            backgroundImage: (member.isPhoto)
-                                ? (member.hasPhotoChanged
-                                    ? MemoryImage(
-                                            base64Decode(member.photoURL!))
-                                        as ImageProvider
-                                    : CachedNetworkImageProvider(
-                                        member.photoURL!) as ImageProvider)
-                                : null,
-                            backgroundColor: Theme.of(context).primaryColor,
-                            child: member.isPhoto
-                                ? null
-                                : Icon(
-                                    Icons.person,
-                                    size: 50,
-                                    color:
-                                        Theme.of(context).colorScheme.onPrimary,
-                                  )),
+                          radius: 35,
+                          backgroundImage: (member.isPhoto)
+                              ? (member.hasPhotoChanged
+                                  ? MemoryImage(base64Decode(member.photoURL!))
+                                      as ImageProvider
+                                  : CachedNetworkImageProvider(member.photoURL!)
+                                      as ImageProvider)
+                              : null,
+                          backgroundColor: theme.primaryColor,
+                          child: member.isPhoto
+                              ? null
+                              : Icon(
+                                  Icons.person,
+                                  size: 50,
+                                  color: theme.colorScheme.onPrimary,
+                                ),
+                        ),
                         SizedBox(
                             height: AppDimensions.screenHeight(context) * 0.02),
-                        Text(
-                          member.displayName,
-                          style: const TextStyle(
-                              fontSize: 17, fontWeight: FontWeight.bold),
-                          overflow: TextOverflow.ellipsis,
-                          textWidthBasis: TextWidthBasis.longestLine,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text(
+                            member.displayName,
+                            style: const TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            textWidthBasis: TextWidthBasis.longestLine,
+                          ),
                         ),
                       ],
                     ),

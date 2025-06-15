@@ -50,6 +50,8 @@
   "myProfile": "Mi Perfil",
   "myVehicles": "Mis Vehículos",
   "myFamily": "Mi Familia",
+  "memebers": "({num} miembros)",
+  "vehicles": "({num} vehículos)",
   "code": "Código:",
    "settings": "Ajustes",
   "account": "Cuenta",

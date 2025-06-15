@@ -20,7 +20,8 @@ class AppThemes {
     appBarTheme: AppBarTheme(
       backgroundColor: azul,
       iconTheme: IconThemeData(color: blanco, size: 40),
-      titleTextStyle: TextStyle(color: blanco, fontSize: 20),
+      titleTextStyle:
+          TextStyle(color: blanco, fontSize: 20, fontWeight: FontWeight.bold),
     ),
     dividerColor: blancoTransparente,
     colorScheme: ColorScheme(
@@ -74,7 +75,8 @@ class AppThemes {
         ),
         minimumSize: Size(double.infinity, 60),
         elevation: 0,
-        textStyle: TextStyle(color: blanco, fontSize: 16),
+        textStyle:
+            TextStyle(color: blanco, fontSize: 16, fontWeight: FontWeight.bold),
       ),
     ),
     dialogTheme: DialogTheme(
@@ -226,7 +228,8 @@ class AppThemes {
         ),
         minimumSize: Size(double.infinity, 60),
         elevation: 0,
-        textStyle: TextStyle(color: blanco, fontSize: 16),
+        textStyle:
+            TextStyle(color: blanco, fontSize: 16, fontWeight: FontWeight.bold),
       ),
     ),
     dialogTheme: DialogTheme(
