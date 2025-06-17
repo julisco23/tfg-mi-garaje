@@ -35,10 +35,10 @@ class Repair extends Activity {
       'idActivity': idActivity,
       'date': date.toIso8601String(),
       'activityType': activityType.name,
-      'photo': photo,
+      'photoURL': photo,
       'details': details,
       'cost': cost,
-      'repairType': repairType,
+      'subType': repairType,
     };
   }
 
@@ -46,13 +46,14 @@ class Repair extends Activity {
     return Repair(
       idActivity: map['idActivity'],
       date: DateTime.parse(map['date']),
-      photo: map['photo'],
+      photo: map['photoURL'],
       details: map['details'],
       cost: map['cost'],
-      repairType: map['repairType'],
+      repairType: map['subType'],
     );
   }
 
+  @override
   Repair copyWith({
     String? idActivity,
     DateTime? date,

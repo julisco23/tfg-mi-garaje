@@ -37,7 +37,7 @@ class Fuel extends Activity {
       'idActivity': idActivity,
       'date': date.toIso8601String(),
       'activityType': activityType.name,
-      'fuelType': fuelType,
+      'subType': fuelType,
       'costLiter': costLiter,
       'cost': cost,
     };
@@ -47,12 +47,13 @@ class Fuel extends Activity {
     return Fuel(
       idActivity: map['idActivity'],
       date: DateTime.parse(map['date']),
-      fuelType: map['fuelType'],
+      fuelType: map['subType'],
       costLiter: map['costLiter'],
       cost: map['cost'],
     );
   }
 
+  @override
   Fuel copyWith({
     String? idActivity,
     DateTime? date,

@@ -44,8 +44,8 @@ class CustomActivity extends Activity {
       'cost': cost,
       'details': details,
       'customType': customType,
-      'photo': photo,
-      'type': type,
+      'photoURL': photo,
+      'subType': type,
     };
   }
 
@@ -56,8 +56,8 @@ class CustomActivity extends Activity {
       details: map['details'],
       cost: map['cost'],
       customType: map['customType'],
-      photo: map['photo'],
-      type: map['type'],
+      photo: map['photoURL'],
+      type: map['subType'],
     );
   }
 
@@ -66,6 +66,7 @@ class CustomActivity extends Activity {
     return 'CustomActivity{idActivity: $idActivity, details: $details, cost: $cost}';
   }
 
+  @override
   CustomActivity copyWith({
     String? idActivity,
     DateTime? date,

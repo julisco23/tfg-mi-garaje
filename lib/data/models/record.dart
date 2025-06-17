@@ -35,10 +35,10 @@ class Record extends Activity {
       'idActivity': idActivity,
       'date': date.toIso8601String(),
       'activityType': activityType.name,
-      'photo': photo,
+      'photoURL': photo,
       'details': details,
       'cost': cost,
-      'recordType': recordType,
+      'subType': recordType,
     };
   }
 
@@ -46,13 +46,14 @@ class Record extends Activity {
     return Record(
       idActivity: map['idActivity'],
       date: DateTime.parse(map['date']),
-      photo: map['photo'],
+      photo: map['photoURL'],
       details: map['details'],
       cost: map['cost'],
-      recordType: map['recordType'],
+      recordType: map['subType'],
     );
   }
 
+  @override
   Record copyWith({
     String? idActivity,
     DateTime? date,
