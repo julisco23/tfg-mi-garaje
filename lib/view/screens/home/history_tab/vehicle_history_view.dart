@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:mi_garaje/data/models/activity.dart';
 import 'package:mi_garaje/data/models/vehicle.dart';
 import 'package:mi_garaje/data/notifier/activity_notifier.dart';
+import 'package:mi_garaje/data/notifier/auth_notifier.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/view/widgets/cards/activity_card.dart';
 
@@ -53,109 +54,114 @@ class VehicleHistoryView extends ConsumerWidget {
       return dateB.compareTo(dateA);
     });
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(16.0),
-      itemCount: keys.length,
-      itemBuilder: (context, index) {
-        String monthYear = keys[index];
-        List<Activity> monthActivities = groupedActivities[monthYear]!;
+    return RefreshIndicator(
+      onRefresh: () async {
+        ref.read(authProvider.notifier).updateUser();
+      },
+      child: ListView.builder(
+        padding: const EdgeInsets.all(16.0),
+        itemCount: keys.length,
+        itemBuilder: (context, index) {
+          String monthYear = keys[index];
+          List<Activity> monthActivities = groupedActivities[monthYear]!;
 
-        return Column(
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Column(
-                  children: [
-                    SizedBox(
-                        height: AppDimensions.screenHeight(context) * 0.02),
-                    // Nodo del mes
-                    Container(
-                      width: 16,
-                      height: 16,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.onPrimary,
-                        border: Border.all(
-                            color: Theme.of(context).colorScheme.primary,
-                            width: 2),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    // Línea entre mes y primera actividad
-                    Container(
-                      width: 2,
-                      height: 14,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ],
-                ),
-                SizedBox(width: AppDimensions.screenWidth(context) * 0.025),
-                // Card del mes
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .primary
-                        .withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    monthYear[0].toUpperCase() + monthYear.substring(1),
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            // Ahora las actividades
-            ...monthActivities.map((activity) {
-              return Row(
+          return Column(
+            children: [
+              Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Nodo de actividad
                   Column(
                     children: [
-                      Container(
-                        width: 2,
-                        height: 30,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
+                      SizedBox(
+                          height: AppDimensions.screenHeight(context) * 0.02),
+                      // Nodo del mes
                       Container(
                         width: 16,
                         height: 16,
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary,
+                          color: Theme.of(context).colorScheme.onPrimary,
+                          border: Border.all(
+                              color: Theme.of(context).colorScheme.primary,
+                              width: 2),
                           shape: BoxShape.circle,
                         ),
                       ),
-                      (activity == monthActivities.last)
-                          ? SizedBox()
-                          : Container(
-                              width: 2,
-                              height: 24,
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
+                      // Línea entre mes y primera actividad
+                      Container(
+                        width: 2,
+                        height: 14,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                     ],
                   ),
                   SizedBox(width: AppDimensions.screenWidth(context) * 0.025),
-                  // Card de la actividad
-                  Expanded(
-                    child: ActivityCard(
-                      activity: activity,
+                  // Card del mes
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .primary
+                          .withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      monthYear[0].toUpperCase() + monthYear.substring(1),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                     ),
                   ),
                 ],
-              );
-            }),
-            SizedBox(height: AppDimensions.screenHeight(context) * 0.02)
-          ],
-        );
-      },
+              ),
+              // Ahora las actividades
+              ...monthActivities.map((activity) {
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Nodo de actividad
+                    Column(
+                      children: [
+                        Container(
+                          width: 2,
+                          height: 30,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        Container(
+                          width: 16,
+                          height: 16,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primary,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        (activity == monthActivities.last)
+                            ? SizedBox()
+                            : Container(
+                                width: 2,
+                                height: 24,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                      ],
+                    ),
+                    SizedBox(width: AppDimensions.screenWidth(context) * 0.025),
+                    // Card de la actividad
+                    Expanded(
+                      child: ActivityCard(
+                        activity: activity,
+                      ),
+                    ),
+                  ],
+                );
+              }),
+              SizedBox(height: AppDimensions.screenHeight(context) * 0.02)
+            ],
+          );
+        },
+      ),
     );
   }
 }

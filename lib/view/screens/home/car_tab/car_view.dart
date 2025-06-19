@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mi_garaje/data/notifier/activity_notifier.dart';
+import 'package:mi_garaje/data/notifier/auth_notifier.dart';
 import 'package:mi_garaje/data/notifier/garage_notifier.dart';
 import 'package:mi_garaje/data/notifier/global_types_notifier.dart';
 import 'package:mi_garaje/data/notifier/tab_update_notifier.dart';
@@ -146,7 +147,7 @@ class _CarTabViewState extends ConsumerState<CarTabView>
 
         return RefreshIndicator(
           onRefresh: () async {
-            ref.invalidate(activityProvider);
+            ref.read(authProvider.notifier).updateUser();
           },
           child: ListView.builder(
             padding:

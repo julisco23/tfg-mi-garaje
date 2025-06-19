@@ -37,7 +37,7 @@ class Perfil extends ConsumerWidget {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          ref.invalidate(garageProvider);
+          ref.read(authProvider.notifier).updateUser();
         },
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),

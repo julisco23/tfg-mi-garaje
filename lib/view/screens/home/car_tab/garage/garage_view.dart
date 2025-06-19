@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mi_garaje/data/models/vehicle.dart';
+import 'package:mi_garaje/data/notifier/auth_notifier.dart';
 import 'package:mi_garaje/utils/app_localizations_extensions.dart';
 import 'package:mi_garaje/view/widgets/cards/vehicle_card.dart';
 import 'package:mi_garaje/view/widgets/dialogs/garage_tab/dialog_add_vehicle.dart';
@@ -35,7 +36,7 @@ class GarageView extends ConsumerWidget {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          ref.invalidate(garageProvider);
+          ref.read(authProvider.notifier).updateUser();
         },
         child: ListView.builder(
           padding:
