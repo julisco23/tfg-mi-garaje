@@ -224,7 +224,9 @@ class AuthService {
       String familyId = _firestore.collection('families').doc().id;
 
       await _firestore.collection('families').doc(familyId).set({
-        'members': [family.members!.first.id],
+        'members': [
+          _firestore.collection('users').doc(family.members!.first.id)
+        ],
         'code': family.code,
         'creationDate': family.creationDate!.toIso8601String(),
       });
@@ -244,7 +246,8 @@ class AuthService {
       bool eliminar, String userId, String familyId) async {
     try {
       await _firestore.collection('families').doc(familyId).update({
-        'members': FieldValue.arrayRemove([userId]),
+        'members': FieldValue.arrayRemove(
+            [_firestore.collection('users').doc(userId)]),
       });
 
       await _firestore.collection('users').doc(userId).update({
@@ -274,7 +277,8 @@ class AuthService {
       DocumentSnapshot doc = snapshot.docs.first;
 
       await _firestore.collection('families').doc(doc.id).update({
-        'members': FieldValue.arrayUnion([userId]),
+        'members':
+            FieldValue.arrayUnion([_firestore.collection('users').doc(userId)]),
       });
 
       await _firestore.collection('users').doc(userId).update({
@@ -285,7 +289,6 @@ class AuthService {
     }
   }
 
-  // Método para obtener la familia del usuario
   Future<Family> getFamily(String idFamily) async {
     try {
       DocumentSnapshot doc =
@@ -294,15 +297,16 @@ class AuthService {
       Family family = Family.fromMap(doc.data() as Map<String, dynamic>)
         ..id = doc.id;
 
-      List<String> members = List<String>.from(doc.get('members'));
+      List<DocumentReference> memberRefs =
+          List<DocumentReference>.from(doc.get('members'));
 
       List<app.User> users = [];
-      for (String id in members) {
-        DocumentSnapshot userDoc =
-            await _firestore.collection('users').doc(id).get();
+      for (DocumentReference ref in memberRefs) {
+        DocumentSnapshot userDoc = await ref.get();
         users.add(app.User.fromMap(userDoc.data() as Map<String, dynamic>)
           ..id = userDoc.id);
       }
+
       family.addMembers(users);
       return family;
     } catch (e) {

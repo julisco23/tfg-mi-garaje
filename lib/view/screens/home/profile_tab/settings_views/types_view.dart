@@ -91,8 +91,7 @@ class _TypesViewState extends ConsumerState<TypesView> {
           ref.read(tabStateProvider.notifier).removeTab(typeName);
           await ref
               .read(activityProvider.notifier)
-              .deleteAllActivities(typeName);
-          await ref.read(garageProvider.notifier).refreshGarage();
+              .deleteAllActivities(typeName, isActivity: true);
         } else if (isVehicle) {
           await ref
               .read(garageProvider.notifier)
@@ -100,8 +99,7 @@ class _TypesViewState extends ConsumerState<TypesView> {
         } else {
           await ref
               .read(activityProvider.notifier)
-              .deleteAllActivities(typeName, type: widget.type);
-          await ref.read(garageProvider.notifier).refreshGarage();
+              .deleteAllActivities(typeName);
         }
 
         ToastHelper.show(theme,
@@ -122,8 +120,7 @@ class _TypesViewState extends ConsumerState<TypesView> {
           ref.read(tabStateProvider.notifier).editTab(oldName, newName);
           await ref
               .read(activityProvider.notifier)
-              .editAllActivities(oldName, newName);
-          await ref.read(garageProvider.notifier).refreshGarage();
+              .editAllActivities(oldName, newName, isActivity: true);
         } else if (isVehicle) {
           await ref
               .read(garageProvider.notifier)
@@ -131,8 +128,7 @@ class _TypesViewState extends ConsumerState<TypesView> {
         } else {
           await ref
               .read(activityProvider.notifier)
-              .editAllActivities(oldName, newName, type: widget.type);
-          await ref.read(garageProvider.notifier).refreshGarage();
+              .editAllActivities(oldName, newName);
         }
 
         ToastHelper.show(theme,

@@ -143,7 +143,9 @@ class Perfil extends ConsumerWidget {
             ),
             Spacer(),
             Text(
-              localizations.vehicles(vehicles.length),
+              vehicles.length == 1
+                  ? localizations.vehicle(vehicles.length)
+                  : localizations.vehicles(vehicles.length),
               style: TextStyle(
                 color: Theme.of(context).primaryColor,
                 fontSize: 18,
@@ -220,77 +222,82 @@ class Perfil extends ConsumerWidget {
               ),
             ),
             Spacer(),
-            Text(
-              localizations.memebers(family.members!.length),
-              style: TextStyle(
-                color: Theme.of(context).primaryColor,
-                fontSize: 18,
+            if (family.members!.length > 1)
+              Text(
+                localizations.members(family.members!.length),
+                style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                  fontSize: 18,
+                ),
               ),
-            ),
             SizedBox(width: AppDimensions.screenWidth(context) * 0.01),
           ],
         ),
         SizedBox(height: AppDimensions.screenHeight(context) * 0.01),
-        SizedBox(
-          height: AppDimensions.screenHeight(context) * 0.2,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: filteredMembers.length,
-            itemBuilder: (context, index) {
-              final member = filteredMembers[index];
+        if (filteredMembers.isNotEmpty)
+          SizedBox(
+            height: AppDimensions.screenHeight(context) * 0.2,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: filteredMembers.length,
+              itemBuilder: (context, index) {
+                final member = filteredMembers[index];
 
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 1.0),
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 2,
-                  child: SizedBox(
-                    width: AppDimensions.screenWidth(context) * 0.35,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CircleAvatar(
-                          radius: 35,
-                          backgroundImage: (member.isPhoto)
-                              ? (member.hasPhotoChanged
-                                  ? MemoryImage(base64Decode(member.photoURL!))
-                                      as ImageProvider
-                                  : CachedNetworkImageProvider(member.photoURL!)
-                                      as ImageProvider)
-                              : null,
-                          backgroundColor: theme.primaryColor,
-                          child: member.isPhoto
-                              ? null
-                              : Icon(
-                                  Icons.person,
-                                  size: 50,
-                                  color: theme.colorScheme.onPrimary,
-                                ),
-                        ),
-                        SizedBox(
-                            height: AppDimensions.screenHeight(context) * 0.02),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Text(
-                            member.displayName,
-                            style: const TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                            textWidthBasis: TextWidthBasis.longestLine,
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 1.0),
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 2,
+                    child: SizedBox(
+                      width: AppDimensions.screenWidth(context) * 0.35,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircleAvatar(
+                            radius: 35,
+                            backgroundImage: (member.isPhoto)
+                                ? (member.hasPhotoChanged
+                                    ? MemoryImage(
+                                            base64Decode(member.photoURL!))
+                                        as ImageProvider
+                                    : CachedNetworkImageProvider(
+                                        member.photoURL!) as ImageProvider)
+                                : null,
+                            backgroundColor: theme.primaryColor,
+                            child: member.isPhoto
+                                ? null
+                                : Icon(
+                                    Icons.person,
+                                    size: 50,
+                                    color: theme.colorScheme.onPrimary,
+                                  ),
                           ),
-                        ),
-                      ],
+                          SizedBox(
+                              height:
+                                  AppDimensions.screenHeight(context) * 0.02),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Text(
+                              member.displayName,
+                              style: const TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              textWidthBasis: TextWidthBasis.longestLine,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
-        ),
       ],
     );
   }

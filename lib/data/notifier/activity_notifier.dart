@@ -80,28 +80,39 @@ class ActivityNotifier extends AsyncNotifier<ActivityState> {
   }
 
   Future<void> deleteAllActivities(String typeName,
-      {String type = "custom"}) async {
+      {isActivity = false}) async {
     final auth = ref.read(authProvider).value;
     if (auth == null) return;
 
     await _garageService.removeAllActivities(
-        auth.id, typeName, type, auth.type);
-  }
+        auth.id, typeName, auth.type, isActivity);
 
-  Future<void> editAllActivities(String oldName, String newName,
-      {String type = "custom"}) async {
-    final auth = ref.read(authProvider).value;
-    if (auth == null) return;
-    await _garageService.editAllActivities(
-        auth.id, oldName, newName, type, auth.type);
-    /*final activities = await getActivitiesByVehicle(
+    final activities = await getActivitiesByVehicle(
       ref.read(garageProvider).value!.selectedVehicle!.id!,
     );
+
     state = AsyncData(
       ActivityState(
         activities: activities,
       ),
-    );*/
+    );
+  }
+
+  Future<void> editAllActivities(String oldName, String newName,
+      {bool isActivity = false}) async {
+    final auth = ref.read(authProvider).value;
+    if (auth == null) return;
+    await _garageService.editAllActivities(
+        auth.id, oldName, newName, auth.type, isActivity);
+    final activities = await getActivitiesByVehicle(
+      ref.read(garageProvider).value!.selectedVehicle!.id!,
+    );
+
+    state = AsyncData(
+      ActivityState(
+        activities: activities,
+      ),
+    );
   }
 }
 

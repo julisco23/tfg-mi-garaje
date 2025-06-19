@@ -144,7 +144,7 @@ class GarageService {
   }
 
   Future<void> removeAllActivities(
-      String id, String typeName, String type, String collection) async {
+      String id, String typeName, String collection, bool isActivity) async {
     try {
       var vehiclesSnapshot = await _firestore
           .collection(collection)
@@ -167,7 +167,11 @@ class GarageService {
         for (var activityDoc in activitiesSnapshot.docs) {
           var activityData = activityDoc.data();
 
-          if (activityData['${type.toLowerCase()}Type'] == typeName) {
+          if (isActivity) {
+            if (activityData['customType'] == typeName) {
+              activityIdsToDelete.add(activityDoc.id);
+            }
+          } else if (activityData['subType'] == typeName) {
             activityIdsToDelete.add(activityDoc.id);
           }
         }
@@ -191,7 +195,7 @@ class GarageService {
   }
 
   Future<void> editAllActivities(String id, String oldName, String newName,
-      String type, String collection) async {
+      String collection, bool isActivity) async {
     try {
       var vehiclesSnapshot = await _firestore
           .collection(collection)
@@ -213,7 +217,7 @@ class GarageService {
         for (var activityDoc in activitiesSnapshot.docs) {
           var activityData = activityDoc.data();
 
-          if (activityData['${type.toLowerCase()}Type'] == oldName) {
+          if (isActivity && activityData['customType'] == oldName) {
             await _firestore
                 .collection(collection)
                 .doc(id)
@@ -221,7 +225,16 @@ class GarageService {
                 .doc(vehicleId)
                 .collection('activities')
                 .doc(activityDoc.id)
-                .update({'${type.toLowerCase()}Type': newName});
+                .update({'customType': newName});
+          } else if (activityData['subType'] == oldName) {
+            await _firestore
+                .collection(collection)
+                .doc(id)
+                .collection('vehicles')
+                .doc(vehicleId)
+                .collection('activities')
+                .doc(activityDoc.id)
+                .update({'subType': newName});
           }
         }
       }

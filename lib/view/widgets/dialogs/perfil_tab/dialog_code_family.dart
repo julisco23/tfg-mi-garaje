@@ -73,6 +73,7 @@ class DialogFamilyCode extends ConsumerWidget {
                           TextButton(
                             onPressed: () {
                               if (formKey.currentState!.validate()) {
+                                navigator.pop();
                                 navigator
                                     .pushNamed(RouteNames.loading, arguments: {
                                   'onInit': () async {
@@ -82,7 +83,6 @@ class DialogFamilyCode extends ConsumerWidget {
                                           .joinFamily(
                                               controller.text.toUpperCase());
 
-                                      navigator.pop();
                                       navigator.pop();
                                     } catch (e) {
                                       ToastHelper.show(

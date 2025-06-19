@@ -261,7 +261,7 @@ class SettingsView extends ConsumerWidget {
                 }),
             SettingCard(
                 icon: Icons.star_rounded,
-                title: localizations.newActivity,
+                title: localizations.activityTypes,
                 onTap: () {
                   navigator.pushNamed(RouteNames.types,
                       arguments: {"type": "Activity"});
@@ -335,7 +335,6 @@ class SettingsView extends ConsumerWidget {
               icon: Icons.help_rounded,
               title: localizations.faq,
               onTap: () {
-                //TODO: Implementar preguntas frecuentes
                 ToastHelper.show(
                     theme, localizations.functionalityNotAvailable);
               },
@@ -344,7 +343,6 @@ class SettingsView extends ConsumerWidget {
               icon: Icons.feedback_rounded,
               title: localizations.sendFeedback,
               onTap: () {
-                //TODO: Implementar comentarios
                 ToastHelper.show(
                     theme, localizations.functionalityNotAvailable);
               },

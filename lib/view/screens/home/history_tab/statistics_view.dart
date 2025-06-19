@@ -106,7 +106,7 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            localizations.vehicle,
+            localizations.vehicle3,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
