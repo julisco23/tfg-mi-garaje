@@ -1,3 +1,5 @@
+import 'package:mi_garaje/data/models/family.dart';
+
 class User {
   String? id;
   String? name;
@@ -7,7 +9,7 @@ class User {
   bool isGoogle;
   DateTime creationDate;
   bool isPhotoChanged;
-  String? idFamily;
+  Family? family;
 
   User({
     this.id,
@@ -18,11 +20,11 @@ class User {
     required this.isGoogle,
     required this.creationDate,
     required this.isPhotoChanged,
-    this.idFamily,
+    this.family,
   });
 
-  /// Propiedad calculada para verificar si el usuario tiene una familia
-  bool get hasFamily => idFamily != null;
+  // Propiedad calculada para verificar si el usuario tiene una familia
+  bool get hasFamily => family != null;
 
   bool get isPhoto {
     return photoURL != null;
@@ -44,7 +46,6 @@ class User {
       'isGoogle': isGoogle,
       'creationDate': creationDate.toIso8601String(),
       'isPhotoChanged': isPhotoChanged,
-      'idFamily': idFamily,
     };
   }
 
@@ -58,24 +59,23 @@ class User {
       isGoogle: map['isGoogle'],
       creationDate: DateTime.parse(map['creationDate']),
       isPhotoChanged: map['isPhotoChanged'],
-      idFamily: map['idFamily'],
     );
   }
 
   // toString
   @override
   String toString() {
-    return 'User{id: $id, name: $name, email: $email, isPhoto: $isPhoto, isAnonymous: $isAnonymous, isGoogle: $isGoogle, creationDate: $creationDate, idFamily: $idFamily}';
+    return 'User{id: $id, name: $name, email: $email, isPhoto: $isPhoto, isAnonymous: $isAnonymous, isGoogle: $isGoogle, creationDate: $creationDate}';
   }
 
   /// Método para unirse a una familia
-  void joinFamily(String idFamily) {
-    this.idFamily = idFamily;
+  void joinFamily(Family family) {
+    this.family = family;
   }
 
   /// Método para salir de la familia
   void leaveFamily() {
-    idFamily = null;
+    family = null;
   }
 
   // Método para actualizar el nombre del usuario

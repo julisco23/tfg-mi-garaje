@@ -21,7 +21,34 @@ class AuthService {
 
     if (!doc.exists || doc.data() == null) return null;
 
-    return app.User.fromMap(doc.data() as Map<String, dynamic>)..id = doc.id;
+    final data = doc.data() as Map<String, dynamic>;
+
+    app.User myUser = app.User.fromMap(data)..id = doc.id;
+
+    if (data.containsKey('family') && data['family'] is DocumentReference) {
+      final familyRef = data['family'] as DocumentReference;
+      final familyDoc = await familyRef.get();
+
+      if (familyDoc.exists && familyDoc.data() != null) {
+        final familyData = familyDoc.data() as Map<String, dynamic>;
+        final family = Family.fromMap(familyData, familyDoc.id);
+
+        List<app.User> users = [];
+        for (DocumentReference ref in familyData['members']) {
+          DocumentSnapshot userDoc = await ref.get();
+          users.add(app.User.fromMap(userDoc.data() as Map<String, dynamic>)
+            ..id = userDoc.id);
+        }
+
+        family.addMembers(users);
+
+        print('Family found: ${family.toMap()}');
+
+        myUser.joinFamily(family);
+      }
+    }
+
+    return myUser;
   }
 
   // Método para verificar si el usuario tiene cuenta
@@ -232,7 +259,7 @@ class AuthService {
       });
 
       await _firestore.collection('users').doc(userId).update({
-        'idFamily': familyId,
+        'family': _firestore.collection('families').doc(familyId),
       });
 
       return familyId;
@@ -251,7 +278,7 @@ class AuthService {
       });
 
       await _firestore.collection('users').doc(userId).update({
-        'idFamily': null,
+        'family': null,
       });
 
       if (eliminar) {
@@ -282,35 +309,10 @@ class AuthService {
       });
 
       await _firestore.collection('users').doc(userId).update({
-        'idFamily': doc.id,
+        'family': _firestore.collection('families').doc(doc.id),
       });
     } catch (e) {
       throw Exception('ejoin_family_error');
-    }
-  }
-
-  Future<Family> getFamily(String idFamily) async {
-    try {
-      DocumentSnapshot doc =
-          await _firestore.collection('families').doc(idFamily).get();
-
-      Family family = Family.fromMap(doc.data() as Map<String, dynamic>)
-        ..id = doc.id;
-
-      List<DocumentReference> memberRefs =
-          List<DocumentReference>.from(doc.get('members'));
-
-      List<app.User> users = [];
-      for (DocumentReference ref in memberRefs) {
-        DocumentSnapshot userDoc = await ref.get();
-        users.add(app.User.fromMap(userDoc.data() as Map<String, dynamic>)
-          ..id = userDoc.id);
-      }
-
-      family.addMembers(users);
-      return family;
-    } catch (e) {
-      throw Exception('get_family_error');
     }
   }
 }

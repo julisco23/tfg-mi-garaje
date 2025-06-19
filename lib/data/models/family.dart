@@ -39,15 +39,14 @@ class Family {
       'id': id,
       'photoURL': photoURL,
       'creationDate': creationDate!.toIso8601String(),
-      'members': members?.map((user) => user.id).toList(),
       'code': code,
     };
   }
 
   /// Crear una familia desde un mapa (Firestore)
-  factory Family.fromMap(Map<String, dynamic> map) {
+  factory Family.fromMap(Map<String, dynamic> map, String familyId) {
     return Family(
-      id: map['id'],
+      id: familyId,
       photoURL: map['photoURL'],
       creationDate: DateTime.parse(map['creationDate']),
       code: map['code'],

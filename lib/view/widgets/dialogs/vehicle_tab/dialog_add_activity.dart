@@ -185,8 +185,13 @@ class _DialogAddActivityState extends ConsumerState<DialogAddActivity> {
                     labelText: localizations.costE,
                     hintText: '20 €',
                     keyboardType: TextInputType.number,
-                    validator: (value) =>
-                        Validator.validateCostRequired(value, localizations),
+                    validator: (value) {
+                      if (customType == "Fuel") {
+                        return Validator.validateCostRequired(
+                            value, localizations);
+                      }
+                      return null;
+                    },
                   ),
                   SizedBox(height: AppDimensions.screenHeight(context) * 0.02),
 

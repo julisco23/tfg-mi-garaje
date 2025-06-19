@@ -13,26 +13,24 @@ import 'package:mi_garaje/shared/utils/family_code_generator.dart';
 
 class AuthState {
   final User? user;
-  final my.Family? family;
 
-  AuthState({this.user, this.family});
+  AuthState({this.user});
 
   bool get isUser => user != null;
-  bool get isFamily => family != null;
+  bool get isFamily => user!.hasFamily;
 
-  String get id => family?.id ?? user!.id!;
+  String get id => user?.family?.id ?? user!.id!;
 
   String get type => isFamily ? "families" : "users";
 
   bool get isGoogle => user?.isGoogle ?? false;
   bool get isPhotoURL => user!.photoURL != null;
 
-  bool get isLastMember => family!.members!.length == 1;
+  bool get isLastMember => user!.family!.members!.length == 1;
 
-  AuthState copyWith({User? user, my.Family? family}) {
+  AuthState copyWith({User? user}) {
     return AuthState(
       user: user ?? this.user,
-      family: family ?? this.family,
     );
   }
 }
@@ -45,12 +43,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
   @override
   FutureOr<AuthState> build() async {
     try {
-      final user = await _authService.currentUser;
-      my.Family? family;
-      if (user != null && user.hasFamily) {
-        family = await _authService.getFamily(user.idFamily!);
-      }
-      return AuthState(user: user, family: family);
+      return AuthState(user: await _authService.currentUser);
     } catch (e, stackTrace) {
       throw AsyncError(e, stackTrace);
     }
@@ -58,12 +51,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
 
   Future<void> updateUser() async {
     try {
-      final user = await _authService.currentUser;
-      my.Family? family;
-      if (user != null && user.hasFamily) {
-        family = await _authService.getFamily(user.idFamily!);
-      }
-      state = AsyncData(AuthState(user: user, family: family));
+      state = AsyncData(AuthState(user: await _authService.currentUser));
     } catch (e, st) {
       state = AsyncError(e, st);
     }
@@ -171,7 +159,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
 
   Future<void> leaveFamily() async {
     await _authService.leaveFamily(state.value!.isLastMember,
-        state.value!.user!.id!, state.value!.family!.id!);
+        state.value!.user!.id!, state.value!.user!.family!.id!);
     if (state.value!.isLastMember) {
       await _garageService.deleteVehicles(state.value!.id, state.value!.type);
     }

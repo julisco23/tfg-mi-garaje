@@ -28,25 +28,31 @@ class _ErrorScreenState extends State<ErrorScreen> {
     final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(title: Text(localizations.error)),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(Icons.error, color: Colors.red, size: 64),
-            SizedBox(height: AppDimensions.screenHeight(context) * 0.025),
-            Text(
-              widget.errorMessage,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.error, color: Colors.red, size: 64),
+                  SizedBox(height: AppDimensions.screenHeight(context) * 0.025),
+                  Text(
+                    widget.errorMessage,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: AppDimensions.screenHeight(context) * 0.025),
+                  ElevatedButton(
+                    onPressed: _retry,
+                    child: Text(localizations.retry),
+                  ),
+                ],
+              ),
             ),
-            SizedBox(height: AppDimensions.screenHeight(context) * 0.025),
-            ElevatedButton(
-              onPressed: _retry,
-              child: Text(localizations.retry),
-            ),
-          ],
+          ),
         ),
       ),
     );

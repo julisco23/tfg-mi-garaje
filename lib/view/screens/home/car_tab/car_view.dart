@@ -10,7 +10,7 @@ import 'package:mi_garaje/shared/routes/route_names.dart';
 import 'package:mi_garaje/utils/app_localizations_extensions.dart';
 import 'package:mi_garaje/view/screens/error_screen.dart';
 import 'package:mi_garaje/view/widgets/cards/activity_card.dart';
-import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_add_activity.dart';
+import 'package:mi_garaje/view/widgets/dialogs/vehicle_tab/dialog_add_activity.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CarTabView extends ConsumerStatefulWidget {

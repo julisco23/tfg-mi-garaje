@@ -177,7 +177,7 @@ class Perfil extends ConsumerWidget {
     AsyncValue<AuthState> authState,
     AppLocalizations localizations,
   ) {
-    final family = authState.value!.family!;
+    final family = authState.value!.user!.family!;
     final currentUserId = authState.value!.user!.id;
     final theme = Theme.of(context);
 

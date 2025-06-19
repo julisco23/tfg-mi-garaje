@@ -8,7 +8,7 @@ import 'package:mi_garaje/data/models/fuel.dart';
 import 'package:mi_garaje/data/notifier/activity_notifier.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
 import 'package:mi_garaje/utils/app_localizations_extensions.dart';
-import 'package:mi_garaje/view/widgets/dialogs/car_tab/dialog_add_activity.dart';
+import 'package:mi_garaje/view/widgets/dialogs/vehicle_tab/dialog_add_activity.dart';
 import 'package:mi_garaje/view/widgets/dialogs/perfil_tab/dialog_confirm.dart';
 import 'package:mi_garaje/view/widgets/utils/elevated_button_utils.dart';
 import 'package:mi_garaje/view/widgets/utils/fluttertoast.dart';
