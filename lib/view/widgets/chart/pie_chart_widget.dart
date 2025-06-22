@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mi_garaje/shared/constants/constants.dart';
+import 'package:mi_garaje/utils/app_localizations_extensions.dart';
 
 class PieChartWidget extends StatelessWidget {
   final Map<String, double> dataMap;
@@ -104,7 +105,8 @@ class PieChartWidget extends StatelessWidget {
                   ),
                 ),
                 SizedBox(width: AppDimensions.screenWidth(context) * 0.01),
-                Text(title, style: const TextStyle(fontSize: 12)),
+                Text(localizations.getSubType(title),
+                    style: const TextStyle(fontSize: 12)),
               ],
             );
           }).toList(),

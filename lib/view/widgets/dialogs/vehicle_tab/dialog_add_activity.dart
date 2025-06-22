@@ -328,7 +328,9 @@ class _DialogAddActivityState extends ConsumerState<DialogAddActivity> {
                                         ? base64Encode(imageBytes!)
                                         : null,
                                     date: selectedDate!,
-                                    cost: num.parse(costController.text),
+                                    cost: costController.text.isEmpty
+                                        ? null
+                                        : num.parse(costController.text),
                                     details: detailsController.text,
                                   );
                                   break;
@@ -339,14 +341,18 @@ class _DialogAddActivityState extends ConsumerState<DialogAddActivity> {
                                         ? base64Encode(imageBytes!)
                                         : null,
                                     date: selectedDate!,
-                                    cost: num.parse(costController.text),
+                                    cost: costController.text.isEmpty
+                                        ? null
+                                        : num.parse(costController.text),
                                     details: detailsController.text,
                                   );
                                   break;
                                 default:
                                   newActivity = CustomActivity(
                                       date: selectedDate!,
-                                      cost: num.parse(costController.text),
+                                      cost: costController.text.isEmpty
+                                          ? null
+                                          : num.parse(costController.text),
                                       details: detailsController.text,
                                       photo: imageBytes != null
                                           ? base64Encode(imageBytes!)

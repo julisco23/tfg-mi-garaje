@@ -47,7 +47,8 @@ class _ActivityViewState extends ConsumerState<ActivityView> {
             onPressed: () async {
               final bool result = await ConfirmDialog.show(
                   context,
-                  '${localizations.delete} ${activity.getType}',
+                  localizations.deleteType(localizations
+                      .getSubType(activity.getType, isSingular: true)),
                   localizations.confirmDeleteActivity);
 
               if (!result) return;

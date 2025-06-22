@@ -154,6 +154,8 @@
   "activityTypeFuel": "fuel",
   "activityTypeRepair": "repair",
   "activityTypeRecord": "record",
+  "activityTypeCustom": "custom",
+  "activityTypeCustoms": "Custom",
   "retry": "Retry",
   "error": "Error",
   "myGarage": "My Garage",

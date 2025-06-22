@@ -31,7 +31,8 @@ class ActivityCard extends ConsumerWidget {
       onLongPress: () async {
         final result = await ConfirmDialog.show(
             context,
-            '${localizations.delete} ${activity.getType}',
+            localizations.deleteType(
+                localizations.getSubType(activity.getType, isSingular: true)),
             localizations.confirmDeleteActivity);
         if (!result) return;
         try {

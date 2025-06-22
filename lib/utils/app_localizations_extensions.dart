@@ -59,6 +59,8 @@ extension LocalizedVehicleType on AppLocalizations {
         return isSingular ? activityTypeRepair : activityTypeRepairs;
       case 'record':
         return isSingular ? activityTypeRecord : activityTypeRecords;
+      case 'custom':
+        return isSingular ? activityTypeCustom : activityTypeCustoms;
       case 'vehicle':
         return isSingular ? vehicle2 : vehicle3;
       case 'activity':

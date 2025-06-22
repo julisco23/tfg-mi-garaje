@@ -153,6 +153,8 @@
   "activityTypeFuel": "repostaje",
   "activityTypeRepair": "reparación",
   "activityTypeRecord": "documento",
+  "activityTypeCustom": "personalizado",
+  "activityTypeCustoms": "Personalizado",
   "retry": "Reintentar",
   "error": "Error",
   "myGarage": "Mi Garaje",
