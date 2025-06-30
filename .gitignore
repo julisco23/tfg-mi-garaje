@@ -36,12 +36,10 @@ GoogleService-Info.plist
 # Web
 web/.dart_tool/
 web/flutter_build/
-
-# Linux
-linux/flutter/ephemeral/
-
-# Windows
-windows/flutter/ephemeral/
+web/
 
 # Mac
 .DS_Store
+
+# Meta
+.metadata

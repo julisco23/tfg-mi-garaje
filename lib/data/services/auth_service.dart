@@ -42,8 +42,6 @@ class AuthService {
 
         family.addMembers(users);
 
-        print('Family found: ${family.toMap()}');
-
         myUser.joinFamily(family);
       }
     }

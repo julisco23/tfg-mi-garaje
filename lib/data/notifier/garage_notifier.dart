@@ -41,14 +41,19 @@ class GarageNotifier extends AsyncNotifier<GarageState> {
       final auth = ref.watch(authProvider).value;
       if (auth == null) return GarageState();
 
-      print('GarageNotifier: Building state for user ${auth.id}');
-      print('GarageNotifier: User type is ${auth.type}');
       final vehicles =
           await _garageService.getVehiclesFuture(auth.id, auth.type);
 
+      final selectedVehicle = vehicles.isNotEmpty
+          ? vehicles.firstWhere(
+              (v) => v.id == state.value?.selectedVehicle?.id,
+              orElse: () => vehicles.first,
+            )
+          : null;
+
       return GarageState(
         vehicles: vehicles,
-        selectedVehicle: vehicles.isNotEmpty ? vehicles.first : null,
+        selectedVehicle: selectedVehicle,
       );
     } catch (e, stackTrace) {
       throw AsyncError(e, stackTrace);
